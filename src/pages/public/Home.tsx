@@ -7,7 +7,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent } from "@/components/ui/card";
 import { VehicleCard, VehicleCardSkeleton } from "@/components/cards/VehicleCard";
 import { SEO } from "@/components/shared/SEO";
-import { BRANDS, CITIES } from "@/data/vehicles";
+import { CITIES } from "@/data/vehicles";
+import { CAR_BRANDS, getModels, getVariants } from "@/data/carDatabase";
+import { SearchableSelect } from "@/components/shared/SearchableSelect";
 import { BUDGET_BANDS, QUICK_BRANDS } from "@/utils/constants";
 import { useState } from "react";
 import { useLatestVehicles, useFeaturedVehicles } from "@/hooks/public/useHomeVehicles";
@@ -39,7 +41,7 @@ const testimonials = [
 export default function Home() {
   const { vehicles: latestVehicles, loading: latestLoading, error: latestError, refetch: refetchLatest } = useLatestVehicles();
   const { vehicles: featuredVehicles, loading: featuredLoading, error: featuredError, refetch: refetchFeatured } = useFeaturedVehicles();
-  
+
   const [customer, setCustomer] = useState(() => getStoredCustomer());
   const isLoggedIn = !!customer;
   const [authOpen, setAuthOpen] = useState(false);
@@ -49,17 +51,33 @@ export default function Home() {
 
   const navigate = useNavigate();
   const [brand, setBrand] = useState("");
+  const [model, setModel] = useState("");
+  const [variant, setVariant] = useState("");
   const [city, setCity] = useState("");
   const [budget, setBudget] = useState("");
-  const [q, setQ] = useState("");
+
+  const models = brand ? getModels(brand) : [];
+  const variants = brand && model ? getVariants(brand, model) : [];
+
+  const handleBrandChange = (v: string) => {
+    setBrand(v);
+    setModel("");
+    setVariant("");
+  };
+
+  const handleModelChange = (v: string) => {
+    setModel(v);
+    setVariant("");
+  };
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();
     if (brand) params.set("brand", brand);
+    if (model) params.set("model", model);
+    if (variant) params.set("variant", variant);
     if (city) params.set("city", city);
     if (budget) params.set("budget", budget);
-    if (q) params.set("q", q);
     navigate(`/cars?${params.toString()}`);
   };
 
@@ -86,21 +104,44 @@ export default function Home() {
           <motion.form
             onSubmit={submit}
             initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}
-            className="mt-8 bg-card text-foreground rounded-2xl shadow-premium p-3 md:p-4 grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr_1fr_auto] gap-2"
+            className="mt-8 bg-card text-foreground rounded-2xl shadow-premium p-3 md:p-4 grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr_1fr_1fr_auto] gap-2"
           >
-            <Select value={brand} onValueChange={setBrand}>
-              <SelectTrigger className="h-12"><SelectValue placeholder="Brand" /></SelectTrigger>
-              <SelectContent>{BRANDS.map((b) => <SelectItem key={b} value={b}>{b}</SelectItem>)}</SelectContent>
-            </Select>
-            <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Model (e.g. Creta)" className="h-12" />
+            <SearchableSelect
+              value={brand}
+              onValueChange={handleBrandChange}
+              options={CAR_BRANDS}
+              placeholder="Brand"
+              triggerClassName="h-12"
+            />
+
+            <SearchableSelect
+              value={model}
+              onValueChange={handleModelChange}
+              options={models}
+              placeholder={brand ? "Model" : "Select brand first"}
+              disabled={!brand}
+              triggerClassName="h-12"
+            />
+
+            <SearchableSelect
+              value={variant}
+              onValueChange={setVariant}
+              options={variants}
+              placeholder={model ? "Variant" : "Select model first"}
+              disabled={!model}
+              triggerClassName="h-12"
+            />
+
             <Select value={city} onValueChange={setCity}>
               <SelectTrigger className="h-12"><SelectValue placeholder="City" /></SelectTrigger>
               <SelectContent>{CITIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
             </Select>
+
             <Select value={budget} onValueChange={setBudget}>
               <SelectTrigger className="h-12"><SelectValue placeholder="Budget" /></SelectTrigger>
               <SelectContent>{BUDGET_BANDS.map((b) => <SelectItem key={b.label} value={b.label}>{b.label}</SelectItem>)}</SelectContent>
             </Select>
+
             <Button type="submit" size="lg" className="h-12 gradient-primary text-white border-0 hover:opacity-90 gap-2">
               <Search className="h-4 w-4" /> Search
             </Button>

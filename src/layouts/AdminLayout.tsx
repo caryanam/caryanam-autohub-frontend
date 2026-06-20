@@ -12,5 +12,5 @@ const nav = [
 ];
 
 export default function AdminLayout() {
-  return <DashboardLayout title="Admin Console" nav={nav} accentLabel="Admin" />;
+  return <DashboardLayout title="Admin Dashboard" nav={nav} accentLabel="Admin" />;
 }

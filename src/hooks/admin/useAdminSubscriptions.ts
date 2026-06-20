@@ -1,13 +1,14 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '@/lib/apiClient';
 
 export interface AdminSubscription {
   dealerId: number;
   dealerName: string;
+  paymentId: number | null;
   subscriptionActive: boolean;
-  subscriptionPlan: string;
-  subscriptionStartDate: string;
-  subscriptionEndDate: string;
+  subscriptionPlan: string | null;
+  subscriptionStartDate: string | null;
+  subscriptionEndDate: string | null;
 }
 
 export interface PaymentRecord {
@@ -29,12 +30,18 @@ export function useAdminSubscriptions() {
   });
 }
 
-export function useAdminPayments() {
-  return useQuery<PaymentRecord[]>({
-    queryKey: ['admin-payments'],
-    queryFn: async () => {
-      const { data: body } = await apiClient.get('/api/admin/payments');
-      return body.data ?? body;
+
+
+export function useApprovePayment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (paymentId: number) => {
+      const { data: body } = await apiClient.put(`/api/payment/success/${paymentId}`);
+      return body;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-subscriptions'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-payments'] });
     },
   });
 }

@@ -5,7 +5,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BRANDS, CITIES, FUELS, TRANSMISSIONS } from "@/data/vehicles";
+import { CITIES, FUELS, TRANSMISSIONS } from "@/data/vehicles";
+import { CAR_BRANDS, getModels, getVariants } from "@/data/carDatabase";
+import { SearchableSelect } from "@/components/shared/SearchableSelect";
 import { useDealerAuth } from "@/contexts/DealerAuthContext";
 import { toast } from "sonner";
 import { useAddVehicle } from "@/hooks/dealer/useAddVehicle";
@@ -36,6 +38,20 @@ export default function VehicleForm({ vehicleId, onSuccess, onCancel }: VehicleF
   const [model, setModel] = useState("");
   const [variant, setVariant] = useState("");
   const [askingPrice, setAskingPrice] = useState("");
+
+  const models = brand ? getModels(brand) : [];
+  const variants = brand && model ? getVariants(brand, model) : [];
+
+  const handleBrandChange = (val: string) => {
+    setBrand(val);
+    setModel("");
+    setVariant("");
+  };
+
+  const handleModelChange = (val: string) => {
+    setModel(val);
+    setVariant("");
+  };
   const [registrationYear, setRegistrationYear] = useState(new Date().getFullYear().toString());
   const [kilometerDriven, setKilometerDriven] = useState("");
   const [insuranceStatus, setInsuranceStatus] = useState("Valid");
@@ -119,14 +135,41 @@ export default function VehicleForm({ vehicleId, onSuccess, onCancel }: VehicleF
 
         <div className="text-left">
           <Label>Brand <span className="text-red-500">*</span></Label>
-          <Select value={brand} onValueChange={setBrand} required>
-            <SelectTrigger className="mt-1"><SelectValue placeholder="Select Brand" /></SelectTrigger>
-            <SelectContent>{BRANDS.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}</SelectContent>
-          </Select>
+          <SearchableSelect
+            value={brand}
+            onValueChange={handleBrandChange}
+            options={CAR_BRANDS}
+            placeholder="Select Brand"
+            allowCustom={true}
+            triggerClassName="mt-1"
+          />
         </div>
 
-        <Field label="Model" placeholder="e.g. Creta" value={model} onChange={(e) => setModel(e.target.value)} required />
-        <Field label="Variant" placeholder="e.g. SX Diesel" value={variant} onChange={(e) => setVariant(e.target.value)} required />
+        <div className="text-left">
+          <Label>Model <span className="text-red-500">*</span></Label>
+          <SearchableSelect
+            value={model}
+            onValueChange={handleModelChange}
+            options={models}
+            placeholder="Select or Type Model"
+            allowCustom={true}
+            triggerClassName="mt-1"
+            disabled={!brand}
+          />
+        </div>
+
+        <div className="text-left">
+          <Label>Variant <span className="text-red-500">*</span></Label>
+          <SearchableSelect
+            value={variant}
+            onValueChange={setVariant}
+            options={variants}
+            placeholder="Select or Type Variant"
+            allowCustom={true}
+            triggerClassName="mt-1"
+            disabled={!model}
+          />
+        </div>
 
         <div className="text-left">
           <Label>City <span className="text-red-500">*</span></Label>

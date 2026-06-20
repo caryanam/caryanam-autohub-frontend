@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircle, RefreshCw, Search } from "lucide-react";
-import { useAllVehicles } from "@/hooks/public/useAllVehicles";
+import { useAdminAllVehicles } from "@/hooks/admin/useAdminAllVehicles";
 import { formatINR, formatKM } from "@/utils/helpers";
 
 const FALLBACK_IMG = "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&h=533&fit=crop";
@@ -21,7 +21,7 @@ function StatusBadge({ status }: { status: string }) {
 
 export default function AdminVehicles() {
   const [search, setSearch] = useState("");
-  const { vehicles, loading, error, refetch } = useAllVehicles();
+  const { vehicles, loading, error, refetch } = useAdminAllVehicles();
 
   const filtered = vehicles.filter((v) =>
     `${v.brand} ${v.model} ${v.variant}`.toLowerCase().includes(search.toLowerCase()) ||
