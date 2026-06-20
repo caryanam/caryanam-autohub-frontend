@@ -5,13 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
-import { VehicleCard } from "@/components/cards/VehicleCard";
+import { VehicleCard, VehicleCardSkeleton } from "@/components/cards/VehicleCard";
 import { SEO } from "@/components/shared/SEO";
-import { vehicleService } from "@/services/vehicleService";
-import { dealerService } from "@/services/dealerService";
 import { BRANDS, CITIES } from "@/data/vehicles";
 import { BUDGET_BANDS, QUICK_BRANDS } from "@/utils/constants";
 import { useState } from "react";
+import { useLatestVehicles, useFeaturedVehicles } from "@/hooks/public/useHomeVehicles";
+import { getStoredCustomer } from "@/hooks/public/useCustomerAuth";
+import { toast } from "sonner";
+import { AuthModal } from "@/components/shared/AuthModal";
+
 
 const stats = [
   { label: "Verified Dealers", value: "500+" },
@@ -34,8 +37,16 @@ const testimonials = [
 ];
 
 export default function Home() {
-  const featured = vehicleService.featured().slice(0, 8);
-  const latest = vehicleService.list().slice(0, 12);
+  const { vehicles: latestVehicles, loading: latestLoading, error: latestError, refetch: refetchLatest } = useLatestVehicles();
+  const { vehicles: featuredVehicles, loading: featuredLoading, error: featuredError, refetch: refetchFeatured } = useFeaturedVehicles();
+  
+  const [customer, setCustomer] = useState(() => getStoredCustomer());
+  const isLoggedIn = !!customer;
+  const [authOpen, setAuthOpen] = useState(false);
+
+  const featured = featuredVehicles.slice(0, 8);
+  const latest = latestVehicles.slice(0, 12);
+
   const navigate = useNavigate();
   const [brand, setBrand] = useState("");
   const [city, setCity] = useState("");
@@ -119,9 +130,35 @@ export default function Home() {
 
       {/* Featured */}
       <Section title="Featured Vehicles" subtitle="Hand-picked premium listings from our top dealers" link="/cars">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {featured.map((v) => <VehicleCard key={v.id} vehicle={v} />)}
-        </div>
+        {featuredLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <VehicleCardSkeleton key={i} />
+            ))}
+          </div>
+        ) : featuredError ? (
+          <div className="text-center py-8 rounded-2xl bg-slate-50 border border-slate-100 p-6">
+            <p className="text-red-500 font-medium">{featuredError}</p>
+            <Button size="sm" onClick={() => refetchFeatured()} className="mt-3 gradient-primary text-white border-0 hover:opacity-90">
+              Try Again
+            </Button>
+          </div>
+        ) : featured.length === 0 ? (
+          <div className="text-center py-8">
+            <p className="text-slate-500">No featured vehicles available.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {featured.map((v) => (
+              <VehicleCard
+                key={v.id}
+                vehicle={v}
+                isLoggedIn={isLoggedIn}
+                onWishlistRequireLogin={() => setAuthOpen(true)}
+              />
+            ))}
+          </div>
+        )}
       </Section>
 
       {/* Browse by brand */}
@@ -147,10 +184,37 @@ export default function Home() {
 
       {/* Latest */}
       <Section title="Latest Listings" subtitle="Fresh inventory updated daily" link="/cars">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {latest.map((v) => <VehicleCard key={v.id} vehicle={v} />)}
-        </div>
+        {latestLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <VehicleCardSkeleton key={i} />
+            ))}
+          </div>
+        ) : latestError ? (
+          <div className="text-center py-8 rounded-2xl bg-slate-50 border border-slate-100 p-6">
+            <p className="text-red-500 font-medium">{latestError}</p>
+            <Button size="sm" onClick={() => refetchLatest()} className="mt-3 gradient-primary text-white border-0 hover:opacity-90">
+              Try Again
+            </Button>
+          </div>
+        ) : latest.length === 0 ? (
+          <div className="text-center py-8">
+            <p className="text-slate-500">No vehicles available at the moment.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {latest.map((v) => (
+              <VehicleCard
+                key={v.id}
+                vehicle={v}
+                isLoggedIn={isLoggedIn}
+                onWishlistRequireLogin={() => setAuthOpen(true)}
+              />
+            ))}
+          </div>
+        )}
       </Section>
+
 
       {/* Budget */}
       <section className="bg-muted/40 py-14">
@@ -206,6 +270,15 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <AuthModal
+        open={authOpen}
+        onOpenChange={setAuthOpen}
+        onSuccess={(user) => {
+          setCustomer(user);
+          window.location.reload();
+        }}
+      />
     </>
   );
 }

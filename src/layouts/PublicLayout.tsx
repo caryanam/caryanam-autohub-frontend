@@ -15,7 +15,7 @@ import { toast } from "sonner";
 const nav = [
   { to: "/", label: "Home" },
   { to: "/cars", label: "Browse Cars" },
-  {to:"/primium", label:"Premium Cars"},
+  { to: "/primium", label: "Premium Cars" },
   { to: "/contact", label: "Contact" },
 ];
 
@@ -97,16 +97,15 @@ export default function PublicLayout() {
           </nav>
 
           <div className="ml-auto flex items-center gap-2">
-           
+
             {/* Customer user icon */}
             <div className="relative" ref={menuRef}>
               <button
                 onClick={handleUserClick}
-                className={`h-9 w-9 flex items-center justify-center rounded-full transition-colors overflow-hidden ${
-                  customer
-                    ? "gradient-primary text-white hover:opacity-90"
-                    : "bg-muted hover:bg-accent/10"
-                }`}
+                className={`h-9 w-9 flex items-center justify-center rounded-full transition-colors overflow-hidden ${customer
+                  ? "gradient-primary text-white hover:opacity-90"
+                  : "bg-muted hover:bg-accent/10"
+                  }`}
                 title={customer ? (customer.customerName || customer.email) : "Login"}
               >
                 {customer ? (
@@ -122,7 +121,7 @@ export default function PublicLayout() {
               {userMenuOpen && customer && (
                 <div className="absolute right-0 top-11 w-52 bg-background border border-border rounded-xl shadow-premium z-50 py-2">
                   <div className="px-4 py-2 border-b border-border">
-                    <p className="text-sm font-semibold truncate">{customer.customerName || customer.email}</p>
+                    <p className="text-sm font-semibold truncate capitalize">{customer.customerName || customer.email}</p>
                     <p className="text-xs text-muted-foreground truncate">{customer.email}</p>
                   </div>
                   <button
@@ -142,7 +141,7 @@ export default function PublicLayout() {
             </div>
 
             {/* Dealer buttons */}
-            <Button asChild  size="sm" className="hidden bg-white border border-blue-500 text-black hover:bg-blue-500/90 sm:inline-flex">
+            <Button asChild size="sm" className="hidden bg-white border border-blue-500 text-black hover:bg-blue-500/90 sm:inline-flex">
               <Link to="/auth/login">Dealer Login</Link>
             </Button>
             <Button asChild size="sm" className="hidden sm:inline-flex gradient-primary text-white border-0 hover:opacity-90">
@@ -162,7 +161,7 @@ export default function PublicLayout() {
                       {n.label}
                     </Link>
                   ))}
-                 
+
                   <div className="h-px bg-border my-3" />
                   <Button asChild variant="outline" className="justify-start">
                     <Link to="/auth/login">Dealer Login</Link>
@@ -205,6 +204,7 @@ export default function PublicLayout() {
             <h4 className="font-bold mb-3">Explore</h4>
             <ul className="space-y-2 text-sm text-white/70">
               <li><Link to="/cars" className="hover:text-white">Browse Cars</Link></li>
+              <li><Link to="/primium" className="hover:text-white">Primium Cars</Link></li>
               <li><Link to="/auth/register" className="hover:text-white">Dealer Registration</Link></li>
             </ul>
           </div>
@@ -212,9 +212,9 @@ export default function PublicLayout() {
             <h4 className="font-bold mb-3">Company</h4>
             <ul className="space-y-2 text-sm text-white/70">
               <li><Link to="/contact" className="hover:text-white">Contact</Link></li>
-              <li><a href="#" className="hover:text-white">About</a></li>
-              <li><a href="#" className="hover:text-white">Privacy Policy</a></li>
-              <li><a href="#" className="hover:text-white">Terms of Service</a></li>
+              <li><Link to="/about" className="hover:text-white">About</Link></li>
+              <li><Link to="/privacy-policy" className="hover:text-white">Privacy Policy</Link></li>
+              <li><Link to="/terms" className="hover:text-white">Terms &amp; Conditions</Link></li>
             </ul>
           </div>
           <div>

@@ -42,7 +42,11 @@ export function getStoredCustomer(): CustomerUser | null {
 }
 
 export function clearCustomer() {
-  localStorage.removeItem(STORAGE_KEY);
+  // Remove every key written during login / session
+  localStorage.removeItem(STORAGE_KEY);       // "customerUser"
+  localStorage.removeItem("customerToken");
+  localStorage.removeItem("customerDecoded");
+  localStorage.removeItem("customerWishlist");
 }
 
 // ── Register — only hits API, stores NOTHING ──────────────────────────────────
@@ -119,6 +123,7 @@ export function useCustomerLogin() {
         mobile:
           body.data?.mobile ??
           (decoded.mobile as string) ??
+          (decoded.mobileNumber as string) ??
           "",
         customerCity:
           body.data?.customerCity ??

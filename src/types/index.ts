@@ -26,6 +26,8 @@ export interface Vehicle {
   dealerContactName?: string;
   dealerContactNumber?: string;
   dealerContactEmail?: string;
+  dealerWhatsappNumber?: string;
+  dealerBusinessName?: string;
   images?: string[];
   videos?: string[];
 }

@@ -2,6 +2,7 @@ import { Plus, Pencil, Trash2, Loader2, Search, RefreshCw, Eye } from "lucide-re
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
@@ -63,20 +64,20 @@ export default function DealerVehicles() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-3 flex-wrap">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold tracking-tight text-slate-900">Inventory</h2>
           <p className="text-base text-slate-500 mt-1">{filteredVehicles.length} vehicles</p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="relative w-[280px]">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="relative flex-1 sm:w-[280px] sm:flex-none">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search vehicles..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 h-10 bg-white rounded-xl"
+              className="pl-9 h-10 bg-white rounded-xl w-full"
             />
           </div>
 
@@ -85,44 +86,63 @@ export default function DealerVehicles() {
             size="icon"
             onClick={() => refetch()}
             disabled={fetching || isRefetching}
-            className="h-10 w-10 bg-white rounded-xl"
+            className="h-10 w-10 bg-white rounded-xl shrink-0"
           >
             <RefreshCw className={`h-4 w-4 ${fetching || isRefetching ? "animate-spin" : ""}`} />
           </Button>
 
           <Button
             onClick={() => { setSelectedVehicleId(null); setIsModalOpen(true); }}
-            className="gradient-primary text-white border-0 gap-2 h-10 rounded-lg"
+            className="gradient-primary text-white border-0 gap-2 h-10 rounded-xl shrink-0 px-3 sm:px-4"
           >
-            <Plus className="h-4 w-4 mr-2" />
-            Add Vehicle
+            <Plus className="h-4 w-4" />
+            <span>Add Vehicle</span>
           </Button>
         </div>
       </div>
 
-      <Card>
+      <Card className="border border-slate-100 shadow-premium rounded-2xl overflow-hidden bg-white">
         <CardContent className="p-0 overflow-x-auto">
           <Table className="min-w-[900px]">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-14">Sr No</TableHead>
-                <TableHead>Vehicle</TableHead>
-                <TableHead>KM</TableHead>
-                <TableHead>Price</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+            <TableHeader className="bg-blue-900 border-b border-blue-900">
+              <TableRow className="bg-blue-900 hover:bg-blue-900 border-none">
+                <TableHead className="w-16 text-center text-xs font-bold text-slate-100 uppercase tracking-wider py-4">Sr No</TableHead>
+                <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4">Vehicle</TableHead>
+                <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4">KM</TableHead>
+                <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4">Price</TableHead>
+                <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4">Status</TableHead>
+                <TableHead className="text-right text-xs font-bold text-slate-100 uppercase tracking-wider py-4 pr-6">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {fetching ? (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8">
-                    <Loader2 className="h-6 w-6 animate-spin mx-auto text-muted-foreground" />
-                  </TableCell>
-                </TableRow>
+                Array.from({ length: 5 }).map((_, idx) => (
+                  <TableRow key={`skeleton-${idx}`} className="border-b border-slate-100/80 last:border-none">
+                    <TableCell className="w-16 text-center py-4"><Skeleton className="h-4 w-4 mx-auto" /></TableCell>
+                    <TableCell className="py-4">
+                      <div className="flex items-center gap-3.5">
+                        <Skeleton className="h-12 w-18 rounded-lg shrink-0" />
+                        <div className="space-y-2">
+                          <Skeleton className="h-4 w-32" />
+                          <Skeleton className="h-3 w-48" />
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="py-4"><Skeleton className="h-4 w-12" /></TableCell>
+                    <TableCell className="py-4"><Skeleton className="h-4 w-16" /></TableCell>
+                    <TableCell className="py-4"><Skeleton className="h-8 w-24 rounded-full" /></TableCell>
+                    <TableCell className="text-right py-4 pr-6">
+                      <div className="flex gap-1.5 justify-end">
+                        <Skeleton className="h-8 w-8 rounded-lg" />
+                        <Skeleton className="h-8 w-8 rounded-lg" />
+                        <Skeleton className="h-8 w-8 rounded-lg" />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
               ) : filteredVehicles.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={6} className="text-center py-12 text-muted-foreground font-medium">
                     {searchQuery ? "No matching vehicles found." : "No vehicles found. Add one to get started."}
                   </TableCell>
                 </TableRow>
@@ -130,85 +150,95 @@ export default function DealerVehicles() {
                 filteredVehicles.map((v, idx) => {
                   const isDeleting = deleteMutation.isPending && deletingId === v.id;
                   return (
-                    <TableRow key={v.id}>
-                      <TableCell className="text-muted-foreground text-sm font-medium">{idx + 1}</TableCell>
+                    <TableRow key={v.id} className="hover:bg-slate-100 transition-colors border-b border-slate-200 last:border-none">
+                      <TableCell className="text-center text-slate-400 text-sm font-medium py-4">{idx + 1}</TableCell>
 
-                      <TableCell>
-                        <div className="flex items-center gap-3 min-w-0">
+                      <TableCell className="py-4">
+                        <div className="flex items-center gap-3.5 min-w-0">
                           {v.images?.length ? (
                             <img
                               src={v.images[0]}
                               alt={`${v.brand} ${v.model}`}
-                              className="h-12 w-16 object-cover rounded shrink-0"
+                              className="h-12 w-18 object-cover rounded-lg border border-slate-100 shadow-sm shrink-0"
                             />
                           ) : (
-                            <div className="h-12 w-16 bg-muted rounded flex items-center justify-center">
-                              <span className="text-xs text-muted-foreground">No Image</span>
+                            <div className="h-12 w-18 bg-muted rounded-lg border border-slate-100 flex items-center justify-center shrink-0">
+                              <span className="text-[10px] font-semibold text-slate-400">NO IMAGE</span>
                             </div>
                           )}
                           <div>
-                            <div className="font-medium text-left">
-                              {v.registrationYear} {v.brand} {v.model} {v.variant}
+                            <div className="font-semibold text-slate-900 text-left text-sm leading-snug">
+                              {v.registrationYear} {v.brand} {v.model}
                             </div>
-                            <div className="text-xs text-muted-foreground text-left">
-                              {v.fuelType} • {v.transmission} • {v.city}
+                            <div className="text-xs text-slate-400 text-left mt-0.5">
+                              {v.variant} • {v.fuelType} • {v.transmission} • {v.city}
                             </div>
                           </div>
                         </div>
                       </TableCell>
 
-                      <TableCell className="text-left">{formatKM(v.kilometerDriven)}</TableCell>
+                      <TableCell className="text-left text-slate-600 text-sm py-4 font-medium">{formatKM(v.kilometerDriven)}</TableCell>
 
-                      <TableCell className="font-semibold text-left">{formatINR(v.askingPrice)}</TableCell>
+                      <TableCell className="font-bold text-left text-slate-900 text-sm py-4">{formatINR(v.askingPrice)}</TableCell>
 
-                      <TableCell className="text-left">
+                      <TableCell className="text-left py-4">
                         <Select
                           value={v.vehicleStatus}
                           onValueChange={(status) => handleStatusChange(v.id, status)}
                           disabled={statusMutation.isPending}
                         >
-                          <SelectTrigger className={`h-8 w-28 text-xs font-semibold border-0 rounded-full ${
-                            v.vehicleStatus === "ACTIVE" ? "bg-green-100 text-green-700" :
-                            v.vehicleStatus === "INACTIVE" ? "bg-red-100 text-red-700" :
-                            "bg-amber-100 text-amber-700"
-                          }`}>
+                          <SelectTrigger className={`h-8 w-[110px] text-[11px] font-bold border-0 rounded-full px-3 py-1 shadow-sm shrink-0 cursor-pointer ${v.vehicleStatus === "ACTIVE" ? "bg-emerald-50 text-emerald-700 hover:bg-emerald-100/80" :
+                            v.vehicleStatus === "INACTIVE" ? "bg-rose-50 text-rose-700 hover:bg-rose-100/80" :
+                              "bg-amber-50 text-amber-700 hover:bg-amber-100/80"
+                            }`}>
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="ACTIVE">
-                              <span className="text-green-600 font-semibold">● Active</span>
+                          <SelectContent className="rounded-xl border border-slate-100 shadow-lg p-1">
+                            <SelectItem
+                              value="ACTIVE"
+                              className="rounded-lg cursor-pointer focus:bg-emerald-50 data-[highlighted]:bg-emerald-50"
+                            >
+                              <span className="text-emerald-600 font-semibold text-xs">● Active</span>
                             </SelectItem>
-                            <SelectItem value="INACTIVE">
-                              <span className="text-red-600 font-semibold">● Inactive</span>
+                            <SelectItem
+                              value="INACTIVE"
+                              className="rounded-lg cursor-pointer focus:bg-rose-50 data-[highlighted]:bg-rose-50"
+                            >
+                              <span className="text-rose-600 font-semibold text-xs">● Inactive</span>
                             </SelectItem>
-                            <SelectItem value="FEATURED">
-                              <span className="text-amber-600 font-semibold">★ Featured</span>
+                            <SelectItem
+                              value="FEATURED"
+                              className="rounded-lg cursor-pointer focus:bg-amber-50 data-[highlighted]:bg-amber-50"
+                            >
+                              <span className="text-amber-600 font-semibold text-xs">★ Featured</span>
                             </SelectItem>
                           </SelectContent>
                         </Select>
                       </TableCell>
 
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-1">
+                      <TableCell className="text-right py-4 pr-6">
+                        <div className="flex justify-end gap-1.5">
                           <Button
-                            size="sm"
+                            size="icon"
                             variant="ghost"
                             onClick={() => navigate(`/dealer/vehicles/${v.id}`)}
+                            className="h-8 w-8 bg-yellow-100 rounded-lg text-yellow-400 hover:bg-yellow-300 hover:text-yellow-700 transition-colors cursor-pointer"
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
                           <Button
-                            size="sm"
+                            size="icon"
                             variant="ghost"
                             onClick={() => { setSelectedVehicleId(v.id); setIsModalOpen(true); }}
+                            className="h-8 w-8 bg-blue-100 rounded-lg text-blue-400 hover:bg-blue-300 hover:text-blue-700 transition-colors cursor-pointer"
                           >
                             <Pencil className="h-4 w-4" />
                           </Button>
 
                           <Button
-                            size="sm"
+                            size="icon"
                             variant="ghost"
-                            className="text-destructive"
+                            className="h-8 w-8 rounded-lg bg-rose-100 text-rose-400 hover:bg-rose-300 hover:text-rose-700 transition-colors cursor-pointer"
                             disabled={deleteMutation.isPending}
                             onClick={() => handleRemove(v.id)}
                           >

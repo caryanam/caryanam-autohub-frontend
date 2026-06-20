@@ -21,7 +21,7 @@ const PAGE = 12;
 
 export default function Cars() {
   const [params, setParams] = useSearchParams();
-  const { vehicles: all, loading, error, refetch } = useAllVehicles();
+  const { vehicles: all, loading, error, refetch, isRefetching } = useAllVehicles();
   const [page, setPage] = useState(1);
   const [customer, setCustomer] = useState<CustomerUser | null>(getStoredCustomer);
   const [authOpen, setAuthOpen] = useState(false);
@@ -205,8 +205,8 @@ export default function Cars() {
                   <h3 className="font-bold text-lg">Failed to load vehicles</h3>
                   <p className="text-sm text-muted-foreground mt-1">{error}</p>
                 </div>
-                <Button onClick={refetch} className="gap-2">
-                  <RefreshCw className="h-4 w-4" /> Retry
+                <Button onClick={() => refetch()} disabled={isRefetching} className="gap-2">
+                  <RefreshCw className={`h-4 w-4 ${isRefetching ? "animate-spin" : ""}`} /> Retry
                 </Button>
               </div>
             )}

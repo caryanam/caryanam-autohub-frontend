@@ -1,48 +1,25 @@
-import { useState, useEffect, useCallback } from "react";
-import axios from "axios";
-import apiClient from "@/lib/apiClient";
+import { useQuery } from "@tanstack/react-query";
 import type { Vehicle } from "@/types";
 
-interface ApiResponse {
-  status: number;
-  message: string;
-  data: Vehicle[];
-}
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-interface UseAllVehiclesResult {
-  vehicles: Vehicle[];
-  loading: boolean;
-  error: string | null;
-  refetch: () => void;
-}
+export function useAllVehicles() {
+  const { data, isLoading, isError, error, refetch, isRefetching } = useQuery<Vehicle[]>({
+    queryKey: ["all-vehicles"],
+    queryFn: async () => {
+      const res = await fetch(`${API_BASE_URL}/api/vehicle/all-vehicle`);
+      const body = await res.json();
+      if (!res.ok) throw new Error(body?.message ?? "Failed to fetch vehicles");
+      return body.data ?? [];
+    },
+    staleTime: 1000 * 60 * 2, // 2 minutes
+  });
 
-export function useAllVehicles(): UseAllVehiclesResult {
-  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchVehicles = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const { data: body } = await apiClient.get<ApiResponse>("/api/vehicle/all-vehicle");
-      setVehicles(body.data ?? []);
-    } catch (err) {
-      if (axios.isAxiosError(err)) {
-        const msg = err.response?.data?.message ?? err.message;
-        setError(msg);
-      } else {
-        setError(err instanceof Error ? err.message : "Unknown error occurred");
-      }
-      setVehicles([]);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchVehicles();
-  }, [fetchVehicles]);
-
-  return { vehicles, loading, error, refetch: fetchVehicles };
+  return {
+    vehicles: data ?? [],
+    loading: isLoading,
+    error: isError ? (error?.message ?? "Failed to load vehicles") : null,
+    refetch,
+    isRefetching,
+  };
 }

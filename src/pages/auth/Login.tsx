@@ -238,11 +238,11 @@ export default function Login() {
                   </div>
                 </div>
 
-                <div className="flex justify-end text-sm">
+                {/* <div className="flex justify-end text-sm">
                   <a className="text-sky-600 hover:underline" href="#">
                     Forgot password?
                   </a>
-                </div>
+                </div> */}
 
                 <Button
                   type="submit"

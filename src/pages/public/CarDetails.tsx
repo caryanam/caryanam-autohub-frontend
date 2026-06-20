@@ -37,6 +37,7 @@ export default function CarDetails() {
   const { isSubmitting, generateLead } = useGenerateLead();
 
   const [activeImg, setActiveImg] = useState(0);
+  const [activeVideo, setActiveVideo] = useState(0);
   const [showContact, setShowContact] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
   const [revealed, setRevealed] = useState(false);
@@ -68,8 +69,14 @@ export default function CarDetails() {
       setAuthOpen(true);
       return;
     }
+    // mobile: stored field → JWT decoded field → empty
+    const mobile =
+      stored.mobile ||
+      (stored.decoded?.mobile as string) ||
+      (stored.decoded?.mobileNumber as string) ||
+      "";
     setLeadName(stored.customerName ?? "");
-    setLeadMobile(stored.mobile ?? "");
+    setLeadMobile(mobile);
     setLeadCity(stored.customerCity ?? "");
     setLeadErr("");
     setShowContact(true);
@@ -78,8 +85,13 @@ export default function CarDetails() {
   const handleAuthSuccess = (user: CustomerUser) => {
     setCustomer(user);
     // After login, open contact dialog with autofill
+    const mobile =
+      user.mobile ||
+      (user.decoded?.mobile as string) ||
+      (user.decoded?.mobileNumber as string) ||
+      "";
     setLeadName(user.customerName ?? "");
-    setLeadMobile(user.mobile ?? "");
+    setLeadMobile(mobile);
     setLeadCity(user.customerCity ?? "");
     setLeadErr("");
     setShowContact(true);
@@ -275,13 +287,61 @@ export default function CarDetails() {
                   <h2 className="font-display font-bold text-lg mb-3 flex items-center gap-2">
                     <Play className="h-5 w-5 text-accent" /> Walkaround Video
                   </h2>
-                  <div className="space-y-4">
-                    {videos.map((src, i) => (
-                      <div key={i} className="aspect-video rounded-xl overflow-hidden bg-black">
-                        <video controls src={src} poster={images[0]} className="h-full w-full" />
-                      </div>
-                    ))}
+
+                  {/* Main video player */}
+                  <div className="relative aspect-video rounded-xl overflow-hidden bg-black group">
+                    <video
+                      key={videos[activeVideo]}
+                      controls
+                      src={videos[activeVideo]}
+                      className="h-full w-full"
+                    />
+                    {videos.length > 1 && (
+                      <>
+                        <button
+                          onClick={() => setActiveVideo((v) => (v === 0 ? videos.length - 1 : v - 1))}
+                          className="absolute left-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                        >
+                          <ChevronLeft className="h-5 w-5" />
+                        </button>
+                        <button
+                          onClick={() => setActiveVideo((v) => (v === videos.length - 1 ? 0 : v + 1))}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                        >
+                          <ChevronRight className="h-5 w-5" />
+                        </button>
+                        <div className="absolute bottom-3 right-3 px-2.5 py-1 rounded-full bg-black/60 text-white text-xs font-medium pointer-events-none">
+                          {activeVideo + 1} / {videos.length}
+                        </div>
+                      </>
+                    )}
                   </div>
+
+                  {/* Video thumbnail strip */}
+                  {videos.length > 1 && (
+                    <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin mt-3">
+                      {videos.map((src, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setActiveVideo(i)}
+                          className={`relative shrink-0 aspect-video w-28 rounded-lg overflow-hidden border-2 transition-all ${activeVideo === i ? "border-accent" : "border-transparent opacity-60 hover:opacity-100"
+                            }`}
+                        >
+                          <video
+                            src={src}
+                            preload="metadata"
+                            className="h-full w-full object-cover"
+                            muted
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                            <div className="h-7 w-7 rounded-full bg-white/80 flex items-center justify-center">
+                              <Play className="h-3.5 w-3.5 text-gray-900 fill-gray-900 ml-0.5" />
+                            </div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}
@@ -289,46 +349,103 @@ export default function CarDetails() {
 
           {/* Sticky sidebar */}
           <aside className="lg:sticky lg:top-20 self-start space-y-4">
-            <Card className="shadow-premium">
-              <CardContent className="p-6">
-                <div className="mb-4">
-                  <h3 className="font-bold text-base">Dealer Contact</h3>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {vehicle.dealerContactName ?? "Dealer"}
-                    {vehicle.city ? ` · ${vehicle.city}` : ""}
-                  </p>
+            {/* Main summary + contact card */}
+            <div className="rounded-2xl border border-border bg-card shadow-premium overflow-hidden">
+              <div className="p-5">
+                {/* Car title */}
+                <h3 className="font-bold text-base leading-snug">{title}</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">{vehicle.variant}</p>
+
+                {/* Price */}
+                <div className="mt-3 text-2xl font-black font-display text-gradient-primary">
+                  {formatINR(vehicle.askingPrice)}
                 </div>
-                <div className="flex flex-col gap-2">
-                  {!revealed ? (
-                    <Button onClick={openContactDialog} className="gradient-primary text-white border-0 hover:opacity-90 gap-2">
-                      <Phone className="h-4 w-4" /> Contact Dealer
-                    </Button>
-                  ) : (
-                    <>
+              </div>
+
+              {/* Divider */}
+              <div className="border-t border-border" />
+
+              {/* 3 inline specs */}
+              <div className="flex items-center divide-x divide-border px-5 py-3">
+                <div className="flex-1 flex flex-col items-center gap-1 pr-3">
+                  <Fuel className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-xs text-muted-foreground">{vehicle.fuelType}</span>
+                </div>
+                <div className="flex-1 flex flex-col items-center gap-1 px-3">
+                  <Settings2 className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-xs text-muted-foreground">{vehicle.transmission}</span>
+                </div>
+                <div className="flex-1 flex flex-col items-center gap-1 pl-3">
+                  <Gauge className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-xs text-muted-foreground">{formatKM(vehicle.kilometerDriven)}</span>
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div className="border-t border-border" />
+
+              {/* Dealer section */}
+              <div className="p-5">
+                {/* Dealer avatar + name */}
+                <div className="flex items-center gap-3 mb-4">
+                  <DealerAvatar name={vehicle.dealerBusinessName ?? vehicle.dealerContactName ?? "D"} />
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1 flex-wrap">
+                      <span className="font-bold text-sm leading-tight truncate">
+                        {vehicle.dealerBusinessName ?? vehicle.dealerContactName ?? "Dealer"}
+                      </span>
+                      <BadgeCheck className="h-4 w-4 text-blue-500 shrink-0" />
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">{vehicle.city ?? ""}</p>
+                  </div>
+                </div>
+
+                {/* CTA */}
+                {!revealed ? (
+                  <Button
+                    onClick={openContactDialog}
+                    className="w-full bg-gray-900 text-white hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-gray-200 font-semibold"
+                  >
+                    View Dealer Contact
+                  </Button>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    {/* Call + WhatsApp side by side */}
+                    <div className="flex gap-2">
                       {vehicle.dealerContactNumber && (
-                        <a href={`tel:${vehicle.dealerContactNumber}`}>
-                          <Button className="w-full gradient-primary text-white border-0 hover:opacity-90 gap-2">
-                            <Phone className="h-4 w-4" /> {vehicle.dealerContactNumber}
+                        <a href={`tel:${vehicle.dealerContactNumber}`} className="flex-1">
+                          <Button className="w-full bg-gray-900 text-white hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-gray-200 gap-2 font-semibold">
+                            <Phone className="h-4 w-4" /> Call
                           </Button>
                         </a>
                       )}
-                      {vehicle.dealerContactNumber && (
-                        <a href={`https://wa.me/${vehicle.dealerContactNumber.replace(/\D/g, "")}`} target="_blank" rel="noreferrer">
-                          <Button className="w-full bg-success text-success-foreground hover:bg-success/90 gap-2">
-                            <MessageCircle className="h-4 w-4" /> WhatsApp Dealer
+                      {(vehicle.dealerWhatsappNumber ?? vehicle.dealerContactNumber) && (
+                        <a
+                          href={`https://wa.me/${(vehicle.dealerWhatsappNumber ?? vehicle.dealerContactNumber)!.replace(/\D/g, "")}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex-1"
+                        >
+                          <Button
+                            variant="outline"
+                            className="w-full gap-2 border-green-500 text-green-600 hover:bg-green-50 dark:hover:bg-green-950 font-semibold"
+                          >
+                            <MessageCircle className="h-4 w-4" /> WhatsApp
                           </Button>
                         </a>
                       )}
-                      {vehicle.dealerContactEmail && (
-                        <a href={`mailto:${vehicle.dealerContactEmail}`}>
-                          <Button variant="outline" className="w-full gap-2">Email Dealer</Button>
-                        </a>
-                      )}
-                    </>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+                    </div>
+
+                    {/* Phone number */}
+                    {vehicle.dealerContactNumber && (
+                      <p className="text-center text-sm font-semibold text-foreground pt-0.5">
+                        +91 {vehicle.dealerContactNumber.replace(/\D/g, "").replace(/^91/, "")}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
 
             <Card>
               <CardContent className="p-6 space-y-2 text-sm">
@@ -338,6 +455,7 @@ export default function CarDetails() {
               </CardContent>
             </Card>
           </aside>
+
         </div>
       </div>
 
@@ -382,6 +500,20 @@ function Spec({ icon, label, value }: { icon: React.ReactNode; label: string; va
     <div>
       <div className="text-xs text-muted-foreground flex items-center gap-1.5">{icon} {label}</div>
       <div className="text-sm font-semibold mt-1">{value || "—"}</div>
+    </div>
+  );
+}
+
+function DealerAvatar({ name }: { name: string }) {
+  const initials = name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0].toUpperCase())
+    .join("");
+  return (
+    <div className="shrink-0 h-11 w-11 rounded-xl gradient-primary flex items-center justify-center text-white font-bold text-sm select-none">
+      {initials}
     </div>
   );
 }

@@ -2,6 +2,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Check,
   Star,
@@ -61,8 +62,53 @@ export default function DealerSubscription() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-24">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      <div className="space-y-8">
+        <div>
+          <Skeleton className="h-9 w-40 rounded-lg" />
+          <Skeleton className="h-4 w-60 mt-2 rounded" />
+        </div>
+
+        {/* Active plan card skeleton */}
+        <Card className="border border-slate-100 shadow-premium rounded-2xl overflow-hidden bg-white">
+          <CardContent className="p-0">
+            <div className="flex flex-col lg:flex-row lg:items-center">
+              <div className="flex items-center gap-4 p-6 lg:w-[35%] border-b lg:border-b-0 lg:border-r">
+                <Skeleton className="h-14 w-14 rounded-xl shrink-0" />
+                <div className="space-y-2">
+                  <Skeleton className="h-7 w-32 rounded" />
+                  <Skeleton className="h-4 w-20 rounded" />
+                </div>
+              </div>
+              <div className="grid grid-cols-3 flex-1">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="p-6 text-center border-r last:border-0 space-y-2">
+                    <Skeleton className="h-3 w-16 mx-auto rounded" />
+                    <Skeleton className="h-8 w-12 mx-auto rounded" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Plans skeletons */}
+        <div className="grid xl:grid-cols-3 md:grid-cols-2 gap-6">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Card key={i} className="border border-slate-100 shadow-sm rounded-2xl">
+              <CardContent className="p-6 flex flex-col space-y-6">
+                <div className="space-y-2">
+                  <Skeleton className="h-6 w-24 rounded" />
+                  <Skeleton className="h-10 w-36 rounded" />
+                </div>
+                <div className="space-y-3 flex-1">
+                  <Skeleton className="h-4 w-full rounded" />
+                  <Skeleton className="h-4 w-3/4 rounded" />
+                </div>
+                <Skeleton className="h-10 w-full rounded-xl" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
     );
   }
@@ -175,9 +221,9 @@ export default function DealerSubscription() {
 
                     className={`text-3xl font-black mt-2 ${activePlan.remainingDays <= 7
 
-                        ? "text-red-600"
+                      ? "text-red-600"
 
-                        : "text-green-600"
+                      : "text-green-600"
 
                       }`}
 

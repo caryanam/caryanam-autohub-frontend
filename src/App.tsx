@@ -14,6 +14,9 @@ import Cars from "@/pages/public/Cars";
 import CarDetails from "@/pages/public/CarDetails";
 import Wishlist from "@/pages/public/Wishlist";
 import Contact from "@/pages/public/Contact";
+import About from "@/pages/public/About";
+import PrivacyPolicy from "@/pages/public/PrivacyPolicy";
+import TermsAndConditions from "@/pages/public/TermsAndConditions";
 import Login from "@/pages/auth/Login";
 import Register from "@/pages/auth/Register";
 import NotFound from "@/pages/NotFound";
@@ -49,6 +52,9 @@ export default function App() {
             <Route path="/car/:id" element={<CarDetails />} />
             <Route path="/wishlist" element={<Wishlist />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<TermsAndConditions />} />
           </Route>
 
           {/* Auth */}

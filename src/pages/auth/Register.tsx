@@ -176,163 +176,129 @@ export default function Register() {
       />
 
       <div className="min-h-screen bg-slate-50 text-slate-900">
-        <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
-          <div className="mb-10">
-            <div className="inline-flex items-center rounded-full bg-blue-50 border border-blue-200 px-4 py-2 text-sm font-semibold text-sky-700 shadow-sm shadow-slate-200">
-              Dealer Registration
-            </div>
+        <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
 
-            <div className="mt-6 flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
-              <div className="max-w-3xl">
-                <h1 className="text-4xl font-black tracking-tight text-slate-950 ">
+          {/* ── Top nav: back link ── */}
+          <div className="mb-6">
+            <button
+              onClick={() => navigate(-1)}
+              className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-900 transition-colors"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Back
+            </button>
+          </div>
+
+          {/* ── Page header ── */}
+          <div className="mb-8">
+            <span className="inline-flex items-center rounded-full bg-sky-50 border border-sky-200 px-3 py-1 text-xs font-semibold text-sky-700 tracking-wide uppercase">
+              Dealer Registration
+            </span>
+            <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <h1 className="text-3xl font-black tracking-tight text-slate-950">
                   Grow your dealership with AutoHub India
                 </h1>
-                <p className="mt-4 text-lg text-slate-600 ">
+                <p className="mt-2 text-slate-500 text-base">
                   Get verified, list inventory and start receiving quality buyer leads in under 24 hours.
                 </p>
               </div>
-
-              <div className="flex flex-wrap gap-3">
-                <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 shadow-sm">
-                  <span className="inline-flex h-2.5 w-2.5 rounded-full bg-sky-500" />
-                  KYC verified
-                </div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 shadow-sm">
-                  <span className="inline-flex h-2.5 w-2.5 rounded-full bg-slate-400" />
-                  25k+ listings
-                </div>
+              <div className="flex flex-wrap gap-2 shrink-0">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-600 shadow-sm">
+                  <span className="h-2 w-2 rounded-full bg-sky-500" /> KYC verified
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-600 shadow-sm">
+                  <span className="h-2 w-2 rounded-full bg-slate-400" /> 25k+ listings
+                </span>
               </div>
             </div>
           </div>
 
-          <div className="grid gap-6 xl:grid-cols-[1fr_320px]">
-            <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-sm">
+          <div className="grid gap-6 xl:grid-cols-[1fr_300px]">
+
+            {/* ── Main form card ── */}
+            <Card className="rounded-2xl border border-slate-200 bg-white shadow-sm">
               <CardContent className="p-6 sm:p-8">
+
+                {/* Step indicator */}
                 <div className="mb-8">
-                  <div className="flex items-center">
+                  <div className="flex items-start">
                     {steps.map((item, index) => {
                       const Icon = item.icon;
                       const active = step === index;
                       const completed = step > index;
-
                       return (
                         <React.Fragment key={item.label}>
-                          <div
-                            className={`
-              flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium transition-all
-              ${active
-                                ? "bg-blue-600 border-blue-600 text-white shadow-sm"
-                                : completed
-                                  ? "bg-green-50 border-green-400 text-green-700"
-                                  : "bg-white border-slate-200 text-slate-500"
-                              }
-            `}
-                          >
-                            {completed ? <CheckCircle2 size={15} /> : <Icon size={15} />}
-                            <span>{item.label}</span>
+                          <div className="flex flex-col items-center gap-1 text-center w-16 sm:w-auto">
+                            <div
+                              className={`flex h-9 w-9 items-center justify-center rounded-full border-2 text-sm font-bold transition-all
+                                ${active ? "border-blue-600 bg-blue-600 text-white shadow-md shadow-blue-200"
+                                  : completed ? "border-green-500 bg-green-50 text-green-600"
+                                    : "border-slate-200 bg-white text-slate-400"}`}
+                            >
+                              {completed ? <CheckCircle2 size={16} /> : <Icon size={15} />}
+                            </div>
+                            <span className={`hidden sm:block text-xs font-medium ${active ? "text-blue-600" : completed ? "text-green-600" : "text-slate-400"}`}>
+                              {item.label}
+                            </span>
                           </div>
-
                           {index < steps.length - 1 && (
-                            <div className="flex-1 mx-3 h-px bg-slate-300" />
+                            <div className={`flex-1 mt-4 mx-2 h-0.5 transition-colors ${step > index ? "bg-green-400" : "bg-slate-200"}`} />
                           )}
                         </React.Fragment>
                       );
                     })}
                   </div>
-
-                  {/* Progress Line */}
-                  <div className="mt-4">
-                    <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                      <div
-                        className="h-full gradient-primary transition-all duration-300"
-                        style={{
-                          width: `${((step + 1) / steps.length) * 100}%`,
-                        }}
-                      />
-                    </div>
+                  {/* Progress bar */}
+                  <div className="mt-5 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div
+                      className="h-full gradient-primary transition-all duration-500 ease-out"
+                      style={{ width: `${((step + 1) / steps.length) * 100}%` }}
+                    />
                   </div>
+                  <p className="mt-2 text-xs text-slate-400 text-right">Step {step + 1} of {steps.length}</p>
                 </div>
 
                 <form ref={formRef} onSubmit={(e) => e.preventDefault()} className="space-y-8">
                   {step === 0 && (
                     <div className="space-y-6">
                       <div>
-                        <h2 className="text-2xl font-bold text-slate-950">Tell us about your business</h2>
-                        <p className="mt-2 text-slate-600">Your dealership identity on AutoHub India.</p>
+                        <h2 className="text-xl font-bold text-slate-900">Tell us about your business</h2>
+                        <p className="mt-1 text-sm text-slate-500">Your dealership identity on AutoHub India.</p>
                       </div>
-
                       <div className="grid gap-5 sm:grid-cols-2">
-                        {/* Business Name */}
                         <div>
-                          <Label className="mb-2 block">
+                          <Label className="mb-2 block text-sm font-medium text-slate-700">
                             Business Name <span className="text-red-500">*</span>
                           </Label>
-
                           <div className="relative">
-                            <Building2 className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
-
-                            <Input
-                              required
-                              placeholder="e.g. Mumbai Premium Motors"
-                              className="h-12 pl-12 rounded-xl"
-                              {...form.register("businessName")}
-                            />
+                            <Building2 className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                            <Input required placeholder="e.g. Mumbai Premium Motors" className="h-11 pl-10 rounded-xl" {...form.register("businessName")} />
                           </div>
                         </div>
-
-                        {/* Owner Name */}
                         <div>
-                          <Label className="mb-2 block">
+                          <Label className="mb-2 block text-sm font-medium text-slate-700">
                             Owner Name <span className="text-red-500">*</span>
                           </Label>
-
                           <div className="relative">
-                            <User className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
-
-                            <Input
-                              required
-                              placeholder="Full name"
-                              className="h-12 pl-12 rounded-xl"
-                              {...form.register("ownerName")}
-                            />
+                            <User className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                            <Input required placeholder="Full name" className="h-11 pl-10 rounded-xl" {...form.register("ownerName")} />
                           </div>
                         </div>
-
-                        {/* GST Number */}
                         <div>
-                          <Label className="mb-2 block">
-                            GST Number
-                          </Label>
-
+                          <Label className="mb-2 block text-sm font-medium text-slate-700">GST Number <span className="text-slate-400 font-normal">(optional)</span></Label>
                           <div className="relative">
-                            <ReceiptText className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
-
-                            <Input
-
-                              placeholder="22AAAAA0000A1Z5"
-                              className="h-12 pl-12 rounded-xl uppercase"
-                              {...form.register("gstNumber")}
-                            />
+                            <ReceiptText className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                            <Input placeholder="22AAAAA0000A1Z5" className="h-11 pl-10 rounded-xl uppercase" {...form.register("gstNumber")} />
                           </div>
                         </div>
-
-                        {/* Years in Business */}
                         <div>
-                          <Label className="mb-2 block">
+                          <Label className="mb-2 block text-sm font-medium text-slate-700">
                             Years in Business <span className="text-red-500">*</span>
                           </Label>
-
                           <div className="relative">
-                            <BriefcaseBusiness className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
-
-                            <Input
-                              type="number"
-                              required
-                              min={0}
-                              placeholder="5"
-                              className="h-12 pl-12 rounded-xl"
-                              {...form.register("yearsInBusiness")}
-                            />
+                            <BriefcaseBusiness className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                            <Input type="number" required min={0} placeholder="5" className="h-11 pl-10 rounded-xl" {...form.register("yearsInBusiness")} />
                           </div>
                         </div>
                       </div>
@@ -342,96 +308,44 @@ export default function Register() {
                   {step === 1 && (
                     <div className="space-y-6">
                       <div>
-                        <h2 className="text-2xl font-bold text-slate-950">Contact details</h2>
-                        <p className="mt-2 text-slate-600">How customers can reach you.</p>
+                        <h2 className="text-xl font-bold text-slate-900">Contact details</h2>
+                        <p className="mt-1 text-sm text-slate-500">How customers can reach you.</p>
                       </div>
-
                       <div className="grid gap-5 sm:grid-cols-2">
-                        {/* Mobile Number */}
                         <div>
-                          <Label className="mb-2 block">
-                            Mobile Number <span className="text-red-500">*</span>
-                          </Label>
-
+                          <Label className="mb-2 block text-sm font-medium text-slate-700">Mobile Number <span className="text-red-500">*</span></Label>
                           <div className="relative">
-                            <Phone className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
-
-                            <Input
-                              required
-                              maxLength={10}
-                              placeholder="e.g. 9876543210"
-                              className="h-12 pl-12 rounded-xl"
-                              {...form.register("mobile")}
-                            />
+                            <Phone className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                            <Input required maxLength={10} placeholder="9876543210" className="h-11 pl-10 rounded-xl" {...form.register("mobile")} />
                           </div>
                         </div>
-
-                        {/* WhatsApp Number */}
                         <div>
-                          <Label className="mb-2 block">
-                            WhatsApp Number <span className="text-red-500">*</span>
-                          </Label>
-
+                          <Label className="mb-2 block text-sm font-medium text-slate-700">WhatsApp Number <span className="text-red-500">*</span></Label>
                           <div className="relative">
-                            <MessageCircle className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
-
-                            <Input
-                              required
-                              maxLength={10}
-                              placeholder="e.g. 9876543210"
-                              className="h-12 pl-12 rounded-xl"
-                              {...form.register("whatsapp")}
-                            />
+                            <MessageCircle className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                            <Input required maxLength={10} placeholder="9876543210" className="h-11 pl-10 rounded-xl" {...form.register("whatsapp")} />
                           </div>
                         </div>
-
-                        {/* Email */}
                         <div>
-                          <Label className="mb-2 block">
-                            Email <span className="text-red-500">*</span>
-                          </Label>
-
+                          <Label className="mb-2 block text-sm font-medium text-slate-700">Email <span className="text-red-500">*</span></Label>
                           <div className="relative">
-                            <Mail className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
-
-                            <Input
-                              type="email"
-                              required
-                              placeholder="Enter email address"
-                              className="h-12 pl-12 rounded-xl"
-                              {...form.register("email")}
-                            />
+                            <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                            <Input type="email" required placeholder="you@example.com" className="h-11 pl-10 rounded-xl" {...form.register("email")} />
                           </div>
                         </div>
-
-                        {/* Password */}
                         <div>
-                          <Label className="mb-2 block">
-                            Password <span className="text-red-500">*</span>
-                          </Label>
-
+                          <Label className="mb-2 block text-sm font-medium text-slate-700">Password <span className="text-red-500">*</span></Label>
                           <div className="relative">
-                            <Lock className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
-
+                            <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                             <Input
                               type={showPassword ? "text" : "password"}
-                              required
-                              minLength={6}
-                              placeholder="Minimum 6 characters"
-                              className="h-12 pl-12 pr-12 rounded-xl"
+                              required minLength={6}
+                              placeholder="Min. 6 characters"
+                              className="h-11 pl-10 pr-10 rounded-xl"
                               {...form.register("password")}
                             />
-
-                            <button
-                              type="button"
-                              onClick={() => setShowPassword(!showPassword)}
-                              className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600"
-                            >
-                              {showPassword ? (
-                                <EyeOff className="h-5 w-5" />
-                              ) : (
-                                <Eye className="h-5 w-5" />
-                              )}
+                            <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 transition-colors">
+                              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                             </button>
                           </div>
                         </div>
@@ -442,93 +356,38 @@ export default function Register() {
                   {step === 2 && (
                     <div className="space-y-6">
                       <div>
-                        <h2 className="text-2xl font-bold text-slate-950">Dealership location</h2>
-                        <p className="mt-2 text-slate-600">Tell buyers where you operate.</p>
+                        <h2 className="text-xl font-bold text-slate-900">Dealership location</h2>
+                        <p className="mt-1 text-sm text-slate-500">Tell buyers where you operate.</p>
                       </div>
-
                       <div className="space-y-5">
-                        {/* Address */}
                         <div>
-                          <Label className="mb-2 block">
-                            Address <span className="text-red-500">*</span>
-                          </Label>
-
+                          <Label className="mb-2 block text-sm font-medium text-slate-700">Address <span className="text-red-500">*</span></Label>
                           <div className="relative">
-                            <MapPinned className="absolute left-4 top-4 h-5 w-5 text-slate-400" />
-
-                            <Textarea
-                              rows={4}
-                              required
-                              placeholder="Enter complete business address"
-                              className="
-          pl-12
-          rounded-xl
-          border-slate-200
-          bg-white
-          shadow-sm
-          resize-none
-          focus-visible:ring-2
-          focus-visible:ring-blue-500
-          focus-visible:ring-offset-0
-        "
-                              {...form.register("address")}
-                            />
+                            <MapPinned className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
+                            <Textarea rows={3} required placeholder="Enter complete business address" className="pl-10 rounded-xl resize-none" {...form.register("address")} />
                           </div>
                         </div>
-
-                        {/* City & State */}
                         <div className="grid gap-5 sm:grid-cols-2">
                           <div>
-                            <Label className="mb-2 block">
-                              City <span className="text-red-500">*</span>
-                            </Label>
-
+                            <Label className="mb-2 block text-sm font-medium text-slate-700">City <span className="text-red-500">*</span></Label>
                             <div className="relative">
-                              <Building className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
-
-                              <Input
-                                required
-                                placeholder="e.g. Pune"
-                                className="h-12 pl-12 rounded-xl"
-                                {...form.register("city")}
-                              />
+                              <Building className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                              <Input required placeholder="e.g. Pune" className="h-11 pl-10 rounded-xl" {...form.register("city")} />
                             </div>
                           </div>
-
                           <div>
-                            <Label className="mb-2 block">
-                              State <span className="text-red-500">*</span>
-                            </Label>
-
+                            <Label className="mb-2 block text-sm font-medium text-slate-700">State <span className="text-red-500">*</span></Label>
                             <div className="relative">
-                              <Map className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
-
-                              <Input
-                                required
-                                placeholder="e.g. Maharashtra"
-                                className="h-12 pl-12 rounded-xl"
-                                {...form.register("state")}
-                              />
+                              <Map className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                              <Input required placeholder="e.g. Maharashtra" className="h-11 pl-10 rounded-xl" {...form.register("state")} />
                             </div>
                           </div>
                         </div>
-
-                        {/* Pin Code */}
-                        <div>
-                          <Label className="mb-2 block">
-                            Pin Code <span className="text-red-500">*</span>
-                          </Label>
-
+                        <div className="sm:max-w-[50%]">
+                          <Label className="mb-2 block text-sm font-medium text-slate-700">Pin Code <span className="text-red-500">*</span></Label>
                           <div className="relative">
-                            <LocateFixed className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
-
-                            <Input
-                              required
-                              maxLength={6}
-                              placeholder="411004"
-                              className="h-12 pl-12 rounded-xl"
-                              {...form.register("pinCode")}
-                            />
+                            <LocateFixed className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                            <Input required maxLength={6} placeholder="411004" className="h-11 pl-10 rounded-xl" {...form.register("pinCode")} />
                           </div>
                         </div>
                       </div>
@@ -538,168 +397,120 @@ export default function Register() {
                   {step === 3 && (
                     <div className="space-y-6">
                       <div>
-                        <h2 className="text-2xl font-bold text-slate-950">Add your brand visuals</h2>
-                        <p className="mt-2 text-slate-600">A great logo & showroom photo build trust with buyers.</p>
+                        <h2 className="text-xl font-bold text-slate-900">Brand visuals</h2>
+                        <p className="mt-1 text-sm text-slate-500">A great logo &amp; showroom photo build trust with buyers.</p>
                       </div>
-
                       <div className="grid gap-5 sm:grid-cols-2">
                         <div>
-                          <Label className="text-slate-700 font-semibold">Dealer Logo <span className="text-red-500">*</span></Label>
-                          <label
-                            htmlFor="dealer-logo-input"
-                            className="mt-2 flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50/50 px-6 py-10 text-center transition-colors hover:border-blue-400 hover:bg-blue-50/30"
-                          >
-                            <Upload className="mb-2 h-6 w-6 text-slate-400" />
-                            <span className="text-sm font-medium text-slate-600">
-                              {dealerLogo?.name || "Click or drag to upload"}
-                            </span>
-                            <span className="mt-1 text-xs text-slate-400">PNG/JPG, square, min 256px</span>
-                            <input
-                              id="dealer-logo-input"
-                              type="file"
-                              accept=".png, .jpg, .jpeg"
-                              className="sr-only"
-                              onChange={(event) =>
-                                setDealerLogo(event.target.files?.[0] ?? null)
-                              }
-                            />
+                          <Label className="mb-2 block text-sm font-medium text-slate-700">Dealer Logo <span className="text-red-500">*</span></Label>
+                          <label htmlFor="dealer-logo-input" className="mt-1 flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 px-6 py-8 text-center transition-colors hover:border-blue-400 hover:bg-blue-50/40">
+                            {dealerLogo ? (
+                              <CheckCircle2 className="mb-2 h-6 w-6 text-green-500" />
+                            ) : (
+                              <Upload className="mb-2 h-6 w-6 text-slate-400" />
+                            )}
+                            <span className="text-sm font-medium text-slate-600 truncate max-w-full">{dealerLogo?.name || "Click to upload logo"}</span>
+                            <span className="mt-1 text-xs text-slate-400">PNG / JPG · Square · min 256 px</span>
+                            <input id="dealer-logo-input" type="file" accept=".png,.jpg,.jpeg" className="sr-only" onChange={(e) => setDealerLogo(e.target.files?.[0] ?? null)} />
                           </label>
                         </div>
                         <div>
-                          <Label className="text-slate-700 font-semibold">Showroom Image <span className="text-red-500">*</span></Label>
-                          <label
-                            htmlFor="showroom-image-input"
-                            className="mt-2 flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50/50 px-6 py-10 text-center transition-colors hover:border-blue-400 hover:bg-blue-50/30"
-                          >
-                            <Upload className="mb-2 h-6 w-6 text-slate-400" />
-                            <span className="text-sm font-medium text-slate-600">
-                              {showroomImage?.name || "Click or drag to upload"}
-                            </span>
-                            <span className="mt-1 text-xs text-slate-400">PNG/JPG, landscape, min 1200px</span>
-                            <input
-                              id="showroom-image-input"
-                              type="file"
-                              accept=".png, .jpg, .jpeg"
-                              className="sr-only"
-                              onChange={(event) =>
-                                setShowroomImage(event.target.files?.[0] ?? null)
-                              }
-                            />
+                          <Label className="mb-2 block text-sm font-medium text-slate-700">Showroom Image <span className="text-red-500">*</span></Label>
+                          <label htmlFor="showroom-image-input" className="mt-1 flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 px-6 py-8 text-center transition-colors hover:border-blue-400 hover:bg-blue-50/40">
+                            {showroomImage ? (
+                              <CheckCircle2 className="mb-2 h-6 w-6 text-green-500" />
+                            ) : (
+                              <Upload className="mb-2 h-6 w-6 text-slate-400" />
+                            )}
+                            <span className="text-sm font-medium text-slate-600 truncate max-w-full">{showroomImage?.name || "Click to upload photo"}</span>
+                            <span className="mt-1 text-xs text-slate-400">PNG / JPG · Landscape · min 1200 px</span>
+                            <input id="showroom-image-input" type="file" accept=".png,.jpg,.jpeg" className="sr-only" onChange={(e) => setShowroomImage(e.target.files?.[0] ?? null)} />
                           </label>
                         </div>
                       </div>
                     </div>
                   )}
 
-                  <div className=" border-t pt-4 sm:flex sm:items-center sm:justify-between">
+                  {/* Navigation footer */}
+                  <div className="flex items-center justify-between gap-3 border-t border-slate-100 pt-5">
                     <Button
                       type="button"
                       variant="outline"
                       disabled={step === 0}
                       onClick={() => setStep(step - 1)}
-                      className="w-full justify-center  bg-slate-100 border border-slate-300 text-black hover:bg-slate-200 sm:w-auto"
+                      className="gap-2 border-slate-200 text-slate-700 hover:bg-slate-100 disabled:opacity-40"
                     >
-                      <ChevronLeft className="h-4 w-4 mr-2" />
-                      Back
+                      <ChevronLeft className="h-4 w-4" /> Back
                     </Button>
-
-                    <div className="mt-4 text-sm text-slate-600 sm:mt-0">
-                      Step {step + 1} of 4
-                    </div>
 
                     {step < 3 ? (
                       <Button
                         type="button"
-                        onClick={() => {
-                          if (formRef.current?.reportValidity()) setStep(step + 1);
-                        }}
+                        onClick={() => { if (formRef.current?.reportValidity()) setStep(step + 1); }}
                         disabled={isSubmitting}
-                        className="mt-4 w-full gradient-primary text-white hover:gradient-primary-hover sm:mt-0 sm:w-auto"
+                        className="gap-2 gradient-primary text-white hover:opacity-90"
                       >
-                        Continue
-                        <ChevronRight className="h-4 w-4 ml-2" />
+                        Continue <ChevronRight className="h-4 w-4" />
                       </Button>
                     ) : (
                       <Button
                         type="button"
                         disabled={isSubmitting}
                         onClick={form.handleSubmit(onSubmit)}
-                        className="mt-4 w-full gradient-primary text-white hover:gradient-primary-hover sm:mt-0 sm:w-auto"
+                        className="gradient-primary text-white hover:opacity-90 min-w-[110px]"
                       >
-                        {isSubmitting ? "Registering..." : "Register"}
+                        {isSubmitting ? "Registering…" : "Register →"}
                       </Button>
                     )}
                   </div>
 
-                  <div className="text-center text-sm text-slate-500">
-                    Already registered?{' '}
-                    <Link
-                      to="/auth/login"
-                      className="font-semibold text-sky-600 hover:text-sky-700"
-                    >
+                  <p className="text-center text-sm text-slate-400">
+                    Already registered?{" "}
+                    <Link to="/auth/login" className="font-semibold text-sky-600 hover:text-sky-700 transition-colors">
                       Sign in
                     </Link>
-                  </div>
+                  </p>
                 </form>
               </CardContent>
             </Card>
 
-            <div className="space-y-5">
-              <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-sm">
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-bold text-slate-950">Why dealers love AutoHub</h3>
-                  <div className="mt-5 space-y-4">
+            {/* ── Sidebar ── */}
+            <div className="space-y-4">
+              <Card className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+                <CardContent className="p-5">
+                  <h3 className="text-base font-bold text-slate-900">Why dealers love AutoHub</h3>
+                  <ul className="mt-4 space-y-3">
                     {[
-                      'Quality verified buyer leads',
-                      'Manage inventory easily',
-                      'Featured & boosted listings',
-                      'Transparent pricing',
+                      "Quality verified buyer leads",
+                      "Manage inventory easily",
+                      "Featured & boosted listings",
+                      "Transparent pricing",
                     ].map((item) => (
-                      <div key={item} className="flex items-start gap-3">
-                        <CheckCircle2 className="mt-1 h-5 w-5 text-sky-500" />
-                        <p className="text-sm text-slate-600">{item}</p>
-                      </div>
+                      <li key={item} className="flex items-center gap-2.5">
+                        <CheckCircle2 className="h-4 w-4 shrink-0 text-sky-500" />
+                        <span className="text-sm text-slate-600">{item}</span>
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 </CardContent>
               </Card>
 
-              <Card className="rounded-[2rem] bg-slate-950 p-6 text-white shadow-sm">
-                <p className="text-xs uppercase tracking-[0.28em] text-slate-400">Trusted by</p>
-                <p className="mt-4 text-5xl font-black">500+</p>
-                <p className="mt-2 text-lg font-semibold">dealers</p>
-                <p className="mt-4 text-slate-400">
-                  Across 150+ Indian cities. Reach 50,000+ monthly buyers.
-                </p>
-                <Button variant="secondary" className="mt-6 w-full border border-white/10 bg-white/10 text-white hover:bg-white/15">
-                  Explore plans
-                </Button>
+              <Card className="rounded-2xl bg-slate-950 text-white shadow-sm overflow-hidden">
+                <CardContent className="p-5">
+                  <p className="text-[10px] uppercase tracking-widest text-slate-500">Trusted by</p>
+                  <p className="mt-2 text-4xl font-black">500+</p>
+                  <p className="mt-0.5 text-base font-semibold text-slate-200">dealers across India</p>
+                  <p className="mt-3 text-sm text-slate-400 leading-relaxed">
+                    Reach 50,000+ monthly buyers across 150+ Indian cities.
+                  </p>
+
+                </CardContent>
               </Card>
             </div>
+
           </div>
         </div>
       </div>
     </>
-  );
-}
-
-function Field({
-  label,
-  error,
-  ...props
-}: {
-  label: string;
-  error?: string;
-} & React.InputHTMLAttributes<HTMLInputElement>) {
-  return (
-    <div>
-      <Label>{label}</Label>
-
-      <Input
-        {...props}
-        className="mt-2 rounded-3xl border border-slate-200 bg-white/95 text-slate-900 shadow-sm"
-      />
-      {error ? <p className="mt-2 text-sm text-red-600">{error}</p> : null}
-    </div>
   );
 }

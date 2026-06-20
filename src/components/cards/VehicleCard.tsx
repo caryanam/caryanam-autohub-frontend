@@ -72,16 +72,20 @@ export function VehicleCard({ vehicle, onWishlistRequireLogin, isLoggedIn }: Veh
       </Link>
 
       <div className="p-4 space-y-3">
+        {/* Title + Price on same line */}
         <div>
-          <Link to={`/car/${vehicle.id}`}>
-            <h3 className="font-bold text-base leading-tight line-clamp-1 hover:text-accent transition-colors">
-              {vehicle.brand} {vehicle.model}
-            </h3>
+          <Link to={`/car/${vehicle.id}`} className="block">
+            <div className="flex items-baseline justify-between gap-2">
+              <h3 className="font-bold text-md leading-tight truncate flex-1 hover:text-accent transition-colors">
+                {vehicle.registrationYear} {vehicle.brand} {vehicle.model}
+              </h3>
+              <span className="shrink-0 font-black text-md font-display text-foreground">
+                {formatINR(vehicle.askingPrice)}
+              </span>
+            </div>
           </Link>
-          <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">{vehicle.variant}</p>
+          <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">{vehicle.variant} {vehicle.fuelType}</p>
         </div>
-
-        <div className="text-xl font-black text-foreground font-display">{formatINR(vehicle.askingPrice)}</div>
 
         <div className="grid grid-cols-3 gap-2 text-xs text-muted-foreground border-y border-border py-3">
           <div className="flex items-center gap-1.5">

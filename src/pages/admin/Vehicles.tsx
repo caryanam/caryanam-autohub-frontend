@@ -4,7 +4,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { AlertCircle, RefreshCw, Loader2, Search } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { AlertCircle, RefreshCw, Search } from "lucide-react";
 import { useAllVehicles } from "@/hooks/public/useAllVehicles";
 import { formatINR, formatKM } from "@/utils/helpers";
 
@@ -12,10 +13,10 @@ const FALLBACK_IMG = "https://images.unsplash.com/photo-1494976388531-d1058494cd
 
 function StatusBadge({ status }: { status: string }) {
   const s = status?.toUpperCase();
-  if (s === "ACTIVE") return <Badge className="bg-green-100 text-green-700 border-green-200 border">Active</Badge>;
-  if (s === "INACTIVE") return <Badge className="bg-red-100 text-red-700 border-red-200 border">Inactive</Badge>;
-  if (s === "FEATURED") return <Badge className="bg-blue-100 text-blue-700 border-blue-200 border">Featured</Badge>;
-  return <Badge variant="secondary">{status}</Badge>;
+  if (s === "ACTIVE") return <Badge className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold rounded-full px-3">Active</Badge>;
+  if (s === "INACTIVE") return <Badge className="bg-red-50 text-red-600 border border-red-200 text-xs font-bold rounded-full px-3">Inactive</Badge>;
+  if (s === "FEATURED") return <Badge className="bg-yellow-50 text-yellow-700 border border-yellow-200 text-xs font-bold rounded-full px-3">Featured</Badge>;
+  return <Badge variant="secondary" className="text-xs font-bold rounded-full px-3">{status}</Badge>;
 }
 
 export default function AdminVehicles() {
@@ -28,15 +29,6 @@ export default function AdminVehicles() {
     v.fuelType?.toLowerCase().includes(search.toLowerCase())
   );
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-20 gap-3 text-muted-foreground">
-        <Loader2 className="h-5 w-5 animate-spin" />
-        <span>Loading vehicles…</span>
-      </div>
-    );
-  }
-
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
@@ -45,7 +37,7 @@ export default function AdminVehicles() {
           <p className="font-semibold">Failed to load vehicles</p>
           <p className="text-sm text-muted-foreground mt-1">{error}</p>
         </div>
-        <Button onClick={refetch} className="gap-2">
+        <Button onClick={() => refetch()} className="gap-2">
           <RefreshCw className="h-4 w-4" /> Retry
         </Button>
       </div>
@@ -53,66 +45,105 @@ export default function AdminVehicles() {
   }
 
   return (
-    <Card>
-      <div className="flex items-center gap-3 p-4 border-b">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search brand, model, city..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
-          />
+    <div className="space-y-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight text-slate-900">Vehicles</h2>
+          <p className="text-base text-slate-500 mt-1">{filtered.length} vehicles</p>
         </div>
-        <Button variant="outline" size="sm" onClick={refetch} disabled={loading}>
-          <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-        </Button>
+
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="relative flex-1 sm:w-[280px] sm:flex-none">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search brand, model, city..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-9 h-10 bg-white rounded-xl w-full"
+            />
+          </div>
+
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => refetch()}
+            disabled={loading}
+            className="h-10 w-10 bg-white rounded-xl shrink-0 cursor-pointer"
+          >
+            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+          </Button>
+        </div>
       </div>
-      <CardContent className="p-0 overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Vehicle</TableHead>
-              <TableHead className="hidden sm:table-cell">Price</TableHead>
-              <TableHead className="hidden md:table-cell">KM / Fuel</TableHead>
-              <TableHead className="hidden lg:table-cell">City</TableHead>
-              <TableHead className="hidden md:table-cell">Status</TableHead>
-              <TableHead className="hidden lg:table-cell">Year</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filtered.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={6} className="text-center py-12 text-muted-foreground">
-                  No vehicles found.
-                </TableCell>
+
+      <Card className="border border-slate-100 shadow-premium rounded-2xl overflow-hidden bg-white">
+        <CardContent className="p-0 overflow-x-auto">
+          <Table className="min-w-[900px]">
+            <TableHeader className="bg-blue-900 border-b border-blue-900">
+              <TableRow className="bg-blue-900 hover:bg-blue-900 border-none">
+                <TableHead className="w-16 text-center text-xs font-bold text-slate-100 uppercase tracking-wider py-4">Sr No</TableHead>
+                <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4 pl-4">Vehicle</TableHead>
+                <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4">Price</TableHead>
+                <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4">KM / Fuel</TableHead>
+                <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4">City</TableHead>
+                <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4">Status</TableHead>
+                <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4 pr-6">Year</TableHead>
               </TableRow>
-            ) : filtered.map((v) => (
-              <TableRow key={v.id}>
-                <TableCell>
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={v.images && v.images.length > 0 ? v.images[0] : FALLBACK_IMG}
-                      className="h-10 w-14 object-cover rounded"
-                      alt=""
-                      onError={(e) => { (e.currentTarget as HTMLImageElement).src = FALLBACK_IMG; }}
-                    />
-                    <div className="min-w-0">
-                      <div className="font-medium truncate">{v.brand} {v.model} {v.variant}</div>
-                      <div className="text-xs text-muted-foreground">{v.dealerContactName ?? "—"}</div>
+            </TableHeader>
+            <TableBody>
+              {loading ? (
+                Array.from({ length: 5 }).map((_, idx) => (
+                  <TableRow key={`skeleton-${idx}`} className="border-b border-slate-100/80 last:border-none">
+                    <TableCell className="w-16 text-center py-4"><Skeleton className="h-4 w-4 mx-auto" /></TableCell>
+                    <TableCell className="py-4 pl-4">
+                      <div className="flex items-center gap-3">
+                        <Skeleton className="h-10 w-14 rounded shrink-0" />
+                        <div className="space-y-1.5">
+                          <Skeleton className="h-4 w-32 rounded" />
+                          <Skeleton className="h-3 w-20 rounded" />
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="py-4"><Skeleton className="h-4 w-20 rounded" /></TableCell>
+                    <TableCell className="py-4"><Skeleton className="h-4 w-28 rounded" /></TableCell>
+                    <TableCell className="py-4"><Skeleton className="h-4 w-16 rounded" /></TableCell>
+                    <TableCell className="py-4"><Skeleton className="h-7 w-20 rounded-full" /></TableCell>
+                    <TableCell className="py-4 pr-6"><Skeleton className="h-4 w-12 rounded" /></TableCell>
+                  </TableRow>
+                ))
+              ) : filtered.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-12 text-muted-foreground font-medium">
+                    {search ? "No matching vehicles found." : "No vehicles found."}
+                  </TableCell>
+                </TableRow>
+              ) : filtered.map((v, idx) => (
+                <TableRow key={v.id} className="hover:bg-slate-50 transition-colors border-b border-slate-200 last:border-none">
+                  <TableCell className="text-center text-slate-400 text-sm font-medium py-4">{idx + 1}</TableCell>
+                  <TableCell className="py-4 pl-4">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={v.images && v.images.length > 0 ? v.images[0] : FALLBACK_IMG}
+                        className="h-10 w-14 object-cover rounded shrink-0"
+                        alt=""
+                        onError={(e) => { (e.currentTarget as HTMLImageElement).src = FALLBACK_IMG; }}
+                      />
+                      <div className="min-w-0">
+                        <div className="font-semibold text-slate-900 text-sm truncate">{v.brand} {v.model} {v.variant}</div>
+                        <div className="text-xs text-slate-400 mt-0.5">{v.dealerContactName ?? "—"}</div>
+                      </div>
                     </div>
-                  </div>
-                </TableCell>
-                <TableCell className="hidden sm:table-cell font-semibold">{formatINR(v.askingPrice)}</TableCell>
-                <TableCell className="hidden md:table-cell text-sm text-muted-foreground">{formatKM(v.kilometerDriven)} · {v.fuelType}</TableCell>
-                <TableCell className="hidden lg:table-cell text-sm">{v.city}</TableCell>
-                <TableCell className="hidden md:table-cell"><StatusBadge status={v.vehicleStatus} /></TableCell>
-                <TableCell className="hidden lg:table-cell text-sm text-muted-foreground">{v.registrationYear}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+                  </TableCell>
+                  <TableCell className="font-semibold text-slate-800 text-sm py-4">{formatINR(v.askingPrice)}</TableCell>
+                  <TableCell className="text-sm text-slate-500 py-4">{formatKM(v.kilometerDriven)} · {v.fuelType}</TableCell>
+                  <TableCell className="text-sm text-slate-600 py-4">{v.city}</TableCell>
+                  <TableCell className="py-4"><StatusBadge status={v.vehicleStatus} /></TableCell>
+                  <TableCell className="text-sm text-slate-400 py-4 pr-6">{v.registrationYear}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

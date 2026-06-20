@@ -16,8 +16,8 @@ export default function DealerVehicleDetails() {
 
   const statusColor =
     vehicle?.vehicleStatus === "ACTIVE" ? "bg-green-100 text-green-700" :
-    vehicle?.vehicleStatus === "INACTIVE" ? "bg-red-100 text-red-700" :
-    "bg-amber-100 text-amber-700";
+      vehicle?.vehicleStatus === "INACTIVE" ? "bg-red-100 text-red-700" :
+        "bg-amber-100 text-amber-700";
 
   if (isLoading) {
     return (
@@ -46,7 +46,7 @@ export default function DealerVehicleDetails() {
   return (
     <div className="space-y-6">
       {/* Back */}
-      <Button variant="ghost" className="gap-2 pl-0" onClick={() => navigate(-1)}>
+      <Button variant="ghost" className="gap-2 pl-0 cursor-pointer" onClick={() => navigate(-1)}>
         <ArrowLeft className="h-4 w-4" /> Back to Inventory
       </Button>
 
@@ -131,7 +131,7 @@ export default function DealerVehicleDetails() {
         </Card>
       )}
 
-    
+
     </div>
   );
 }

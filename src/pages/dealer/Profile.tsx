@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -112,8 +113,48 @@ export default function DealerProfile() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-24">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      <div className="space-y-6">
+        <div>
+          <Skeleton className="h-9 w-32 rounded-lg" />
+          <Skeleton className="h-4 w-64 mt-2 rounded" />
+        </div>
+
+        <Card className="rounded-3xl border border-slate-100 shadow-premium">
+          <CardContent className="p-6 md:p-8 space-y-8">
+            <div className="flex items-center gap-4 flex-wrap">
+              <Skeleton className="h-20 w-20 rounded-3xl shrink-0" />
+              <div className="space-y-2.5">
+                <Skeleton className="h-7 w-48 rounded" />
+                <Skeleton className="h-4 w-36 rounded" />
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="space-y-2">
+                  <Skeleton className="h-4 w-24 rounded" />
+                  <Skeleton className="h-12 w-full rounded-xl" />
+                </div>
+              ))}
+            </div>
+
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-16 rounded" />
+              <Skeleton className="h-12 w-full rounded-xl" />
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              {Array.from({ length: 2 }).map((_, i) => (
+                <div key={i} className="space-y-2">
+                  <Skeleton className="h-4 w-12 rounded" />
+                  <Skeleton className="h-12 w-full rounded-xl" />
+                </div>
+              ))}
+            </div>
+
+            <Skeleton className="h-12 w-36 rounded-xl" />
+          </CardContent>
+        </Card>
       </div>
     );
   }
