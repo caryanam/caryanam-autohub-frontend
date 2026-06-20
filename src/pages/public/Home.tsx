@@ -16,12 +16,12 @@ import { useLatestVehicles, useFeaturedVehicles } from "@/hooks/public/useHomeVe
 import { getStoredCustomer } from "@/hooks/public/useCustomerAuth";
 import { toast } from "sonner";
 import { AuthModal } from "@/components/shared/AuthModal";
-
+import hero from "@/assets/hero1.mp4";
 
 const stats = [
   { label: "Verified Dealers", value: "500+" },
   { label: "Vehicles Listed", value: "25,000+" },
-  { label: "Cities Covered", value: "150+" },
+  { label: "Happy Customers", value: "1000+" },
   { label: "Monthly Visitors", value: "50,000+" },
 ];
 
@@ -34,7 +34,7 @@ const why = [
 
 const testimonials = [
   { name: "Rohit Mehra", role: "Buyer · Pune", text: "Found a certified 2022 Creta in 3 days. Dealer was responsive, paperwork was clean." },
-  { name: "Mumbai Motors", role: "Verified Dealer", text: "AutoHub doubled our lead flow in the first month. The premium plan is well worth it." },
+  { name: "Mumbai Motors", role: "Verified Dealer", text: "CAPL doubled our lead flow in the first month. The premium plan is well worth it." },
   { name: "Priya Nair", role: "Buyer · Bangalore", text: "Loved the transparency — verified badges and direct dealer contact saved me hours." },
 ];
 
@@ -83,12 +83,25 @@ export default function Home() {
 
   return (
     <>
-      <SEO title="AutoHub India — Verified Used Cars from Trusted Dealers" description="Browse thousands of verified used cars from 500+ trusted dealers across 150+ Indian cities. Direct dealer contact, no middlemen." />
+      <SEO title="CAPL — Verified Used Cars from Trusted Dealers" description="Browse thousands of verified used cars from 500+ trusted dealers across 150+ Indian cities. Direct dealer contact, no middlemen." />
 
       {/* Hero */}
-      <section className="relative overflow-hidden gradient-primary text-white">
-        <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "radial-gradient(circle at 20% 20%, rgba(37,99,235,0.5), transparent 40%), radial-gradient(circle at 80% 60%, rgba(37,99,235,0.4), transparent 50%)" }} />
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+      <section className="relative overflow-hidden text-white bg-slate-950">
+        {/* Background Video */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover opacity-35 z-0"
+        >
+          <source src={hero} type="video/mp4" />
+        </video>
+        {/* Overlays for contrast and theme consistency */}
+        {/* <div className="absolute inset-0 bg-gradient-to-r from-slate-950/80 via-slate-950/60 to-transparent z-0" /> */}
+        <div className="absolute inset-0 opacity-20 z-0" style={{ backgroundImage: "radial-gradient(circle at 20% 20%, rgba(37,99,235,0.4), transparent 50%), radial-gradient(circle at 80% 60%, rgba(37,99,235,0.3), transparent 50%)" }} />
+
+        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 md:py-24">
           <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-3 py-1 text-xs font-medium mb-5">
               <BadgeCheck className="h-3.5 w-3.5" /> India's #1 verified used-car marketplace
@@ -104,7 +117,7 @@ export default function Home() {
           <motion.form
             onSubmit={submit}
             initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}
-            className="mt-8 bg-card text-foreground rounded-2xl shadow-premium p-3 md:p-4 grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr_1fr_1fr_auto] gap-2"
+            className="mt-8 bg-card text-foreground rounded-2xl shadow-premium p-2 grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr_1fr_1fr_auto] gap-2"
           >
             <SearchableSelect
               value={brand}
@@ -278,7 +291,7 @@ export default function Home() {
       </section>
 
       {/* Why */}
-      <Section title="Why AutoHub India" subtitle="Built for buyers. Loved by dealers.">
+      <Section title="Why CAPL" subtitle="Built for buyers. Loved by dealers.">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {why.map((w) => (
             <Card key={w.title} className="border-border/60">
@@ -301,7 +314,7 @@ export default function Home() {
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <div className="rounded-3xl gradient-premium text-white p-8 md:p-12 text-center shadow-premium">
             <h2 className="font-display text-3xl md:text-4xl font-black">Are you a used-car dealer?</h2>
-            <p className="mt-3 text-white/80 max-w-xl mx-auto">List your inventory on AutoHub India and reach 50,000+ buyers every month. Start free, upgrade as you grow.</p>
+            <p className="mt-3 text-white/80 max-w-xl mx-auto">List your inventory on CAPL and reach 50,000+ buyers every month. Start free, upgrade as you grow.</p>
             <div className="mt-6 flex flex-wrap gap-3 justify-center">
               <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 border-0">
                 <Link to="/auth/register">Register as Dealer</Link>

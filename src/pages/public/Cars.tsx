@@ -19,12 +19,20 @@ import { BUDGET_BANDS } from "@/utils/constants";
 import { formatINR } from "@/utils/helpers";
 import type { Vehicle } from "@/types";
 
-const PAGE = 12;
+const PAGE = 9;
 
 export default function Cars() {
   const [params, setParams] = useSearchParams();
-  const { vehicles: all, loading, error, refetch, isRefetching } = useAllVehicles();
   const [page, setPage] = useState(1);
+  const {
+    vehicles: all,
+    totalPages: backendTotalPages,
+    totalElements: backendTotalElements,
+    loading,
+    error,
+    refetch,
+    isRefetching
+  } = useAllVehicles(page - 1, PAGE);
   const [customer, setCustomer] = useState<CustomerUser | null>(getStoredCustomer);
   const [authOpen, setAuthOpen] = useState(false);
 
@@ -74,11 +82,11 @@ export default function Cars() {
     setPage(1);
   };
 
-  // Dynamic filter options from fetched data
-  const CITIES = useMemo(() => [...new Set(all.map((v) => v.city))].sort(), [all]);
-  const FUELS = useMemo(() => [...new Set(all.map((v) => v.fuelType))].sort(), [all]);
-  const TRANSMISSIONS = useMemo(() => [...new Set(all.map((v) => v.transmission))].sort(), [all]);
-  const OWNERSHIPS = useMemo(() => [...new Set(all.map((v) => v.ownershipDetails))].sort(), [all]);
+  // Static filter options
+  const CITIES = ["Pune", "PCMC"];
+  const FUELS = ["Petrol", "Diesel", "CNG", "Electric", "Hybrid"];
+  const TRANSMISSIONS = ["Manual", "Automatic"];
+  const OWNERSHIPS = ["First Owner", "Second Owner", "Third Owner", "Others"];
 
   const filtered = useMemo(() => {
     let list: Vehicle[] = all;
@@ -112,8 +120,8 @@ export default function Cars() {
     return list;
   }, [all, brand, model, variant, city, fuel, transmission, ownership, minYear, maxKm, budget, minPrice, maxPrice, q, sort]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE));
-  const paged = filtered.slice((page - 1) * PAGE, page * PAGE);
+  const totalPages = backendTotalPages || 1;
+  const paged = filtered;
 
   const activeFilterCount = [brand, model, variant, city, fuel, transmission, ownership, budgetLabel, minYear, maxKm, q]
     .filter(Boolean).length + (minPrice > 0 || maxPrice < 5000000 ? 1 : 0);
@@ -221,7 +229,7 @@ export default function Cars() {
   return (
     <>
       <SEO
-        title="Browse Used Cars — AutoHub India"
+        title="Browse Used Cars — CAPL"
         description="Search verified used cars by brand, city, fuel, transmission and budget. Direct dealer contact."
       />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
@@ -229,7 +237,7 @@ export default function Cars() {
           <div>
             <h1 className="font-display text-2xl md:text-3xl font-black">Browse Used Cars</h1>
             <p className="text-sm text-muted-foreground mt-1">
-              {loading ? "Loading vehicles…" : `${filtered.length} verified vehicles available`}
+              {loading ? "Loading vehicles…" : `${backendTotalElements} verified vehicles available`}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -256,7 +264,7 @@ export default function Cars() {
                 <SelectItem value="latest">Latest</SelectItem>
                 <SelectItem value="price-asc">Price: Low to High</SelectItem>
                 <SelectItem value="price-desc">Price: High to Low</SelectItem>
-                <SelectItem value="year-desc">Newest First</SelectItem>
+
                 <SelectItem value="km-asc">Lowest KM</SelectItem>
               </SelectContent>
             </Select>
@@ -270,38 +278,38 @@ export default function Cars() {
             </div>
           </aside>
 
-          <div className="min-w-0">
-            {error && (
-              <div className="flex flex-col items-center justify-center py-16 bg-card rounded-2xl border border-destructive/30 text-center gap-4">
-                <AlertCircle className="h-10 w-10 text-destructive" />
-                <div>
-                  <h3 className="font-bold text-lg">Failed to load vehicles</h3>
-                  <p className="text-sm text-muted-foreground mt-1">{error}</p>
+          <div className="min-w-0 flex flex-col justify-between min-h-[600px] sm:min-h-[1000px] lg:min-h-[1150px]">
+            <div className="flex-1">
+              {error && (
+                <div className="flex flex-col items-center justify-center py-16 bg-card rounded-2xl border border-destructive/30 text-center gap-4">
+                  <AlertCircle className="h-10 w-10 text-destructive" />
+                  <div>
+                    <h3 className="font-bold text-lg">Failed to load vehicles</h3>
+                    <p className="text-sm text-muted-foreground mt-1">{error}</p>
+                  </div>
+                  <Button onClick={() => refetch()} disabled={isRefetching} className="gap-2">
+                    <RefreshCw className={`h-4 w-4 ${isRefetching ? "animate-spin" : ""}`} /> Retry
+                  </Button>
                 </div>
-                <Button onClick={() => refetch()} disabled={isRefetching} className="gap-2">
-                  <RefreshCw className={`h-4 w-4 ${isRefetching ? "animate-spin" : ""}`} /> Retry
-                </Button>
-              </div>
-            )}
+              )}
 
-            {!error && loading && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-                {Array.from({ length: 6 }).map((_, i) => <VehicleCardSkeleton key={i} />)}
-              </div>
-            )}
+              {!error && loading && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+                  {Array.from({ length: 6 }).map((_, i) => <VehicleCardSkeleton key={i} />)}
+                </div>
+              )}
 
-            {!error && !loading && paged.length === 0 && (
-              <div className="text-center py-20 bg-card rounded-2xl border border-border">
-                <h3 className="font-display font-bold text-lg">No vehicles match your filters</h3>
-                <p className="text-sm text-muted-foreground mt-1">Try clearing some filters or broadening your search.</p>
-                <Button className="mt-4" onClick={() => { setParams(new URLSearchParams(), { replace: true }); setPage(1); }}>
-                  Clear filters
-                </Button>
-              </div>
-            )}
+              {!error && !loading && paged.length === 0 && (
+                <div className="text-center py-20 bg-card rounded-2xl border border-border">
+                  <h3 className="font-display font-bold text-lg">No vehicles match your filters</h3>
+                  <p className="text-sm text-muted-foreground mt-1">Try clearing some filters or broadening your search.</p>
+                  <Button className="mt-4" onClick={() => { setParams(new URLSearchParams(), { replace: true }); setPage(1); }}>
+                    Clear filters
+                  </Button>
+                </div>
+              )}
 
-            {!error && !loading && paged.length > 0 && (
-              <>
+              {!error && !loading && paged.length > 0 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
                   {paged.map((v) => (
                     <VehicleCard
@@ -312,14 +320,15 @@ export default function Cars() {
                     />
                   ))}
                 </div>
-                {totalPages > 1 && (
-                  <div className="mt-8 flex items-center justify-center gap-2">
-                    <Button variant="outline" size="sm" disabled={page === 1} onClick={() => setPage(page - 1)}>Previous</Button>
-                    <span className="text-sm text-muted-foreground px-3">Page {page} of {totalPages}</span>
-                    <Button variant="outline" size="sm" disabled={page === totalPages} onClick={() => setPage(page + 1)}>Next</Button>
-                  </div>
-                )}
-              </>
+              )}
+            </div>
+
+            {!error && !loading && paged.length > 0 && totalPages > 1 && (
+              <div className="mt-8 flex items-center justify-center gap-2 pt-4 border-t border-border/50">
+                <Button variant="outline" size="sm" disabled={page === 1} onClick={() => setPage(page - 1)}>Previous</Button>
+                <span className="text-sm text-muted-foreground px-3">Page {page} of {totalPages}</span>
+                <Button variant="outline" size="sm" disabled={page === totalPages} onClick={() => setPage(page + 1)}>Next</Button>
+              </div>
             )}
           </div>
         </div>

@@ -72,7 +72,7 @@ export default function Login() {
 
   return (
     <>
-      <SEO title="Sign In — AutoHub India" />
+      <SEO title="Sign In — CAPL" />
       <div className="min-h-screen grid lg:grid-cols-2 bg-background">
         {/* Left decorative panel */}
         <div className="hidden lg:flex gradient-primary text-white p-12 flex-col justify-between">
@@ -84,7 +84,7 @@ export default function Login() {
 
             <div>
               <div className="font-display font-black text-lg">
-                AutoHub India
+                CAPL
               </div>
               <div className="text-xs text-white/70">
                 Dealer Management Portal
@@ -138,7 +138,7 @@ export default function Login() {
 
           {/* Footer */}
           <div className="flex items-center justify-between text-xs text-white/60">
-            <span>© 2026 AutoHub India</span>
+            <span>© 2026 CAPL</span>
             <span>Secure • Reliable • Scalable</span>
           </div>
         </div>

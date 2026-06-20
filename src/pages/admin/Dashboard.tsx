@@ -1,51 +1,134 @@
-import { useQueries } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Users, CarFront, Inbox, Clock } from "lucide-react";
-import apiClient from "@/lib/apiClient";
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, LineChart, Line, AreaChart, Area } from "recharts";
+import { Users, CarFront, Inbox, Clock, IndianRupee, TrendingUp, InboxIcon } from "lucide-react";
+import {
+  ResponsiveContainer,
+  BarChart, Bar,
+  XAxis, YAxis, Tooltip, CartesianGrid,
+  LineChart, Line,
+} from "recharts";
+import {
+  useMonthlyDealerRegistrations,
+  useMonthlyLeads,
+  useMonthlyRevenue,
+  useAdminDealerCount,
+  useAdminVehicleCount,
+  useAdminPendingCount,
+  useAdminLeadCount,
+  useAdminTotalRevenue,
+} from "@/hooks/admin/useAdminDashboard";
+import { Button } from "@/components/ui/button";
 
-const months = [
-  { m: "Jan", regs: 12, leads: 240, rev: 320000 },
-  { m: "Feb", regs: 18, leads: 320, rev: 412000 },
-  { m: "Mar", regs: 22, leads: 410, rev: 520000 },
-  { m: "Apr", regs: 28, leads: 520, rev: 640000 },
-  { m: "May", regs: 34, leads: 680, rev: 780000 },
-  { m: "Jun", regs: 41, leads: 820, rev: 920000 },
-];
+// ── Chart skeleton ─────────────────────────────────────────────────────────────
+function ChartSkeleton({ height = "h-56" }: { height?: string }) {
+  return (
+    <div className={`${height} flex items-end gap-1 px-2 pb-2`}>
+      {[40, 60, 45, 80, 55, 90, 50, 70, 65, 85, 48, 75].map((h, i) => (
+        <Skeleton key={i} className="flex-1 rounded-sm" style={{ height: `${h}%` }} />
+      ))}
+    </div>
+  );
+}
+
+// ── Shared chart axis/grid props — always show all 12 months ───────────────────
+const xAxisProps = {
+  dataKey: "month",
+  fontSize: 11,
+  interval: 0 as const,
+  tick: { fill: "#6b7280" },
+  axisLine: { stroke: "#e5e7eb" },
+  tickLine: false,
+} as const;
+
+const yAxisProps = {
+  fontSize: 11,
+  allowDecimals: false,
+  tick: { fill: "#6b7280" },
+  axisLine: false,
+  tickLine: false,
+  width: 40,
+} as const;
+
+const gridProps = {
+  strokeDasharray: "3 3",
+  stroke: "#f0f0f0",
+  vertical: false,
+} as const;
 
 export default function AdminDashboard() {
-  const results = useQueries({
-    queries: [
-      { queryKey: ["admin-count-dealers"],  queryFn: async () => (await apiClient.get("/api/admin/dealer/count")).data },
-      { queryKey: ["admin-count-vehicles"], queryFn: async () => (await apiClient.get("/api/admin/vehicle/count")).data },
-      { queryKey: ["admin-count-pending"],  queryFn: async () => (await apiClient.get("/api/admin/pending/count")).data },
-      { queryKey: ["admin-count-leads"],    queryFn: async () => (await apiClient.get("/api/admin/customer-lead/count")).data },
-    ],
-  });
+  // ── Stat count hooks ──────────────────────────────────────────────────────────
+  const { data: dealersData, isLoading: loadingDealers } = useAdminDealerCount();
+  const { data: vehiclesData, isLoading: loadingVehicles } = useAdminVehicleCount();
+  const { data: pendingData, isLoading: loadingPending } = useAdminPendingCount();
+  const { data: leadsData, isLoading: loadingLeads } = useAdminLeadCount();
+  const { data: revenueData, isLoading: loadingRevenue } = useAdminTotalRevenue();
 
-  const [dealers, vehicles, pending, leads] = results;
+  // ── Chart data hooks ──────────────────────────────────────────────────────────
+  const { data: dealerRegs, isLoading: loadingDealerRegs } = useMonthlyDealerRegistrations();
+  const { data: monthLeads, isLoading: loadingMonthLeads } = useMonthlyLeads();
+  const { data: monthRev, isLoading: loadingMonthRev } = useMonthlyRevenue();
 
   const stats = [
-    { icon: <Users className="h-5 w-5" />,    label: "Total Dealers",  value: dealers.data?.totalDealers,         loading: dealers.isLoading },
-    { icon: <CarFront className="h-5 w-5" />,  label: "Total Vehicles", value: vehicles.data?.totalVehicles,       loading: vehicles.isLoading },
-    { icon: <Clock className="h-5 w-5" />,     label: "Pending",        value: pending.data?.totalPendingDealers,  loading: pending.isLoading, accent: true },
-    { icon: <Inbox className="h-5 w-5" />,     label: "Total Leads",    value: leads.data?.totalCustomerLeads,     loading: leads.isLoading },
+    {
+      icon: <Users className="h-5 w-5" />,
+      label: "Total Dealers",
+      value: dealersData?.totalDealers,
+      loading: loadingDealers,
+    },
+    {
+      icon: <CarFront className="h-5 w-5" />,
+      label: "Total Vehicles",
+      value: vehiclesData?.totalVehicles,
+      loading: loadingVehicles,
+    },
+    {
+      icon: <Clock className="h-5 w-5" />,
+      label: "Pending",
+      value: pendingData?.totalPendingDealers,
+      loading: loadingPending,
+      accent: true,
+    },
+    {
+      icon: <Inbox className="h-5 w-5" />,
+      label: "Total Leads",
+      value: leadsData?.totalCustomerLeads,
+      loading: loadingLeads,
+    },
+    {
+      icon: <IndianRupee className="h-5 w-5" />,
+      label: "Total Revenue",
+      value: revenueData?.totalRevenue != null
+        ? `₹${revenueData.totalRevenue.toLocaleString("en-IN")}`
+        : undefined,
+      loading: loadingRevenue,
+      green: true,
+    },
   ];
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+
+      {/* ── Stat cards ──────────────────────────────────────────────────────────── */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-4">
         {stats.map((s) => (
           <Card key={s.label}>
             <CardContent className="p-5">
-              <div className={`w-10 h-10 grid place-items-center rounded-xl mb-3 ${s.accent ? "bg-warning text-warning-foreground" : "gradient-primary text-white"}`}>
+              <div
+                className={`w-10 h-10 grid place-items-center rounded-xl mb-3 ${s.accent
+                  ? "bg-warning text-warning-foreground"
+                  : s.green
+                    ? "bg-emerald-500 text-white"
+                    : "gradient-primary text-white"
+                  }`}
+              >
                 {s.icon}
               </div>
               {s.loading ? (
                 <Skeleton className="h-8 w-16 mb-1" />
               ) : (
-                <div className="text-2xl font-black font-display">{s.value ?? "—"}</div>
+                <div className="text-2xl font-black font-display truncate">
+                  {s.value ?? "—"}
+                </div>
               )}
               <div className="text-xs text-muted-foreground mt-1">{s.label}</div>
             </CardContent>
@@ -53,20 +136,111 @@ export default function AdminDashboard() {
         ))}
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-5">
-        <Card><CardContent className="p-6">
-          <h2 className="font-display font-bold text-lg mb-3">Dealer Registrations</h2>
-          <div className="h-64"><ResponsiveContainer><BarChart data={months}><CartesianGrid strokeDasharray="3 3" /><XAxis dataKey="m" fontSize={12} /><YAxis fontSize={12} /><Tooltip /><Bar dataKey="regs" fill="#2563EB" radius={[6,6,0,0]} /></BarChart></ResponsiveContainer></div>
-        </CardContent></Card>
-        <Card><CardContent className="p-6">
-          <h2 className="font-display font-bold text-lg mb-3">Lead Analytics</h2>
-          <div className="h-64"><ResponsiveContainer><LineChart data={months}><CartesianGrid strokeDasharray="3 3" /><XAxis dataKey="m" fontSize={12} /><YAxis fontSize={12} /><Tooltip /><Line dataKey="leads" stroke="#16A34A" strokeWidth={2.5} dot={{ r: 4 }} /></LineChart></ResponsiveContainer></div>
-        </CardContent></Card>
-        <Card><CardContent className="p-6">
-          <h2 className="font-display font-bold text-lg mb-3">Revenue (₹)</h2>
-          <div className="h-64"><ResponsiveContainer><AreaChart data={months}><defs><linearGradient id="ar" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#0F172A" stopOpacity={0.45} /><stop offset="100%" stopColor="#0F172A" stopOpacity={0} /></linearGradient></defs><CartesianGrid strokeDasharray="3 3" /><XAxis dataKey="m" fontSize={12} /><YAxis fontSize={12} /><Tooltip /><Area dataKey="rev" stroke="#0F172A" fill="url(#ar)" strokeWidth={2} /></AreaChart></ResponsiveContainer></div>
-        </CardContent></Card>
+      {/* ── Top row: Dealer Registrations (wider) + Lead Analytics ────────────── */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
+
+        {/* Monthly Dealer Registrations */}
+        <Card>
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2 mb-10">
+                <TrendingUp className="h-5 w-5 text-primary" />
+                <h2 className="font-bold text-lg">Monthly Dealer Registrations</h2>
+              </div>
+
+            </div>
+            {loadingDealerRegs ? (
+              <ChartSkeleton height="h-56" />
+            ) : (
+              <div className="h-56">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={dealerRegs} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
+                    <CartesianGrid {...gridProps} />
+                    <XAxis {...xAxisProps} />
+                    <YAxis {...yAxisProps} />
+                    <Tooltip
+                      cursor={{ fill: "#eff6ff" }}
+                      contentStyle={{ borderRadius: 8, fontSize: 12 }}
+                      formatter={(v: number) => [v, "Dealers"]}
+                    />
+                    <Bar dataKey="dealer" fill="#3b82f6" radius={[4, 4, 0, 0]} maxBarSize={40} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Lead Analytics */}
+        <Card>
+          <CardContent className="p-5">
+            <div className="flex items-center gap-2 mb-10">
+              <InboxIcon className="h-5 w-5 text-primary" />
+              <h2 className="font-bold text-lg">Lead Analytics</h2>
+            </div>
+            {loadingMonthLeads ? (
+              <ChartSkeleton height="h-56" />
+            ) : (
+              <div className="h-56">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={monthLeads} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
+                    <CartesianGrid {...gridProps} />
+                    <XAxis {...xAxisProps} />
+                    <YAxis {...yAxisProps} />
+                    <Tooltip
+                      contentStyle={{ borderRadius: 8, fontSize: 12 }}
+                      formatter={(v: number) => [v, "Leads"]}
+                    />
+                    <Line
+                      dataKey="leads"
+                      stroke="#1e293b"
+                      strokeWidth={2}
+                      dot={{ r: 3, fill: "#fff", stroke: "#1e293b", strokeWidth: 2 }}
+                      activeDot={{ r: 5 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
+
+      {/* ── Bottom row: Revenue Analytics (full-width green bar chart) ─────────── */}
+      <Card>
+        <CardContent className="p-5">
+          <div className="flex items-center gap-2 mb-10">
+            <TrendingUp className="h-5 w-5 text-primary" />
+            <h2 className="font-bold text-lg">Revenue Analytics</h2>
+          </div>
+          {loadingMonthRev ? (
+            <ChartSkeleton height="h-56" />
+          ) : (
+            <div className="h-56">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={monthRev} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
+                  <CartesianGrid {...gridProps} />
+                  <XAxis {...xAxisProps} />
+                  <YAxis
+                    {...yAxisProps}
+                    width={60}
+                    tickFormatter={(v: number) =>
+                      v >= 1000 ? `₹${(v / 1000).toFixed(0)}k` : `₹${v}`
+                    }
+                  />
+                  <Tooltip
+                    cursor={{ fill: "#f0fdf4" }}
+                    contentStyle={{ borderRadius: 8, fontSize: 12 }}
+                    formatter={(v: number) => [`₹${v.toLocaleString("en-IN")}`, "Revenue"]}
+                  />
+                  <Bar dataKey="revenue" fill="#22c55e" radius={[4, 4, 0, 0]} maxBarSize={48} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
     </div>
   );
 }

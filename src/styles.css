@@ -76,7 +76,7 @@
 
 :root {
   --radius: 0.625rem;
-  /* AutoHub India design system — premium automotive marketplace */
+  /* CAPL design system — premium automotive marketplace */
   --background: oklch(0.985 0.003 247);          /* #F8FAFC */
   --foreground: oklch(0.18 0.02 264);            /* #111827 */
   --card: oklch(1 0 0);                          /* #FFFFFF */

@@ -165,7 +165,7 @@ export default function CarDetails() {
   return (
     <>
       <SEO
-        title={`${title} — ${formatINR(vehicle.askingPrice)} | AutoHub India`}
+        title={`${title} — ${formatINR(vehicle.askingPrice)} | CAPL`}
         description={vehicle.vehicleDescription?.slice(0, 160) ?? `${title} available in ${vehicle.city}`}
         ogImage={images[0]}
       />
@@ -449,7 +449,7 @@ export default function CarDetails() {
 
             <Card>
               <CardContent className="p-6 space-y-2 text-sm">
-                <div className="flex items-center gap-2 text-success"><BadgeCheck className="h-4 w-4" /> Verified by AutoHub</div>
+                <div className="flex items-center gap-2 text-success"><BadgeCheck className="h-4 w-4" /> Verified by CAPL</div>
                 <div className="flex items-center gap-2 text-success"><Shield className="h-4 w-4" /> Document check passed</div>
                 <div className="flex items-center gap-2 text-muted-foreground"><Phone className="h-4 w-4" /> Direct dealer contact</div>
               </CardContent>

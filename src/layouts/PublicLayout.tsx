@@ -11,7 +11,7 @@ import {
   type CustomerUser,
 } from "@/hooks/public/useCustomerAuth";
 import { toast } from "sonner";
-
+import footerBg from "@/assets/footer-bg.png";
 const nav = [
   { to: "/", label: "Home" },
   { to: "/cars", label: "Browse Cars" },
@@ -77,7 +77,7 @@ export default function PublicLayout() {
               <Car className="h-5 w-5" />
             </div>
             <div className="font-display font-black text-lg leading-none">
-              AutoHub <span className="text-accent">India</span>
+              CAPL <span className="text-accent"></span>
             </div>
           </Link>
 
@@ -189,14 +189,15 @@ export default function PublicLayout() {
         </motion.main>
       </AnimatePresence>
 
-      <footer className="gradient-premium text-white mt-16">
+      <footer className=" text-white mt-16"
+       style={{ backgroundImage: `url(${footerBg})`, backgroundSize: "cover", backgroundPosition: "center" }}>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 grid gap-8 md:grid-cols-4">
           <div>
             <div className="flex items-center gap-2 mb-4">
               <div className="grid h-9 w-9 place-items-center rounded-xl bg-accent">
                 <Car className="h-5 w-5" />
               </div>
-              <div className="font-display font-black text-lg">AutoHub India</div>
+              <div className="font-display font-black text-lg">CAPL</div>
             </div>
             <p className="text-sm text-white/70">India's most trusted used-car dealer marketplace. Verified inventory across 150+ cities.</p>
           </div>
@@ -221,14 +222,14 @@ export default function PublicLayout() {
             <h4 className="font-bold mb-3">Reach us</h4>
             <ul className="space-y-2 text-sm text-white/70">
               <li className="flex items-center gap-2"><Phone className="h-4 w-4" /> +91 1800 123 4567</li>
-              <li className="flex items-center gap-2"><Mail className="h-4 w-4" /> hello@autohub.in</li>
+              <li className="flex items-center gap-2"><Mail className="h-4 w-4" /> hello@CAPL.in</li>
               <li className="flex items-center gap-2"><MapPin className="h-4 w-4" /> Mumbai · Delhi · Bangalore</li>
             </ul>
           </div>
         </div>
         <div className="border-t border-white/10">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 text-xs text-white/50 flex flex-wrap gap-2 justify-between">
-            <span>© {new Date().getFullYear()} AutoHub India. All rights reserved.</span>
+            <span>© {new Date().getFullYear()} CAPL. All rights reserved.</span>
             <span>Verified dealers · Trusted listings</span>
           </div>
         </div>

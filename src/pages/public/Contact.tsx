@@ -20,7 +20,7 @@ export default function Contact() {
   const form = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema), defaultValues: { name: "", email: "", message: "" } });
   return (
     <>
-      <SEO title="Contact AutoHub India" description="Get in touch with the AutoHub India team for support, partnerships or dealer enquiries." />
+      <SEO title="Contact CAPL" description="Get in touch with the CAPL team for support, partnerships or dealer enquiries." />
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center max-w-xl mx-auto">
           <h1 className="font-display text-3xl md:text-4xl font-black">We'd love to hear from you</h1>
@@ -42,7 +42,7 @@ export default function Contact() {
           <Card>
             <CardContent className="p-6 space-y-4">
               <Info icon={<Phone className="h-4 w-4" />} title="Phone" value="+91 1800 123 4567" />
-              <Info icon={<Mail className="h-4 w-4" />} title="Email" value="hello@autohub.in" />
+              <Info icon={<Mail className="h-4 w-4" />} title="Email" value="hello@CAPL.in" />
               <Info icon={<MapPin className="h-4 w-4" />} title="Headquarters" value="Bandra Kurla Complex, Mumbai 400051" />
             </CardContent>
           </Card>

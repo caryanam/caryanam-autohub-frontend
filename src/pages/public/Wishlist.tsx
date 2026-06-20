@@ -8,7 +8,7 @@ import { getWishlist } from "@/hooks/public/useCustomerAuth";
 import { Button } from "@/components/ui/button";
 
 export default function Wishlist() {
-  const { vehicles, loading } = useAllVehicles();
+  const { vehicles, loading } = useAllVehicles(0, 1000);
   const wishlistIds = getWishlist();
 
   const wishlisted = useMemo(
@@ -18,7 +18,7 @@ export default function Wishlist() {
 
   return (
     <>
-      <SEO title="My Wishlist — AutoHub India" description="Your saved cars on AutoHub India." />
+      <SEO title="My Wishlist — CAPL" description="Your saved cars on CAPL." />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center gap-3 mb-6">
           <Heart className="h-6 w-6 text-accent fill-accent" />

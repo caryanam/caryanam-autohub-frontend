@@ -171,7 +171,7 @@ export default function Register() {
   return (
     <>
       <SEO
-        title="Dealer Registration - AutoHub India"
+        title="Dealer Registration - CAPL"
         description="Register your dealership and start receiving quality leads."
       />
 
@@ -197,7 +197,7 @@ export default function Register() {
             <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <h1 className="text-3xl font-black tracking-tight text-slate-950">
-                  Grow your dealership with AutoHub India
+                  Grow your dealership with CAPL
                 </h1>
                 <p className="mt-2 text-slate-500 text-base">
                   Get verified, list inventory and start receiving quality buyer leads in under 24 hours.
@@ -264,7 +264,7 @@ export default function Register() {
                     <div className="space-y-6">
                       <div>
                         <h2 className="text-xl font-bold text-slate-900">Tell us about your business</h2>
-                        <p className="mt-1 text-sm text-slate-500">Your dealership identity on AutoHub India.</p>
+                        <p className="mt-1 text-sm text-slate-500">Your dealership identity on CAPL.</p>
                       </div>
                       <div className="grid gap-5 sm:grid-cols-2">
                         <div>
@@ -478,7 +478,7 @@ export default function Register() {
             <div className="space-y-4">
               <Card className="rounded-2xl border border-slate-200 bg-white shadow-sm">
                 <CardContent className="p-5">
-                  <h3 className="text-base font-bold text-slate-900">Why dealers love AutoHub</h3>
+                  <h3 className="text-base font-bold text-slate-900">Why dealers love CAPL</h3>
                   <ul className="mt-4 space-y-3">
                     {[
                       "Quality verified buyer leads",

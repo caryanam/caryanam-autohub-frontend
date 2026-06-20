@@ -61,7 +61,7 @@ const sections = [
       "**Correction:** You can update or correct inaccurate information via your account settings.",
       "**Deletion:** You may request deletion of your account and associated data, subject to legal retention requirements.",
       "**Portability:** You can request your data in a structured, machine-readable format.",
-      "To exercise any of these rights, contact us at privacy@autohub.in.",
+      "To exercise any of these rights, contact us at privacy@CAPL.in.",
     ],
   },
 ];
@@ -96,7 +96,7 @@ export default function PrivacyPolicy() {
       {/* Intro banner */}
       <div className="bg-blue-50 border-b border-blue-100 px-4 py-4">
         <p className="mx-auto max-w-4xl text-sm text-blue-700 text-center font-medium">
-          This Privacy Policy applies to AutoHub and all associated services. By using our platform, you agree to the collection and use of information as described below.
+          This Privacy Policy applies to CAPL and all associated services. By using our platform, you agree to the collection and use of information as described below.
         </p>
       </div>
 
@@ -125,7 +125,7 @@ export default function PrivacyPolicy() {
         <div className="bg-amber-50 rounded-2xl border border-amber-100 p-8">
           <h2 className="text-xl font-bold text-slate-900 mb-3">Children's Privacy</h2>
           <p className="text-slate-600 text-sm leading-relaxed">
-            Our services are not directed to individuals under the age of 18. We do not knowingly collect personal data from minors. If you believe we have inadvertently collected data from a child, please contact us immediately at <a href="mailto:privacy@autohub.in" className="text-blue-600 hover:underline">privacy@autohub.in</a>.
+            Our services are not directed to individuals under the age of 18. We do not knowingly collect personal data from minors. If you believe we have inadvertently collected data from a child, please contact us immediately at <a href="mailto:privacy@CAPL.in" className="text-blue-600 hover:underline">privacy@CAPL.in</a>.
           </p>
         </div>
 
@@ -133,7 +133,7 @@ export default function PrivacyPolicy() {
         <div className="bg-slate-50 rounded-2xl border border-slate-100 p-8">
           <h2 className="text-xl font-bold text-slate-900 mb-3">Changes to This Policy</h2>
           <p className="text-slate-600 text-sm leading-relaxed">
-            We may update this Privacy Policy from time to time. We will notify you of significant changes by email or via a prominent notice on our platform. Continued use of AutoHub after changes constitutes your acceptance of the updated policy.
+            We may update this Privacy Policy from time to time. We will notify you of significant changes by email or via a prominent notice on our platform. Continued use of CAPL after changes constitutes your acceptance of the updated policy.
           </p>
         </div>
 
@@ -143,10 +143,10 @@ export default function PrivacyPolicy() {
           <h2 className="text-xl font-bold mb-2">Questions About Your Privacy?</h2>
           <p className="text-slate-300 text-sm mb-4">Our privacy team is here to help. Reach out to us anytime.</p>
           <a
-            href="mailto:privacy@autohub.in"
+            href="mailto:privacy@CAPL.in"
             className="inline-block bg-blue-500 hover:bg-blue-400 text-white font-semibold px-6 py-2.5 rounded-xl text-sm transition-colors"
           >
-            privacy@autohub.in
+            privacy@CAPL.in
           </a>
         </div>
       </div>

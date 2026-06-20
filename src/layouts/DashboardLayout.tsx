@@ -41,7 +41,7 @@ export default function DashboardLayout({ title, nav, accentLabel }: Props) {
             <Car className="h-5 w-5" />
           </div>
           <div className="font-display font-black text-base leading-none text-white">
-            AutoHub <span className="text-sky-400">{accentLabel}</span>
+            CAPL <span className="text-sky-400">{accentLabel}</span>
           </div>
         </Link>
       </div>

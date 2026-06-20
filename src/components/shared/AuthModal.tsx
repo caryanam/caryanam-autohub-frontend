@@ -59,7 +59,7 @@ export function AuthModal({ open, onOpenChange, onSuccess }: AuthModalProps) {
                 <div className="grid h-8 w-8 place-items-center rounded-lg bg-accent text-accent-foreground font-black text-sm">
                   A
                 </div>
-                <span className="font-display font-black text-sm tracking-wide">AutoHub India</span>
+                <span className="font-display font-black text-sm tracking-wide">CAPL</span>
               </div>
 
               <div className="space-y-6">

@@ -45,7 +45,7 @@ export default function About() {
             <span className="text-blue-400">Used Car Marketplace</span>
           </h1>
           <p className="text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
-            AutoHub was founded with a single mission — to make buying and selling used cars in India simple, safe, and transparent. We connect lakhs of buyers with verified dealers across 150+ cities.
+            CAPL was founded with a single mission — to make buying and selling used cars in India simple, safe, and transparent. We connect lakhs of buyers with verified dealers across 150+ cities.
           </p>
         </div>
       </section>
@@ -77,10 +77,10 @@ export default function About() {
                 Making Every Car Purchase<br />a Confident Decision
               </h2>
               <p className="text-slate-600 text-base leading-relaxed mb-4">
-                The used car market in India has historically been plagued by uncertainty — unknown vehicle history, inflated prices, and untrustworthy sellers. AutoHub was built to fix this.
+                The used car market in India has historically been plagued by uncertainty — unknown vehicle history, inflated prices, and untrustworthy sellers. CAPL was built to fix this.
               </p>
               <p className="text-slate-600 text-base leading-relaxed">
-                We built a platform where every listing is dealer-verified, pricing is transparent, and buyers can connect directly with sellers. Whether you're looking for your first car or upgrading your ride, AutoHub puts the power back in your hands.
+                We built a platform where every listing is dealer-verified, pricing is transparent, and buyers can connect directly with sellers. Whether you're looking for your first car or upgrading your ride, CAPL puts the power back in your hands.
               </p>
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -107,7 +107,7 @@ export default function About() {
         <div className="mx-auto max-w-2xl relative">
           <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-px bg-slate-200" />
           {[
-            { year: "2020", title: "Founded in Mumbai", desc: "AutoHub started as a small team of 5 people with a big dream — to clean up the used car industry in India." },
+            { year: "2020", title: "Founded in Mumbai", desc: "CAPL started as a small team of 5 people with a big dream — to clean up the used car industry in India." },
             { year: "2021", title: "500 Dealers Onboarded", desc: "Rapid expansion across Maharashtra and Gujarat. Launched our dealer verification program." },
             { year: "2022", title: "Pan-India Expansion", desc: "Reached 100+ cities. Launched our mobile app and crossed 1 lakh listings on the platform." },
             { year: "2023", title: "1 Million Users", desc: "Milestone year — 10 lakh monthly active users, 1200+ verified dealers, and ₹500 Cr+ in transactions facilitated." },

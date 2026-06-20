@@ -108,7 +108,7 @@ export const vehicles: Vehicle[] = seeds.map((s, i) => {
     city: s.city,
     images: makeImages(i),
     videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
-    description: `Excellent condition ${s.year} ${s.brand} ${s.model} ${s.variant}. Single owner, well maintained with complete service history. Comprehensive insurance valid, all original documents available. ${s.fuel} engine with smooth ${s.trans.toLowerCase()} transmission. Driven only ${s.km.toLocaleString("en-IN")} km. Inspected and certified by AutoHub India.`,
+    description: `Excellent condition ${s.year} ${s.brand} ${s.model} ${s.variant}. Single owner, well maintained with complete service history. Comprehensive insurance valid, all original documents available. ${s.fuel} engine with smooth ${s.trans.toLowerCase()} transmission. Driven only ${s.km.toLocaleString("en-IN")} km. Inspected and certified by CAPL.`,
     insurance: "Comprehensive — Valid till Dec 2025",
     financeAvailable: true,
     dealerId: dealer.id,

@@ -5,10 +5,10 @@ const sections = [
     icon: ShoppingCart,
     title: "Use of the Platform",
     content: [
-      "AutoHub provides an online marketplace for buying and selling used vehicles in India. You may use our platform solely for lawful purposes.",
-      "You must be at least 18 years of age to create an account or submit enquiries on AutoHub.",
+      "CAPL provides an online marketplace for buying and selling used vehicles in India. You may use our platform solely for lawful purposes.",
+      "You must be at least 18 years of age to create an account or submit enquiries on CAPL.",
       "You agree not to misuse the platform for fraudulent listings, spam, harassment, or any activity that violates applicable laws.",
-      "AutoHub reserves the right to suspend or terminate accounts that violate these terms without prior notice.",
+      "CAPL reserves the right to suspend or terminate accounts that violate these terms without prior notice.",
       "You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account.",
     ],
   },
@@ -18,29 +18,29 @@ const sections = [
     content: [
       "Dealers are solely responsible for the accuracy, completeness, and legality of their vehicle listings.",
       "All vehicles listed must be legally owned and fit for sale. Listing stolen, encumbered, or misrepresented vehicles is strictly prohibited.",
-      "AutoHub performs verification checks on dealers but does not independently verify every listing detail. Buyers are encouraged to inspect vehicles before purchase.",
+      "CAPL performs verification checks on dealers but does not independently verify every listing detail. Buyers are encouraged to inspect vehicles before purchase.",
       "Dealers must not post misleading prices, fake images, or fabricated specifications.",
-      "AutoHub reserves the right to remove any listing that violates our content standards, without notice or liability.",
+      "CAPL reserves the right to remove any listing that violates our content standards, without notice or liability.",
     ],
   },
   {
     icon: AlertTriangle,
     title: "Disclaimers & Limitation of Liability",
     content: [
-      "AutoHub is a marketplace platform and is NOT a party to any transaction between buyers and dealers.",
+      "CAPL is a marketplace platform and is NOT a party to any transaction between buyers and dealers.",
       "We do not guarantee the accuracy of vehicle listings, dealer representations, or the outcome of any transaction.",
-      "AutoHub is not responsible for any loss, damage, or dispute arising from a vehicle purchase or any interaction between users and dealers.",
+      "CAPL is not responsible for any loss, damage, or dispute arising from a vehicle purchase or any interaction between users and dealers.",
       "Our platform is provided \"as is\" without warranties of any kind, express or implied, including fitness for a particular purpose.",
-      "In no event shall AutoHub's total liability exceed the amount, if any, paid by you to AutoHub in the six months preceding the claim.",
+      "In no event shall CAPL's total liability exceed the amount, if any, paid by you to CAPL in the six months preceding the claim.",
     ],
   },
   {
     icon: Globe,
     title: "Intellectual Property",
     content: [
-      "All content on AutoHub — including the logo, design, text, graphics, and software — is the property of AutoHub Technologies Pvt. Ltd. and protected by Indian copyright law.",
+      "All content on CAPL — including the logo, design, text, graphics, and software — is the property of CAPL Technologies Pvt. Ltd. and protected by Indian copyright law.",
       "You may not copy, reproduce, distribute, or create derivative works from any part of the platform without written permission.",
-      "Vehicle images uploaded by dealers remain the property of the respective dealers. By uploading, you grant AutoHub a non-exclusive licence to display them on the platform.",
+      "Vehicle images uploaded by dealers remain the property of the respective dealers. By uploading, you grant CAPL a non-exclusive licence to display them on the platform.",
       "Trademarks of third-party brands mentioned on the site belong to their respective owners.",
     ],
   },
@@ -51,7 +51,7 @@ const sections = [
       "These Terms are governed by the laws of India. Any disputes arising shall be subject to the exclusive jurisdiction of the courts of Mumbai, Maharashtra.",
       "We encourage you to contact us first to resolve disputes amicably before pursuing legal action.",
       "If any provision of these Terms is found to be unenforceable, the remaining provisions shall continue in full force and effect.",
-      "These Terms constitute the entire agreement between you and AutoHub regarding use of the platform.",
+      "These Terms constitute the entire agreement between you and CAPL regarding use of the platform.",
     ],
   },
 ];
@@ -76,7 +76,7 @@ export default function TermsAndConditions() {
           </div>
           <h1 className="text-4xl sm:text-5xl font-extrabold mb-4">Terms &amp; Conditions</h1>
           <p className="text-slate-300 text-lg max-w-2xl mx-auto">
-            Please read these terms carefully before using AutoHub. By accessing or using our platform, you agree to be bound by these conditions.
+            Please read these terms carefully before using CAPL. By accessing or using our platform, you agree to be bound by these conditions.
           </p>
           <p className="text-slate-400 text-sm mt-4">Last updated: June 2024</p>
         </div>
@@ -85,7 +85,7 @@ export default function TermsAndConditions() {
       {/* Acceptance banner */}
       <div className="bg-blue-50 border-b border-blue-100 px-4 py-4">
         <p className="mx-auto max-w-4xl text-sm text-blue-700 text-center font-medium">
-          By using AutoHub, you agree to these Terms &amp; Conditions. If you do not agree, please do not use our platform.
+          By using CAPL, you agree to these Terms &amp; Conditions. If you do not agree, please do not use our platform.
         </p>
       </div>
 
@@ -96,7 +96,7 @@ export default function TermsAndConditions() {
         <div className="bg-slate-50 rounded-2xl border border-slate-100 p-8">
           <h2 className="text-xl font-bold text-slate-900 mb-3">Introduction</h2>
           <p className="text-slate-600 text-sm leading-relaxed mb-3">
-            These Terms &amp; Conditions ("Terms") govern your access to and use of the AutoHub platform, including our website, mobile applications, and all related services operated by <strong className="text-slate-900">AutoHub Technologies Pvt. Ltd.</strong> ("AutoHub", "we", "us", or "our"), registered in India.
+            These Terms &amp; Conditions ("Terms") govern your access to and use of the CAPL platform, including our website, mobile applications, and all related services operated by <strong className="text-slate-900">CAPL Technologies Pvt. Ltd.</strong> ("CAPL", "we", "us", or "our"), registered in India.
           </p>
           <p className="text-slate-600 text-sm leading-relaxed">
             These Terms apply to all visitors, registered users, buyers, and dealers who access or use our platform in any manner.
@@ -126,7 +126,7 @@ export default function TermsAndConditions() {
         <div className="bg-amber-50 rounded-2xl border border-amber-100 p-8">
           <h2 className="text-xl font-bold text-slate-900 mb-3">Amendments</h2>
           <p className="text-slate-600 text-sm leading-relaxed">
-            AutoHub reserves the right to modify these Terms at any time. We will notify you of material changes via email or a prominent platform notice. Continued use of the platform following changes constitutes your acceptance of the updated Terms.
+            CAPL reserves the right to modify these Terms at any time. We will notify you of material changes via email or a prominent platform notice. Continued use of the platform following changes constitutes your acceptance of the updated Terms.
           </p>
         </div>
 
@@ -136,10 +136,10 @@ export default function TermsAndConditions() {
           <h2 className="text-xl font-bold mb-2">Questions About These Terms?</h2>
           <p className="text-slate-300 text-sm mb-4">Our team is happy to clarify anything. Reach out to us below.</p>
           <a
-            href="mailto:legal@autohub.in"
+            href="mailto:legal@CAPL.in"
             className="inline-block bg-blue-500 hover:bg-blue-400 text-white font-semibold px-6 py-2.5 rounded-xl text-sm transition-colors"
           >
-            legal@autohub.in
+            legal@CAPL.in
           </a>
         </div>
       </div>
