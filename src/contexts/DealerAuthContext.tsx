@@ -1,4 +1,10 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  type ReactNode,
+} from "react";
 import type { AuthUser } from "@/types";
 
 interface DealerAuthContextValue {
@@ -13,7 +19,13 @@ const DealerAuthContext = createContext<DealerAuthContextValue | null>(null);
 function buildDealer(decoded: Record<string, unknown>): AuthUser {
   return {
     id: String(decoded.id ?? decoded.sub ?? ""),
-    name: String(decoded.businessName ?? decoded.ownerName ?? decoded.name ?? decoded.email ?? "Dealer"),
+    name: String(
+      decoded.businessName ??
+        decoded.ownerName ??
+        decoded.name ??
+        decoded.email ??
+        "Dealer",
+    ),
     email: String(decoded.email ?? decoded.sub ?? ""),
     role: "dealer",
     dealerId: decoded.dealerId ? String(decoded.dealerId) : undefined,
@@ -24,7 +36,9 @@ function restoreDealer(): AuthUser | null {
   try {
     const raw = localStorage.getItem("dealerData");
     if (raw) return buildDealer(JSON.parse(raw));
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   return null;
 }
 
@@ -35,14 +49,28 @@ export function DealerAuthProvider({ children }: { children: ReactNode }) {
     setUser(buildDealer(decoded));
   }, []);
 
-  const updateUserFields = useCallback((fields: Partial<Record<string, unknown>>) => {
-    try {
-      const existing = JSON.parse(localStorage.getItem("dealerData") || "{}");
-      const merged = { ...existing, ...fields };
-      localStorage.setItem("dealerData", JSON.stringify(merged));
-      setUser((prev) => prev ? { ...prev, name: String(fields.businessName ?? fields.ownerName ?? prev.name) } : prev);
-    } catch { /* ignore */ }
-  }, []);
+  const updateUserFields = useCallback(
+    (fields: Partial<Record<string, unknown>>) => {
+      try {
+        const existing = JSON.parse(localStorage.getItem("dealerData") || "{}");
+        const merged = { ...existing, ...fields };
+        localStorage.setItem("dealerData", JSON.stringify(merged));
+        setUser((prev) =>
+          prev
+            ? {
+                ...prev,
+                name: String(
+                  fields.businessName ?? fields.ownerName ?? prev.name,
+                ),
+              }
+            : prev,
+        );
+      } catch {
+        /* ignore */
+      }
+    },
+    [],
+  );
 
   const logout = useCallback(async () => {
     const token = localStorage.getItem("dealerToken") ?? "";
@@ -51,14 +79,18 @@ export function DealerAuthProvider({ children }: { children: ReactNode }) {
         method: "POST",
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
     localStorage.removeItem("dealerToken");
     localStorage.removeItem("dealerData");
     setUser(null);
   }, []);
 
   return (
-    <DealerAuthContext.Provider value={{ user, setUserFromToken, updateUserFields, logout }}>
+    <DealerAuthContext.Provider
+      value={{ user, setUserFromToken, updateUserFields, logout }}
+    >
       {children}
     </DealerAuthContext.Provider>
   );
@@ -66,6 +98,7 @@ export function DealerAuthProvider({ children }: { children: ReactNode }) {
 
 export function useDealerAuth() {
   const ctx = useContext(DealerAuthContext);
-  if (!ctx) throw new Error("useDealerAuth must be used within DealerAuthProvider");
+  if (!ctx)
+    throw new Error("useDealerAuth must be used within DealerAuthProvider");
   return ctx;
 }

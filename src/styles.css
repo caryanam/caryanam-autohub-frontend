@@ -1,4 +1,4 @@
-@import "tailwindcss" ;
+@import "tailwindcss";
 @import "tw-animate-css";
 @source "../src";
 
@@ -77,9 +77,9 @@
 :root {
   --radius: 0.625rem;
   /* CAPL design system — premium automotive marketplace */
-  --background: oklch(0.985 0.003 247);          /* #F8FAFC */
-  --foreground: oklch(0.18 0.02 264);            /* #111827 */
-  --card: oklch(1 0 0);                          /* #FFFFFF */
+  --background: oklch(0.985 0.003 247); /* #F8FAFC */
+  --foreground: oklch(0.18 0.02 264); /* #111827 */
+  --card: oklch(1 0 0); /* #FFFFFF */
   --card-foreground: oklch(0.18 0.02 264);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.18 0.02 264);
@@ -90,17 +90,17 @@
   --secondary: oklch(0.27 0.04 263);
   --secondary-foreground: oklch(0.985 0.003 247);
   --muted: oklch(0.96 0.008 248);
-  --muted-foreground: oklch(0.5 0.02 257);       /* #6B7280 */
+  --muted-foreground: oklch(0.5 0.02 257); /* #6B7280 */
   /* Accent = electric blue #2563EB */
   --accent: oklch(0.555 0.21 263);
   --accent-foreground: oklch(0.99 0 0);
-  --destructive: oklch(0.58 0.22 27);            /* #DC2626 */
+  --destructive: oklch(0.58 0.22 27); /* #DC2626 */
   --destructive-foreground: oklch(0.99 0 0);
-  --success: oklch(0.62 0.18 145);               /* #16A34A */
+  --success: oklch(0.62 0.18 145); /* #16A34A */
   --success-foreground: oklch(0.99 0 0);
-  --warning: oklch(0.78 0.16 70);                /* #F59E0B */
+  --warning: oklch(0.78 0.16 70); /* #F59E0B */
   --warning-foreground: oklch(0.2 0.04 265);
-  --border: oklch(0.92 0.008 255);               /* #E5E7EB */
+  --border: oklch(0.92 0.008 255); /* #E5E7EB */
   --input: oklch(0.92 0.008 255);
   --ring: oklch(0.555 0.21 263);
   --brand-50: oklch(0.97 0.02 263);
@@ -182,23 +182,28 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
   }
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-display);
     letter-spacing: -0.01em;
   }
 }
 
 @utility gradient-primary {
-  background-image: linear-gradient(135deg, #0F172A 0%, #2563EB 100%);
+  background-image: linear-gradient(135deg, #0f172a 0%, #2563eb 100%);
 }
 .hover\:gradient-primary-hover:hover {
-  background-image: linear-gradient(135deg, #1E293B 0%, #3B82F6 100%);
+  background-image: linear-gradient(135deg, #1e293b 0%, #3b82f6 100%);
 }
 @utility gradient-premium {
-  background-image: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
+  background-image: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
 }
 @utility text-gradient-primary {
-  background-image: linear-gradient(135deg, #0F172A 0%, #2563EB 100%);
+  background-image: linear-gradient(135deg, #0f172a 0%, #2563eb 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -210,8 +215,10 @@
   border: 1px solid color-mix(in oklab, white 30%, transparent);
 }
 @utility shadow-premium {
-  box-shadow: 0 10px 30px -12px color-mix(in oklab, #0F172A 25%, transparent);
+  box-shadow: 0 10px 30px -12px color-mix(in oklab, #0f172a 25%, transparent);
 }
 @utility shadow-card {
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 16px -4px rgba(15, 23, 42, 0.08);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 4px 16px -4px rgba(15, 23, 42, 0.08);
 }

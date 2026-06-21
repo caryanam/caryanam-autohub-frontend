@@ -1,7 +1,14 @@
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useNavigate,
+} from "react-router-dom";
 import { AdminAuthProvider } from "@/contexts/AdminAuthContext";
 import { DealerAuthProvider } from "@/contexts/DealerAuthContext";
 import { Toaster } from "@/components/ui/sonner";
+import { SessionExpiredModal } from "@/components/shared/SessionExpiredModal";
 import { useEffect } from "react";
 
 import PublicLayout from "@/layouts/PublicLayout";
@@ -37,68 +44,74 @@ import AdminSubscriptions from "@/pages/admin/Subscriptions";
 
 import AdminReports from "@/pages/admin/Reports";
 
-
-
 export default function App() {
   return (
     <AdminAuthProvider>
-    <DealerAuthProvider>
-      <BrowserRouter>
-        <Routes>
-          {/* Public */}
-          <Route element={<PublicLayout />}>
-            <Route index element={<Home />} />
-            <Route path="/cars" element={<Cars />} />
-            <Route path="/car/:id" element={<CarDetails />} />
-            <Route path="/wishlist" element={<Wishlist />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/terms" element={<TermsAndConditions />} />
-          </Route>
-
-          {/* Auth */}
-          <Route path="/auth/login" element={<Login />} />
-          <Route path="/auth/register" element={<Register />} />
-
-          {/* Dealer */}
-          <Route element={<ProtectedRoute allow={["dealer"]} />}>
-            <Route path="/dealer" element={<DealerLayout />}>
-              <Route index element={<Navigate to="/dealer/dashboard" replace />} />
-              <Route path="dashboard" element={<DealerDashboard />} />
-              <Route path="vehicles" element={<DealerVehicles />} />
-              <Route path="vehicles/:vehicleId" element={<DealerVehicleDetails />} />
-              <Route path="leads" element={<DealerLeads />} />
-              <Route path="profile" element={<DealerProfile />} />
-
-              <Route path="subscription" element={<DealerSubscription />} />
+      <DealerAuthProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* Public */}
+            <Route element={<PublicLayout />}>
+              <Route index element={<Home />} />
+              <Route path="/cars" element={<Cars />} />
+              <Route path="/car/:id" element={<CarDetails />} />
+              <Route path="/wishlist" element={<Wishlist />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms" element={<TermsAndConditions />} />
             </Route>
-          </Route>
 
-          {/* Admin */}
-          <Route element={<ProtectedRoute allow={["admin"]} />}>
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<Navigate to="/admin/dashboard" replace />} />
-              <Route path="dashboard" element={<AdminDashboard />} />
-              <Route path="dealers" element={<AdminDealers />} />
-              <Route path="vehicles" element={<AdminVehicles />} />
-              <Route path="leads" element={<AdminLeads />} />
-              <Route path="subscriptions" element={<AdminSubscriptions />} />
-              
-              <Route path="reports" element={<AdminReports />} />
+            {/* Auth */}
+            <Route path="/auth/login" element={<Login />} />
+            <Route path="/auth/register" element={<Register />} />
+
+            {/* Dealer */}
+            <Route element={<ProtectedRoute allow={["dealer"]} />}>
+              <Route path="/dealer" element={<DealerLayout />}>
+                <Route
+                  index
+                  element={<Navigate to="/dealer/dashboard" replace />}
+                />
+                <Route path="dashboard" element={<DealerDashboard />} />
+                <Route path="vehicles" element={<DealerVehicles />} />
+                <Route
+                  path="vehicles/:vehicleId"
+                  element={<DealerVehicleDetails />}
+                />
+                <Route path="leads" element={<DealerLeads />} />
+                <Route path="profile" element={<DealerProfile />} />
+
+                <Route path="subscription" element={<DealerSubscription />} />
+              </Route>
             </Route>
-          </Route>
 
+            {/* Admin */}
+            <Route element={<ProtectedRoute allow={["admin"]} />}>
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route
+                  index
+                  element={<Navigate to="/admin/dashboard" replace />}
+                />
+                <Route path="dashboard" element={<AdminDashboard />} />
+                <Route path="dealers" element={<AdminDealers />} />
+                <Route path="vehicles" element={<AdminVehicles />} />
+                <Route path="leads" element={<AdminLeads />} />
+                <Route path="subscriptions" element={<AdminSubscriptions />} />
 
+                <Route path="reports" element={<AdminReports />} />
+              </Route>
+            </Route>
 
-          {/* 404 inside the public layout shell */}
-          <Route element={<PublicLayout />}>
-            <Route path="*" element={<NotFound />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-      <Toaster position="top-right" richColors />
-    </DealerAuthProvider>
+            {/* 404 inside the public layout shell */}
+            <Route element={<PublicLayout />}>
+              <Route path="*" element={<NotFound />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+        <Toaster position="top-right" richColors />
+        <SessionExpiredModal />
+      </DealerAuthProvider>
     </AdminAuthProvider>
   );
 }

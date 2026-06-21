@@ -1,4 +1,12 @@
-import { Shield, Eye, Lock, Database, UserCheck, RefreshCw, Mail } from "lucide-react";
+import {
+  Shield,
+  Eye,
+  Lock,
+  Database,
+  UserCheck,
+  RefreshCw,
+  Mail,
+} from "lucide-react";
 
 const sections = [
   {
@@ -70,9 +78,13 @@ function renderLine(line: string) {
   // Bold markdown (**text**)
   const parts = line.split(/\*\*(.*?)\*\*/g);
   return parts.map((part, i) =>
-    i % 2 === 1
-      ? <strong key={i} className="font-semibold text-slate-900">{part}</strong>
-      : <span key={i}>{part}</span>
+    i % 2 === 1 ? (
+      <strong key={i} className="font-semibold text-slate-900">
+        {part}
+      </strong>
+    ) : (
+      <span key={i}>{part}</span>
+    ),
   );
 }
 
@@ -85,9 +97,12 @@ export default function PrivacyPolicy() {
           <div className="w-14 h-14 rounded-2xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center mx-auto mb-6">
             <Shield className="h-7 w-7 text-blue-400" />
           </div>
-          <h1 className="text-4xl sm:text-5xl font-extrabold mb-4">Privacy Policy</h1>
+          <h1 className="text-4xl sm:text-5xl font-extrabold mb-4">
+            Privacy Policy
+          </h1>
           <p className="text-slate-300 text-lg max-w-2xl mx-auto">
-            We are committed to protecting your privacy. This policy explains what data we collect, how we use it, and the choices you have.
+            We are committed to protecting your privacy. This policy explains
+            what data we collect, how we use it, and the choices you have.
           </p>
           <p className="text-slate-400 text-sm mt-4">Last updated: June 2024</p>
         </div>
@@ -96,14 +111,19 @@ export default function PrivacyPolicy() {
       {/* Intro banner */}
       <div className="bg-blue-50 border-b border-blue-100 px-4 py-4">
         <p className="mx-auto max-w-4xl text-sm text-blue-700 text-center font-medium">
-          This Privacy Policy applies to CAPL and all associated services. By using our platform, you agree to the collection and use of information as described below.
+          This Privacy Policy applies to CAPL and all associated services. By
+          using our platform, you agree to the collection and use of information
+          as described below.
         </p>
       </div>
 
       {/* Content */}
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-16 space-y-10">
         {sections.map(({ icon: Icon, title, content }) => (
-          <div key={title} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-8">
+          <div
+            key={title}
+            className="bg-white rounded-2xl border border-slate-100 shadow-sm p-8"
+          >
             <div className="flex items-center gap-3 mb-5">
               <div className="w-10 h-10 rounded-xl bg-blue-900 text-white flex items-center justify-center shrink-0">
                 <Icon className="h-5 w-5" />
@@ -112,7 +132,10 @@ export default function PrivacyPolicy() {
             </div>
             <ul className="space-y-3">
               {content.map((line, i) => (
-                <li key={i} className="flex items-start gap-2.5 text-slate-600 text-sm leading-relaxed">
+                <li
+                  key={i}
+                  className="flex items-start gap-2.5 text-slate-600 text-sm leading-relaxed"
+                >
                   <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-blue-500 shrink-0" />
                   <span>{renderLine(line)}</span>
                 </li>
@@ -123,25 +146,46 @@ export default function PrivacyPolicy() {
 
         {/* Children */}
         <div className="bg-amber-50 rounded-2xl border border-amber-100 p-8">
-          <h2 className="text-xl font-bold text-slate-900 mb-3">Children's Privacy</h2>
+          <h2 className="text-xl font-bold text-slate-900 mb-3">
+            Children's Privacy
+          </h2>
           <p className="text-slate-600 text-sm leading-relaxed">
-            Our services are not directed to individuals under the age of 18. We do not knowingly collect personal data from minors. If you believe we have inadvertently collected data from a child, please contact us immediately at <a href="mailto:privacy@CAPL.in" className="text-blue-600 hover:underline">privacy@CAPL.in</a>.
+            Our services are not directed to individuals under the age of 18. We
+            do not knowingly collect personal data from minors. If you believe
+            we have inadvertently collected data from a child, please contact us
+            immediately at{" "}
+            <a
+              href="mailto:privacy@CAPL.in"
+              className="text-blue-600 hover:underline"
+            >
+              privacy@CAPL.in
+            </a>
+            .
           </p>
         </div>
 
         {/* Changes */}
         <div className="bg-slate-50 rounded-2xl border border-slate-100 p-8">
-          <h2 className="text-xl font-bold text-slate-900 mb-3">Changes to This Policy</h2>
+          <h2 className="text-xl font-bold text-slate-900 mb-3">
+            Changes to This Policy
+          </h2>
           <p className="text-slate-600 text-sm leading-relaxed">
-            We may update this Privacy Policy from time to time. We will notify you of significant changes by email or via a prominent notice on our platform. Continued use of CAPL after changes constitutes your acceptance of the updated policy.
+            We may update this Privacy Policy from time to time. We will notify
+            you of significant changes by email or via a prominent notice on our
+            platform. Continued use of CAPL after changes constitutes your
+            acceptance of the updated policy.
           </p>
         </div>
 
         {/* Contact */}
         <div className="bg-gradient-to-br from-blue-900 to-slate-900 rounded-2xl p-8 text-white text-center">
           <Mail className="h-8 w-8 mx-auto mb-4 text-blue-300" />
-          <h2 className="text-xl font-bold mb-2">Questions About Your Privacy?</h2>
-          <p className="text-slate-300 text-sm mb-4">Our privacy team is here to help. Reach out to us anytime.</p>
+          <h2 className="text-xl font-bold mb-2">
+            Questions About Your Privacy?
+          </h2>
+          <p className="text-slate-300 text-sm mb-4">
+            Our privacy team is here to help. Reach out to us anytime.
+          </p>
           <a
             href="mailto:privacy@CAPL.in"
             className="inline-block bg-blue-500 hover:bg-blue-400 text-white font-semibold px-6 py-2.5 rounded-xl text-sm transition-colors"

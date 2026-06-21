@@ -43,14 +43,18 @@ export function useLogin() {
   const login = React.useCallback(async (payload: LoginPayload) => {
     setIsLoggingIn(true);
     try {
-      const { data: body } = await apiClient.post<{ status: number; message: string; data: LoginData }>(
-        "/api/auth/login",
-        payload,
-      );
+      const { data: body } = await apiClient.post<{
+        status: number;
+        message: string;
+        data: LoginData;
+      }>("/api/auth/login", payload);
 
       const token = body?.data?.token;
       if (!token) {
-        throw new LoginError(body?.message ?? "Login failed — no token received", body?.status ?? 401);
+        throw new LoginError(
+          body?.message ?? "Login failed — no token received",
+          body?.status ?? 401,
+        );
       }
 
       const decoded = decodeJwtPayload(token);

@@ -1,6 +1,6 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
-import apiClient from '@/lib/apiClient';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import apiClient from "@/lib/apiClient";
 
 export class VehicleError extends Error {
   status: number;
@@ -14,12 +14,16 @@ export class VehicleError extends Error {
 export function useAddVehicle(dealerId: string) {
   const queryClient = useQueryClient();
 
-  return useMutation<any, Error, { vehicleData: any; images: File[]; videos: File[] }>({
+  return useMutation<
+    any,
+    Error,
+    { vehicleData: any; images: File[]; videos: File[] }
+  >({
     mutationFn: async ({ vehicleData, images, videos }) => {
       const vehicleFormData = new FormData();
       vehicleFormData.append(
         "vehicle",
-        new Blob([JSON.stringify(vehicleData)], { type: "application/json" })
+        new Blob([JSON.stringify(vehicleData)], { type: "application/json" }),
       );
       for (const image of images) vehicleFormData.append("images", image);
       for (const video of videos) vehicleFormData.append("videos", video);
@@ -42,7 +46,7 @@ export function useAddVehicle(dealerId: string) {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['vehicles', dealerId] });
+      queryClient.invalidateQueries({ queryKey: ["vehicles", dealerId] });
     },
   });
 }

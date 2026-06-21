@@ -2,14 +2,34 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
-  ArrowLeft, MapPin, Fuel, Settings2, Gauge, Calendar, Shield,
-  Phone, MessageCircle, BadgeCheck, AlertCircle, RefreshCw,
-  ChevronLeft, ChevronRight, Play, Star, Heart,
+  ArrowLeft,
+  MapPin,
+  Fuel,
+  Settings2,
+  Gauge,
+  Calendar,
+  Shield,
+  Phone,
+  MessageCircle,
+  BadgeCheck,
+  AlertCircle,
+  RefreshCw,
+  ChevronLeft,
+  ChevronRight,
+  Play,
+  Star,
+  Heart,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SEO } from "@/components/shared/SEO";
@@ -25,14 +45,21 @@ import {
 import { formatINR, formatKM } from "@/utils/helpers";
 import { toast } from "sonner";
 
-const FALLBACK_IMG = "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=1200&h=800&fit=crop";
+const FALLBACK_IMG =
+  "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=1200&h=800&fit=crop";
 
 export default function CarDetails() {
   const { id } = useParams<{ id: string }>();
   const vehicleId = id ? Number(id) : undefined;
   const navigate = useNavigate();
 
-  const { data: vehicle, isLoading, isError, error, refetch } = useGetVehicleDetails(vehicleId);
+  const {
+    data: vehicle,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useGetVehicleDetails(vehicleId);
   const { generateView } = useGenerateView();
   const { isSubmitting, generateLead } = useGenerateLead();
 
@@ -41,7 +68,9 @@ export default function CarDetails() {
   const [showContact, setShowContact] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
   const [revealed, setRevealed] = useState(false);
-  const [customer, setCustomer] = useState<CustomerUser | null>(getStoredCustomer);
+  const [customer, setCustomer] = useState<CustomerUser | null>(
+    getStoredCustomer,
+  );
   const [wishlisted, setWishlisted] = useState(false);
 
   // Lead form fields (autofilled from localStorage)
@@ -131,7 +160,9 @@ export default function CarDetails() {
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <AlertCircle className="h-12 w-12 text-destructive" />
         <h2 className="font-bold text-lg">Invalid vehicle ID</h2>
-        <Button asChild variant="outline"><Link to="/cars">Back to listings</Link></Button>
+        <Button asChild variant="outline">
+          <Link to="/cars">Back to listings</Link>
+        </Button>
       </div>
     );
   }
@@ -144,21 +175,32 @@ export default function CarDetails() {
         <AlertCircle className="h-12 w-12 text-destructive" />
         <div className="text-center">
           <h2 className="font-bold text-lg">Failed to load vehicle</h2>
-          <p className="text-sm text-muted-foreground mt-1">{error?.message ?? "Vehicle not found."}</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            {error?.message ?? "Vehicle not found."}
+          </p>
         </div>
         <div className="flex gap-3">
-          <Button onClick={() => refetch()} className="gap-2"><RefreshCw className="h-4 w-4" /> Retry</Button>
-          <Button variant="outline" asChild><Link to="/cars">Back to listings</Link></Button>
+          <Button onClick={() => refetch()} className="gap-2">
+            <RefreshCw className="h-4 w-4" /> Retry
+          </Button>
+          <Button variant="outline" asChild>
+            <Link to="/cars">Back to listings</Link>
+          </Button>
         </div>
       </div>
     );
   }
 
-  const images: string[] = vehicle.images && vehicle.images.length > 0 ? vehicle.images : [FALLBACK_IMG];
+  const images: string[] =
+    vehicle.images && vehicle.images.length > 0
+      ? vehicle.images
+      : [FALLBACK_IMG];
   const videos: string[] = vehicle.videos ?? [];
 
-  const prevImg = () => setActiveImg((i) => (i === 0 ? images.length - 1 : i - 1));
-  const nextImg = () => setActiveImg((i) => (i === images.length - 1 ? 0 : i + 1));
+  const prevImg = () =>
+    setActiveImg((i) => (i === 0 ? images.length - 1 : i - 1));
+  const nextImg = () =>
+    setActiveImg((i) => (i === images.length - 1 ? 0 : i + 1));
 
   const title = `${vehicle.registrationYear} ${vehicle.brand} ${vehicle.model} ${vehicle.variant}`;
 
@@ -166,7 +208,10 @@ export default function CarDetails() {
     <>
       <SEO
         title={`${title} — ${formatINR(vehicle.askingPrice)} | CAPL`}
-        description={vehicle.vehicleDescription?.slice(0, 160) ?? `${title} available in ${vehicle.city}`}
+        description={
+          vehicle.vehicleDescription?.slice(0, 160) ??
+          `${title} available in ${vehicle.city}`
+        }
         ogImage={images[0]}
       />
 
@@ -194,14 +239,22 @@ export default function CarDetails() {
                   src={images[activeImg]}
                   alt={title}
                   className="h-full w-full object-cover"
-                  onError={(e) => { (e.currentTarget as HTMLImageElement).src = FALLBACK_IMG; }}
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).src = FALLBACK_IMG;
+                  }}
                 />
                 {images.length > 1 && (
                   <>
-                    <button onClick={prevImg} className="absolute left-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-black/50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={prevImg}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-black/50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
                       <ChevronLeft className="h-5 w-5" />
                     </button>
-                    <button onClick={nextImg} className="absolute right-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-black/50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={nextImg}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-black/50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
                       <ChevronRight className="h-5 w-5" />
                     </button>
                   </>
@@ -226,7 +279,15 @@ export default function CarDetails() {
                       onClick={() => setActiveImg(i)}
                       className={`shrink-0 aspect-[4/3] w-20 rounded-lg overflow-hidden border-2 transition-all ${activeImg === i ? "border-accent" : "border-transparent opacity-60 hover:opacity-100"}`}
                     >
-                      <img src={src} alt="" className="h-full w-full object-cover" onError={(e) => { (e.currentTarget as HTMLImageElement).src = FALLBACK_IMG; }} />
+                      <img
+                        src={src}
+                        alt=""
+                        className="h-full w-full object-cover"
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).src =
+                            FALLBACK_IMG;
+                        }}
+                      />
                     </button>
                   ))}
                 </div>
@@ -239,19 +300,30 @@ export default function CarDetails() {
                 <MapPin className="h-3 w-3" />
                 {vehicle.city}
                 <span>·</span>
-                Posted {new Date(vehicle.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                Posted{" "}
+                {new Date(vehicle.createdAt).toLocaleDateString("en-IN", {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                })}
               </div>
               <div className="flex items-start justify-between gap-2 mt-1">
-                <h1 className="font-display text-2xl md:text-3xl font-black">{title}</h1>
+                <h1 className="font-display text-2xl md:text-3xl font-black">
+                  {title}
+                </h1>
                 {/* Wishlist on detail page */}
                 <button
                   onClick={handleWishlist}
                   className="shrink-0 h-10 w-10 rounded-full border border-border flex items-center justify-center hover:bg-muted transition-colors"
                 >
-                  <Heart className={`h-5 w-5 transition-colors ${wishlisted ? "fill-rose-500 text-rose-500" : "text-muted-foreground"}`} />
+                  <Heart
+                    className={`h-5 w-5 transition-colors ${wishlisted ? "fill-rose-500 text-rose-500" : "text-muted-foreground"}`}
+                  />
                 </button>
               </div>
-              <p className="text-sm text-muted-foreground mt-1">{vehicle.variant}</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                {vehicle.variant}
+              </p>
               <div className="mt-3 text-3xl md:text-4xl font-black font-display text-gradient-primary">
                 {formatINR(vehicle.askingPrice)}
               </div>
@@ -260,14 +332,40 @@ export default function CarDetails() {
             {/* Key Specs */}
             <Card>
               <CardContent className="p-6">
-                <h2 className="font-display font-bold text-lg mb-4">Key Specs</h2>
+                <h2 className="font-display font-bold text-lg mb-4">
+                  Key Specs
+                </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                  <Spec icon={<Calendar className="h-4 w-4" />} label="Reg. Year" value={String(vehicle.registrationYear)} />
-                  <Spec icon={<Gauge className="h-4 w-4" />} label="KM Driven" value={formatKM(vehicle.kilometerDriven)} />
-                  <Spec icon={<Fuel className="h-4 w-4" />} label="Fuel" value={vehicle.fuelType} />
-                  <Spec icon={<Settings2 className="h-4 w-4" />} label="Transmission" value={vehicle.transmission} />
-                  <Spec icon={<BadgeCheck className="h-4 w-4" />} label="Ownership" value={vehicle.ownershipDetails} />
-                  <Spec icon={<Shield className="h-4 w-4" />} label="Insurance" value={vehicle.insuranceStatus} />
+                  <Spec
+                    icon={<Calendar className="h-4 w-4" />}
+                    label="Reg. Year"
+                    value={String(vehicle.registrationYear)}
+                  />
+                  <Spec
+                    icon={<Gauge className="h-4 w-4" />}
+                    label="KM Driven"
+                    value={formatKM(vehicle.kilometerDriven)}
+                  />
+                  <Spec
+                    icon={<Fuel className="h-4 w-4" />}
+                    label="Fuel"
+                    value={vehicle.fuelType}
+                  />
+                  <Spec
+                    icon={<Settings2 className="h-4 w-4" />}
+                    label="Transmission"
+                    value={vehicle.transmission}
+                  />
+                  <Spec
+                    icon={<BadgeCheck className="h-4 w-4" />}
+                    label="Ownership"
+                    value={vehicle.ownershipDetails}
+                  />
+                  <Spec
+                    icon={<Shield className="h-4 w-4" />}
+                    label="Insurance"
+                    value={vehicle.insuranceStatus}
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -275,8 +373,12 @@ export default function CarDetails() {
             {vehicle.vehicleDescription && (
               <Card>
                 <CardContent className="p-6">
-                  <h2 className="font-display font-bold text-lg mb-2">Description</h2>
-                  <p className="text-sm leading-relaxed text-foreground/80 whitespace-pre-line">{vehicle.vehicleDescription}</p>
+                  <h2 className="font-display font-bold text-lg mb-2">
+                    Description
+                  </h2>
+                  <p className="text-sm leading-relaxed text-foreground/80 whitespace-pre-line">
+                    {vehicle.vehicleDescription}
+                  </p>
                 </CardContent>
               </Card>
             )}
@@ -299,13 +401,21 @@ export default function CarDetails() {
                     {videos.length > 1 && (
                       <>
                         <button
-                          onClick={() => setActiveVideo((v) => (v === 0 ? videos.length - 1 : v - 1))}
+                          onClick={() =>
+                            setActiveVideo((v) =>
+                              v === 0 ? videos.length - 1 : v - 1,
+                            )
+                          }
                           className="absolute left-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
                         >
                           <ChevronLeft className="h-5 w-5" />
                         </button>
                         <button
-                          onClick={() => setActiveVideo((v) => (v === videos.length - 1 ? 0 : v + 1))}
+                          onClick={() =>
+                            setActiveVideo((v) =>
+                              v === videos.length - 1 ? 0 : v + 1,
+                            )
+                          }
                           className="absolute right-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
                         >
                           <ChevronRight className="h-5 w-5" />
@@ -324,8 +434,11 @@ export default function CarDetails() {
                         <button
                           key={i}
                           onClick={() => setActiveVideo(i)}
-                          className={`relative shrink-0 aspect-video w-28 rounded-lg overflow-hidden border-2 transition-all ${activeVideo === i ? "border-accent" : "border-transparent opacity-60 hover:opacity-100"
-                            }`}
+                          className={`relative shrink-0 aspect-video w-28 rounded-lg overflow-hidden border-2 transition-all ${
+                            activeVideo === i
+                              ? "border-accent"
+                              : "border-transparent opacity-60 hover:opacity-100"
+                          }`}
                         >
                           <video
                             src={src}
@@ -354,7 +467,9 @@ export default function CarDetails() {
               <div className="p-5">
                 {/* Car title */}
                 <h3 className="font-bold text-base leading-snug">{title}</h3>
-                <p className="text-xs text-muted-foreground mt-0.5">{vehicle.variant}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {vehicle.variant}
+                </p>
 
                 {/* Price */}
                 <div className="mt-3 text-2xl font-black font-display text-gradient-primary">
@@ -369,15 +484,21 @@ export default function CarDetails() {
               <div className="flex items-center divide-x divide-border px-5 py-3">
                 <div className="flex-1 flex flex-col items-center gap-1 pr-3">
                   <Fuel className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-xs text-muted-foreground">{vehicle.fuelType}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {vehicle.fuelType}
+                  </span>
                 </div>
                 <div className="flex-1 flex flex-col items-center gap-1 px-3">
                   <Settings2 className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-xs text-muted-foreground">{vehicle.transmission}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {vehicle.transmission}
+                  </span>
                 </div>
                 <div className="flex-1 flex flex-col items-center gap-1 pl-3">
                   <Gauge className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-xs text-muted-foreground">{formatKM(vehicle.kilometerDriven)}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {formatKM(vehicle.kilometerDriven)}
+                  </span>
                 </div>
               </div>
 
@@ -388,15 +509,25 @@ export default function CarDetails() {
               <div className="p-5">
                 {/* Dealer avatar + name */}
                 <div className="flex items-center gap-3 mb-4">
-                  <DealerAvatar name={vehicle.dealerBusinessName ?? vehicle.dealerContactName ?? "D"} />
+                  <DealerAvatar
+                    name={
+                      vehicle.dealerBusinessName ??
+                      vehicle.dealerContactName ??
+                      "D"
+                    }
+                  />
                   <div className="min-w-0">
                     <div className="flex items-center gap-1 flex-wrap">
                       <span className="font-bold text-sm leading-tight truncate">
-                        {vehicle.dealerBusinessName ?? vehicle.dealerContactName ?? "Dealer"}
+                        {vehicle.dealerBusinessName ??
+                          vehicle.dealerContactName ??
+                          "Dealer"}
                       </span>
                       <BadgeCheck className="h-4 w-4 text-blue-500 shrink-0" />
                     </div>
-                    <p className="text-xs text-muted-foreground mt-0.5">{vehicle.city ?? ""}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {vehicle.city ?? ""}
+                    </p>
                   </div>
                 </div>
 
@@ -413,13 +544,17 @@ export default function CarDetails() {
                     {/* Call + WhatsApp side by side */}
                     <div className="flex gap-2">
                       {vehicle.dealerContactNumber && (
-                        <a href={`tel:${vehicle.dealerContactNumber}`} className="flex-1">
+                        <a
+                          href={`tel:${vehicle.dealerContactNumber}`}
+                          className="flex-1"
+                        >
                           <Button className="w-full bg-gray-900 text-white hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-gray-200 gap-2 font-semibold">
                             <Phone className="h-4 w-4" /> Call
                           </Button>
                         </a>
                       )}
-                      {(vehicle.dealerWhatsappNumber ?? vehicle.dealerContactNumber) && (
+                      {(vehicle.dealerWhatsappNumber ??
+                        vehicle.dealerContactNumber) && (
                         <a
                           href={`https://wa.me/${(vehicle.dealerWhatsappNumber ?? vehicle.dealerContactNumber)!.replace(/\D/g, "")}`}
                           target="_blank"
@@ -439,7 +574,10 @@ export default function CarDetails() {
                     {/* Phone number */}
                     {vehicle.dealerContactNumber && (
                       <p className="text-center text-sm font-semibold text-foreground pt-0.5">
-                        +91 {vehicle.dealerContactNumber.replace(/\D/g, "").replace(/^91/, "")}
+                        +91{" "}
+                        {vehicle.dealerContactNumber
+                          .replace(/\D/g, "")
+                          .replace(/^91/, "")}
                       </p>
                     )}
                   </div>
@@ -449,13 +587,18 @@ export default function CarDetails() {
 
             <Card>
               <CardContent className="p-6 space-y-2 text-sm">
-                <div className="flex items-center gap-2 text-success"><BadgeCheck className="h-4 w-4" /> Verified by CAPL</div>
-                <div className="flex items-center gap-2 text-success"><Shield className="h-4 w-4" /> Document check passed</div>
-                <div className="flex items-center gap-2 text-muted-foreground"><Phone className="h-4 w-4" /> Direct dealer contact</div>
+                <div className="flex items-center gap-2 text-success">
+                  <BadgeCheck className="h-4 w-4" /> Verified by CAPL
+                </div>
+                <div className="flex items-center gap-2 text-success">
+                  <Shield className="h-4 w-4" /> Document check passed
+                </div>
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Phone className="h-4 w-4" /> Direct dealer contact
+                </div>
               </CardContent>
             </Card>
           </aside>
-
         </div>
       </div>
 
@@ -465,24 +608,47 @@ export default function CarDetails() {
           <DialogHeader>
             <DialogTitle>Contact Dealer</DialogTitle>
             <DialogDescription>
-              Your details are pre-filled. Confirm to reveal the dealer's contact.
+              Your details are pre-filled. Confirm to reveal the dealer's
+              contact.
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleLeadSubmit} className="space-y-3">
             <div>
               <Label>Your Name</Label>
-              <Input value={leadName} onChange={(e) => setLeadName(e.target.value)} placeholder="Aman Verma" className="mt-1" required />
+              <Input
+                value={leadName}
+                onChange={(e) => setLeadName(e.target.value)}
+                placeholder="Aman Verma"
+                className="mt-1"
+                required
+              />
             </div>
             <div>
               <Label>Mobile Number</Label>
-              <Input value={leadMobile} onChange={(e) => setLeadMobile(e.target.value)} placeholder="+91 98xxx xxxxx" className="mt-1" required />
+              <Input
+                value={leadMobile}
+                onChange={(e) => setLeadMobile(e.target.value)}
+                placeholder="+91 98xxx xxxxx"
+                className="mt-1"
+                required
+              />
             </div>
             <div>
               <Label>City</Label>
-              <Input value={leadCity} onChange={(e) => setLeadCity(e.target.value)} placeholder="Mumbai" className="mt-1" required />
+              <Input
+                value={leadCity}
+                onChange={(e) => setLeadCity(e.target.value)}
+                placeholder="Mumbai"
+                className="mt-1"
+                required
+              />
             </div>
             {leadErr && <p className="text-xs text-destructive">{leadErr}</p>}
-            <Button type="submit" className="w-full gradient-primary text-white border-0" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              className="w-full gradient-primary text-white border-0"
+              disabled={isSubmitting}
+            >
               {isSubmitting ? "Submitting…" : "Show Dealer Contact"}
             </Button>
           </form>
@@ -490,15 +656,29 @@ export default function CarDetails() {
       </Dialog>
 
       {/* Auth Modal (shown if user not logged in and clicks Contact Dealer) */}
-      <AuthModal open={authOpen} onOpenChange={setAuthOpen} onSuccess={handleAuthSuccess} />
+      <AuthModal
+        open={authOpen}
+        onOpenChange={setAuthOpen}
+        onSuccess={handleAuthSuccess}
+      />
     </>
   );
 }
 
-function Spec({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+function Spec({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+}) {
   return (
     <div>
-      <div className="text-xs text-muted-foreground flex items-center gap-1.5">{icon} {label}</div>
+      <div className="text-xs text-muted-foreground flex items-center gap-1.5">
+        {icon} {label}
+      </div>
       <div className="text-sm font-semibold mt-1">{value || "—"}</div>
     </div>
   );
@@ -527,7 +707,12 @@ function CarDetailsSkeleton() {
           <div className="space-y-3">
             <div className="aspect-[16/10] rounded-2xl bg-muted" />
             <div className="flex gap-2">
-              {Array.from({ length: 5 }).map((_, i) => <div key={i} className="shrink-0 w-20 aspect-[4/3] rounded-lg bg-muted" />)}
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="shrink-0 w-20 aspect-[4/3] rounded-lg bg-muted"
+                />
+              ))}
             </div>
           </div>
           <div className="space-y-2">

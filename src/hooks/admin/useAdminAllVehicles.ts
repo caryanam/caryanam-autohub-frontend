@@ -1,11 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import type { Vehicle } from "@/types";
 
-import apiClient from '@/lib/apiClient';
-
+import apiClient from "@/lib/apiClient";
 
 export function useAdminAllVehicles() {
-  const { data, isLoading, isError, error, refetch, isRefetching } = useQuery<Vehicle[]>({
+  const { data, isLoading, isError, error, refetch, isRefetching } = useQuery<
+    Vehicle[]
+  >({
     queryKey: ["admin-all-vehicles"],
     queryFn: async () => {
       const { data } = await apiClient.get("/api/admin/all-vehicle");

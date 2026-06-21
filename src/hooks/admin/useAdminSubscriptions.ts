@@ -1,5 +1,5 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import apiClient from '@/lib/apiClient';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import apiClient from "@/lib/apiClient";
 
 export interface AdminSubscription {
   dealerId: number;
@@ -22,26 +22,26 @@ export interface PaymentRecord {
 
 export function useAdminSubscriptions() {
   return useQuery<AdminSubscription[]>({
-    queryKey: ['admin-subscriptions'],
+    queryKey: ["admin-subscriptions"],
     queryFn: async () => {
-      const { data: body } = await apiClient.get('/api/admin/subscriptions');
+      const { data: body } = await apiClient.get("/api/admin/subscriptions");
       return body.data;
     },
   });
 }
 
-
-
 export function useApprovePayment() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (paymentId: number) => {
-      const { data: body } = await apiClient.put(`/api/payment/success/${paymentId}`);
+      const { data: body } = await apiClient.put(
+        `/api/payment/success/${paymentId}`,
+      );
       return body;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-subscriptions'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-payments'] });
+      queryClient.invalidateQueries({ queryKey: ["admin-subscriptions"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-payments"] });
     },
   });
 }

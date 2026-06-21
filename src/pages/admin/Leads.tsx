@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,15 +25,24 @@ const leadStatusStyle: Record<string, string> = {
 
 export default function AdminLeads() {
   const [search, setSearch] = useState("");
-  const { data: leads = [], isLoading, refetch, isFetching, error } = useAdminLeads();
+  const {
+    data: leads = [],
+    isLoading,
+    refetch,
+    isFetching,
+    error,
+  } = useAdminLeads();
 
   if (error) console.error("[AdminLeads] fetch error:", error);
 
   const getVehicleLabel = (v: AdminLead["vehicleName"]) => {
     try {
-      if (typeof v === "object" && v !== null) return `${v.brand} ${v.model} ${v.variant}`;
+      if (typeof v === "object" && v !== null)
+        return `${v.brand} ${v.model} ${v.variant}`;
       return String(v ?? "");
-    } catch { return ""; }
+    } catch {
+      return "";
+    }
   };
 
   const filtered = leads.filter((l) => {
@@ -38,15 +54,21 @@ export default function AdminLeads() {
         l.customerCity?.toLowerCase().includes(search.toLowerCase()) ||
         l.customerMobile?.includes(search)
       );
-    } catch { return true; }
+    } catch {
+      return true;
+    }
   });
 
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-slate-900">Leads</h2>
-          <p className="text-base text-slate-500 mt-1">{filtered.length} leads</p>
+          <h2 className="text-3xl font-bold tracking-tight text-slate-900">
+            Leads
+          </h2>
+          <p className="text-base text-slate-500 mt-1">
+            {filtered.length} leads
+          </p>
         </div>
 
         <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -67,7 +89,9 @@ export default function AdminLeads() {
             disabled={isFetching}
             className="h-10 w-10 bg-white rounded-xl shrink-0 cursor-pointer"
           >
-            <RefreshCw className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`} />
+            <RefreshCw
+              className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`}
+            />
           </Button>
         </div>
       </div>
@@ -77,55 +101,106 @@ export default function AdminLeads() {
           <Table className="min-w-[900px]">
             <TableHeader className="bg-blue-900 border-b border-blue-900">
               <TableRow className="bg-blue-900 hover:bg-blue-900 border-none">
-                <TableHead className="w-16 text-center text-xs font-bold text-slate-100 uppercase tracking-wider py-4">Sr No</TableHead>
-                <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4">Customer</TableHead>
-                <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4">Mobile</TableHead>
-                <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4">City</TableHead>
-                <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4">Vehicle</TableHead>
-                <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4">Date</TableHead>
-                <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4 pr-6">Status</TableHead>
+                <TableHead className="w-16 text-center text-xs font-bold text-slate-100 uppercase tracking-wider py-4">
+                  Sr No
+                </TableHead>
+                <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4">
+                  Customer
+                </TableHead>
+                <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4">
+                  Mobile
+                </TableHead>
+                <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4">
+                  City
+                </TableHead>
+                <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4">
+                  Vehicle
+                </TableHead>
+                <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4">
+                  Date
+                </TableHead>
+                <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4 pr-6">
+                  Status
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
                 Array.from({ length: 5 }).map((_, idx) => (
-                  <TableRow key={`skeleton-${idx}`} className="border-b border-slate-100/80 last:border-none">
-                    <TableCell className="w-16 text-center py-4"><Skeleton className="h-4 w-4 mx-auto" /></TableCell>
-                    <TableCell className="py-4"><Skeleton className="h-4 w-28" /></TableCell>
-                    <TableCell className="py-4"><Skeleton className="h-4 w-24" /></TableCell>
-                    <TableCell className="py-4"><Skeleton className="h-4 w-20" /></TableCell>
-                    <TableCell className="py-4"><Skeleton className="h-4 w-36" /></TableCell>
-                    <TableCell className="py-4"><Skeleton className="h-4 w-20" /></TableCell>
-                    <TableCell className="py-4 pr-6"><Skeleton className="h-7 w-24 rounded-full" /></TableCell>
+                  <TableRow
+                    key={`skeleton-${idx}`}
+                    className="border-b border-slate-100/80 last:border-none"
+                  >
+                    <TableCell className="w-16 text-center py-4">
+                      <Skeleton className="h-4 w-4 mx-auto" />
+                    </TableCell>
+                    <TableCell className="py-4">
+                      <Skeleton className="h-4 w-28" />
+                    </TableCell>
+                    <TableCell className="py-4">
+                      <Skeleton className="h-4 w-24" />
+                    </TableCell>
+                    <TableCell className="py-4">
+                      <Skeleton className="h-4 w-20" />
+                    </TableCell>
+                    <TableCell className="py-4">
+                      <Skeleton className="h-4 w-36" />
+                    </TableCell>
+                    <TableCell className="py-4">
+                      <Skeleton className="h-4 w-20" />
+                    </TableCell>
+                    <TableCell className="py-4 pr-6">
+                      <Skeleton className="h-7 w-24 rounded-full" />
+                    </TableCell>
                   </TableRow>
                 ))
               ) : filtered.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-12 text-muted-foreground font-medium">
+                  <TableCell
+                    colSpan={7}
+                    className="text-center py-12 text-muted-foreground font-medium"
+                  >
                     {search ? "No matching leads found." : "No leads found."}
                   </TableCell>
                 </TableRow>
-              ) : filtered.map((l, idx) => (
-                <TableRow key={l.id} className="hover:bg-slate-50 transition-colors border-b border-slate-200 last:border-none">
-                  <TableCell className="text-center text-slate-400 text-sm font-medium py-4">{idx + 1}</TableCell>
-                  <TableCell className="font-semibold text-slate-900 text-sm py-4">{l.customerName}</TableCell>
-                  <TableCell className="text-sm text-slate-500 py-4">{l.customerMobile}</TableCell>
-                  <TableCell className="text-sm text-slate-500 py-4">{l.customerCity ?? "—"}</TableCell>
-                  <TableCell className="text-sm font-medium text-slate-600 truncate max-w-[240px] py-4">
-                    {typeof l.vehicleName === "object" && l.vehicleName
-                      ? `${l.vehicleName.brand} ${l.vehicleName.model} ${l.vehicleName.variant}`
-                      : l.vehicleName ?? "—"}
-                  </TableCell>
-                  <TableCell className="text-sm text-slate-400 py-4">
-                    {l.enquiryDate ? new Date(l.enquiryDate).toLocaleDateString() : "—"}
-                  </TableCell>
-                  <TableCell className="py-4 pr-6">
-                    <Badge className={`${leadStatusStyle[l.leadStatus] ?? "bg-slate-100 text-slate-600 border-slate-200"} border text-xs font-bold rounded-full px-3`}>
-                      {l.leadStatus}
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-              ))}
+              ) : (
+                filtered.map((l, idx) => (
+                  <TableRow
+                    key={l.id}
+                    className="hover:bg-slate-50 transition-colors border-b border-slate-200 last:border-none"
+                  >
+                    <TableCell className="text-center text-slate-400 text-sm font-medium py-4">
+                      {idx + 1}
+                    </TableCell>
+                    <TableCell className="font-semibold text-slate-900 text-sm py-4">
+                      {l.customerName}
+                    </TableCell>
+                    <TableCell className="text-sm text-slate-500 py-4">
+                      {l.customerMobile}
+                    </TableCell>
+                    <TableCell className="text-sm text-slate-500 py-4">
+                      {l.customerCity ?? "—"}
+                    </TableCell>
+                    <TableCell className="text-sm font-medium text-slate-600 truncate max-w-[240px] py-4">
+                      {typeof l.vehicleName === "object" && l.vehicleName
+                        ? `${l.vehicleName.brand} ${l.vehicleName.model} ${l.vehicleName.variant}`
+                        : (l.vehicleName ?? "—")}
+                    </TableCell>
+                    <TableCell className="text-sm text-slate-400 py-4">
+                      {l.enquiryDate
+                        ? new Date(l.enquiryDate).toLocaleDateString()
+                        : "—"}
+                    </TableCell>
+                    <TableCell className="py-4 pr-6">
+                      <Badge
+                        className={`${leadStatusStyle[l.leadStatus] ?? "bg-slate-100 text-slate-600 border-slate-200"} border text-xs font-bold rounded-full px-3`}
+                      >
+                        {l.leadStatus}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </CardContent>

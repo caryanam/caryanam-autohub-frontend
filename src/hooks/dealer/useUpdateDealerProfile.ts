@@ -1,5 +1,5 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import apiClient from '@/lib/apiClient';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import apiClient from "@/lib/apiClient";
 
 export interface UpdateProfilePayload {
   businessName: string;
@@ -22,7 +22,7 @@ export function useUpdateDealerProfile(dealerId: string) {
       return body.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['dealer-profile', dealerId] });
+      queryClient.invalidateQueries({ queryKey: ["dealer-profile", dealerId] });
     },
   });
 }

@@ -16,11 +16,7 @@ export function ProtectedRoute({ allow }: { allow: AuthRole[] }) {
 
   if (!isAllowed) {
     return (
-      <Navigate
-        to="/auth/login"
-        state={{ from: location.pathname }}
-        replace
-      />
+      <Navigate to="/auth/login" state={{ from: location.pathname }} replace />
     );
   }
 

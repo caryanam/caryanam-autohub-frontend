@@ -19,38 +19,61 @@ export interface MonthlyRevenue {
 }
 
 // Count response shapes
-export interface DealerCountResponse   { totalDealers: number }
-export interface VehicleCountResponse  { totalVehicles: number }
-export interface PendingCountResponse  { totalPendingDealers: number }
-export interface LeadCountResponse     { totalCustomerLeads: number }
-export interface TotalRevenueResponse  { totalRevenue: number }
+export interface DealerCountResponse {
+  totalDealers: number;
+}
+export interface VehicleCountResponse {
+  totalVehicles: number;
+}
+export interface PendingCountResponse {
+  totalPendingDealers: number;
+}
+export interface LeadCountResponse {
+  totalCustomerLeads: number;
+}
+export interface TotalRevenueResponse {
+  totalRevenue: number;
+}
 
 // ── Fetchers ───────────────────────────────────────────────────────────────────
 
 // Chart fetchers
-const fetchMonthlyDealerRegistrations = async (): Promise<MonthlyDealerRegistration[]> => {
+const fetchMonthlyDealerRegistrations = async (): Promise<
+  MonthlyDealerRegistration[]
+> => {
   const { data } = await apiClient.get<MonthlyDealerRegistration[]>(
-    "/api/admin/monthly-dealer-registrations"
+    "/api/admin/monthly-dealer-registrations",
   );
   return data;
 };
 
 const fetchMonthlyLeads = async (): Promise<MonthlyLead[]> => {
-  const { data } = await apiClient.get<MonthlyLead[]>("/api/admin/monthly-leads");
+  const { data } = await apiClient.get<MonthlyLead[]>(
+    "/api/admin/monthly-leads",
+  );
   return data;
 };
 
 const fetchMonthlyRevenue = async (): Promise<MonthlyRevenue[]> => {
-  const { data } = await apiClient.get<MonthlyRevenue[]>("/api/admin/monthly-revenue");
+  const { data } = await apiClient.get<MonthlyRevenue[]>(
+    "/api/admin/monthly-revenue",
+  );
   return data;
 };
 
 // Count fetchers
-const fetchDealerCount  = async () => (await apiClient.get<DealerCountResponse>("/api/admin/dealer/count")).data;
-const fetchVehicleCount = async () => (await apiClient.get<VehicleCountResponse>("/api/admin/vehicle/count")).data;
-const fetchPendingCount = async () => (await apiClient.get<PendingCountResponse>("/api/admin/pending/count")).data;
-const fetchLeadCount    = async () => (await apiClient.get<LeadCountResponse>("/api/admin/customer-lead/count")).data;
-const fetchTotalRevenue = async () => (await apiClient.get<TotalRevenueResponse>("/api/admin/total-revenue/count")).data;
+const fetchDealerCount = async () =>
+  (await apiClient.get<DealerCountResponse>("/api/admin/dealer/count")).data;
+const fetchVehicleCount = async () =>
+  (await apiClient.get<VehicleCountResponse>("/api/admin/vehicle/count")).data;
+const fetchPendingCount = async () =>
+  (await apiClient.get<PendingCountResponse>("/api/admin/pending/count")).data;
+const fetchLeadCount = async () =>
+  (await apiClient.get<LeadCountResponse>("/api/admin/customer-lead/count"))
+    .data;
+const fetchTotalRevenue = async () =>
+  (await apiClient.get<TotalRevenueResponse>("/api/admin/total-revenue/count"))
+    .data;
 
 // ── Chart Hooks ────────────────────────────────────────────────────────────────
 

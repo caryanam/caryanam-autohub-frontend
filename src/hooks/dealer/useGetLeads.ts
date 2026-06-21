@@ -1,7 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
-import type { Lead, LeadStatus } from '@/types';
-import apiClient from '@/lib/apiClient';
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import type { Lead, LeadStatus } from "@/types";
+import apiClient from "@/lib/apiClient";
 
 export class LeadError extends Error {
   status: number;
@@ -27,19 +27,21 @@ export interface ApiLead {
   dealer: number;
 }
 
-const statusMapToFrontend: Record<ApiLead['leadStatus'], LeadStatus> = {
-  NEW: 'New',
-  CONTACTED: 'Contacted',
-  CONVERTED: 'Converted'
+const statusMapToFrontend: Record<ApiLead["leadStatus"], LeadStatus> = {
+  NEW: "New",
+  CONTACTED: "Contacted",
+  CONVERTED: "Converted",
 };
 
 export function useGetLeads(dealerId: string) {
   return useQuery<Lead[], Error>({
-    queryKey: ['leads', dealerId],
+    queryKey: ["leads", dealerId],
     queryFn: async () => {
       if (!dealerId) return [];
       try {
-        const { data: body } = await apiClient.get(`/api/lead/all-leads/${dealerId}`);
+        const { data: body } = await apiClient.get(
+          `/api/lead/all-leads/${dealerId}`,
+        );
         const data = body?.data !== undefined ? body.data : body;
         if (!Array.isArray(data)) return [];
         return data.map((l: ApiLead) => ({
@@ -49,8 +51,8 @@ export function useGetLeads(dealerId: string) {
           vehicleId: "",
           vehicleTitle: l.vehicleName || "N/A",
           dealerId: String(l.dealer),
-          status: statusMapToFrontend[l.leadStatus] || 'New',
-          createdAt: l.enquiryDate
+          status: statusMapToFrontend[l.leadStatus] || "New",
+          createdAt: l.enquiryDate,
         }));
       } catch (err) {
         if (axios.isAxiosError(err)) {

@@ -13,7 +13,7 @@ export default function Wishlist() {
 
   const wishlisted = useMemo(
     () => vehicles.filter((v) => wishlistIds.includes(v.id)),
-    [vehicles, wishlistIds]
+    [vehicles, wishlistIds],
   );
 
   return (
@@ -28,7 +28,10 @@ export default function Wishlist() {
         {loading && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="rounded-2xl bg-card shadow-card overflow-hidden animate-pulse">
+              <div
+                key={i}
+                className="rounded-2xl bg-card shadow-card overflow-hidden animate-pulse"
+              >
                 <div className="aspect-[16/10] bg-muted" />
                 <div className="p-4 space-y-3">
                   <div className="h-4 bg-muted rounded w-3/4" />
@@ -42,11 +45,16 @@ export default function Wishlist() {
         {!loading && wishlisted.length === 0 && (
           <div className="text-center py-24 bg-card rounded-2xl border border-border">
             <Heart className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="font-display font-bold text-lg">No saved cars yet</h3>
+            <h3 className="font-display font-bold text-lg">
+              No saved cars yet
+            </h3>
             <p className="text-sm text-muted-foreground mt-1">
               Browse cars and tap the heart icon to save them here.
             </p>
-            <Button asChild className="mt-5 gradient-primary text-white border-0">
+            <Button
+              asChild
+              className="mt-5 gradient-primary text-white border-0"
+            >
               <Link to="/cars">Browse Cars</Link>
             </Button>
           </div>

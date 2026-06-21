@@ -39,18 +39,25 @@ export function useRegister() {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const registerDealer = React.useCallback(
-    async (payload: DealerRegistrationPayload, dealerLogo: File, showroomImage: File) => {
+    async (
+      payload: DealerRegistrationPayload,
+      dealerLogo: File,
+      showroomImage: File,
+    ) => {
       setIsSubmitting(true);
       try {
         const formData = new FormData();
         formData.append(
           "dealer",
-          new Blob([JSON.stringify(payload)], { type: "application/json" })
+          new Blob([JSON.stringify(payload)], { type: "application/json" }),
         );
         formData.append("dealerLogo", dealerLogo);
         formData.append("showroomImage", showroomImage);
 
-        const { data: body } = await apiClient.post("/api/dealer/register", formData);
+        const { data: body } = await apiClient.post(
+          "/api/dealer/register",
+          formData,
+        );
         return body;
       } catch (err) {
         if (axios.isAxiosError(err)) {

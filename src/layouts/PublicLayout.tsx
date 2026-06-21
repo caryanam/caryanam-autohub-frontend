@@ -1,6 +1,22 @@
-import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import {
+  Link,
+  NavLink,
+  Outlet,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, Car, X, Phone, Mail, MapPin, Heart, User, LogOut } from "lucide-react";
+import {
+  Menu,
+  Car,
+  X,
+  Phone,
+  Mail,
+  MapPin,
+  Heart,
+  User,
+  LogOut,
+} from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -24,11 +40,16 @@ export default function PublicLayout() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
-  const [customer, setCustomer] = useState<CustomerUser | null>(getStoredCustomer);
+  const [customer, setCustomer] = useState<CustomerUser | null>(
+    getStoredCustomer,
+  );
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { setOpen(false); window.scrollTo(0, 0); }, [pathname]);
+  useEffect(() => {
+    setOpen(false);
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
   // Close user dropdown on outside click
   useEffect(() => {
@@ -97,20 +118,25 @@ export default function PublicLayout() {
           </nav>
 
           <div className="ml-auto flex items-center gap-2">
-
             {/* Customer user icon */}
             <div className="relative" ref={menuRef}>
               <button
                 onClick={handleUserClick}
-                className={`h-9 w-9 flex items-center justify-center rounded-full transition-colors overflow-hidden ${customer
-                  ? "gradient-primary text-white hover:opacity-90"
-                  : "bg-muted hover:bg-accent/10"
-                  }`}
-                title={customer ? (customer.customerName || customer.email) : "Login"}
+                className={`h-9 w-9 flex items-center justify-center rounded-full transition-colors overflow-hidden ${
+                  customer
+                    ? "gradient-primary text-white hover:opacity-90"
+                    : "bg-muted hover:bg-accent/10"
+                }`}
+                title={
+                  customer ? customer.customerName || customer.email : "Login"
+                }
               >
                 {customer ? (
                   <span className="text-sm font-bold uppercase leading-none">
-                    {(customer.customerName || customer.email || "U").trim().charAt(0).toUpperCase()}
+                    {(customer.customerName || customer.email || "U")
+                      .trim()
+                      .charAt(0)
+                      .toUpperCase()}
                   </span>
                 ) : (
                   <User className="h-5 w-5 text-foreground/70" />
@@ -121,11 +147,18 @@ export default function PublicLayout() {
               {userMenuOpen && customer && (
                 <div className="absolute right-0 top-11 w-52 bg-background border border-border rounded-xl shadow-premium z-50 py-2">
                   <div className="px-4 py-2 border-b border-border">
-                    <p className="text-sm font-semibold truncate capitalize">{customer.customerName || customer.email}</p>
-                    <p className="text-xs text-muted-foreground truncate">{customer.email}</p>
+                    <p className="text-sm font-semibold truncate capitalize">
+                      {customer.customerName || customer.email}
+                    </p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {customer.email}
+                    </p>
                   </div>
                   <button
-                    onClick={() => { navigate("/wishlist"); setUserMenuOpen(false); }}
+                    onClick={() => {
+                      navigate("/wishlist");
+                      setUserMenuOpen(false);
+                    }}
                     className="w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-muted transition-colors"
                   >
                     <Heart className="h-4 w-4" /> My Wishlist
@@ -141,11 +174,13 @@ export default function PublicLayout() {
             </div>
 
             {/* Dealer buttons */}
-            <Button asChild size="sm" className="hidden bg-white border border-blue-500 text-black hover:bg-blue-500/90 sm:inline-flex">
+
+            <Button
+              asChild
+              size="sm"
+              className="hidden sm:inline-flex gradient-primary text-white border-0 hover:opacity-90"
+            >
               <Link to="/auth/login">Dealer Login</Link>
-            </Button>
-            <Button asChild size="sm" className="hidden sm:inline-flex gradient-primary text-white border-0 hover:opacity-90">
-              <Link to="/auth/register">Register Dealer</Link>
             </Button>
 
             <Sheet open={open} onOpenChange={setOpen}>
@@ -157,7 +192,11 @@ export default function PublicLayout() {
               <SheetContent side="right" className="w-[300px]">
                 <div className="flex flex-col gap-1 mt-8">
                   {nav.map((n) => (
-                    <Link key={n.to} to={n.to} className="px-3 py-3 rounded-lg hover:bg-muted font-medium">
+                    <Link
+                      key={n.to}
+                      to={n.to}
+                      className="px-3 py-3 rounded-lg hover:bg-muted font-medium"
+                    >
                       {n.label}
                     </Link>
                   ))}
@@ -166,7 +205,10 @@ export default function PublicLayout() {
                   <Button asChild variant="outline" className="justify-start">
                     <Link to="/auth/login">Dealer Login</Link>
                   </Button>
-                  <Button asChild className="justify-start gradient-primary text-white border-0">
+                  <Button
+                    asChild
+                    className="justify-start gradient-primary text-white border-0"
+                  >
                     <Link to="/auth/register">Register Dealer</Link>
                   </Button>
                 </div>
@@ -189,8 +231,14 @@ export default function PublicLayout() {
         </motion.main>
       </AnimatePresence>
 
-      <footer className=" text-white mt-16"
-       style={{ backgroundImage: `url(${footerBg})`, backgroundSize: "cover", backgroundPosition: "center" }}>
+      <footer
+        className=" text-white mt-16"
+        style={{
+          backgroundImage: `url(${footerBg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 grid gap-8 md:grid-cols-4">
           <div>
             <div className="flex items-center gap-2 mb-4">
@@ -199,31 +247,68 @@ export default function PublicLayout() {
               </div>
               <div className="font-display font-black text-lg">CAPL</div>
             </div>
-            <p className="text-sm text-white/70">India's most trusted used-car dealer marketplace. Verified inventory across 150+ cities.</p>
+            <p className="text-sm text-white/70">
+              India's most trusted used-car dealer marketplace. Verified
+              inventory across 150+ cities.
+            </p>
           </div>
           <div>
             <h4 className="font-bold mb-3">Explore</h4>
             <ul className="space-y-2 text-sm text-white/70">
-              <li><Link to="/cars" className="hover:text-white">Browse Cars</Link></li>
-              <li><Link to="/primium" className="hover:text-white">Primium Cars</Link></li>
-              <li><Link to="/auth/register" className="hover:text-white">Dealer Registration</Link></li>
+              <li>
+                <Link to="/cars" className="hover:text-white">
+                  Browse Cars
+                </Link>
+              </li>
+              <li>
+                <Link to="/primium" className="hover:text-white">
+                  Primium Cars
+                </Link>
+              </li>
+              <li>
+                <Link to="/auth/register" className="hover:text-white">
+                  Dealer Registration
+                </Link>
+              </li>
             </ul>
           </div>
           <div>
             <h4 className="font-bold mb-3">Company</h4>
             <ul className="space-y-2 text-sm text-white/70">
-              <li><Link to="/contact" className="hover:text-white">Contact</Link></li>
-              <li><Link to="/about" className="hover:text-white">About</Link></li>
-              <li><Link to="/privacy-policy" className="hover:text-white">Privacy Policy</Link></li>
-              <li><Link to="/terms" className="hover:text-white">Terms &amp; Conditions</Link></li>
+              <li>
+                <Link to="/contact" className="hover:text-white">
+                  Contact
+                </Link>
+              </li>
+              <li>
+                <Link to="/about" className="hover:text-white">
+                  About
+                </Link>
+              </li>
+              <li>
+                <Link to="/privacy-policy" className="hover:text-white">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link to="/terms" className="hover:text-white">
+                  Terms &amp; Conditions
+                </Link>
+              </li>
             </ul>
           </div>
           <div>
             <h4 className="font-bold mb-3">Reach us</h4>
             <ul className="space-y-2 text-sm text-white/70">
-              <li className="flex items-center gap-2"><Phone className="h-4 w-4" /> +91 1800 123 4567</li>
-              <li className="flex items-center gap-2"><Mail className="h-4 w-4" /> hello@CAPL.in</li>
-              <li className="flex items-center gap-2"><MapPin className="h-4 w-4" /> Mumbai · Delhi · Bangalore</li>
+              <li className="flex items-center gap-2">
+                <Phone className="h-4 w-4" /> +91 1800 123 4567
+              </li>
+              <li className="flex items-center gap-2">
+                <Mail className="h-4 w-4" /> hello@CAPL.in
+              </li>
+              <li className="flex items-center gap-2">
+                <MapPin className="h-4 w-4" /> Mumbai · Delhi · Bangalore
+              </li>
             </ul>
           </div>
         </div>
@@ -235,7 +320,11 @@ export default function PublicLayout() {
         </div>
       </footer>
 
-      <AuthModal open={authOpen} onOpenChange={setAuthOpen} onSuccess={handleAuthSuccess} />
+      <AuthModal
+        open={authOpen}
+        onOpenChange={setAuthOpen}
+        onSuccess={handleAuthSuccess}
+      />
     </div>
   );
 }

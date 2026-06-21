@@ -1,7 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
-import type { Vehicle } from '@/types';
-import apiClient from '@/lib/apiClient';
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import type { Vehicle } from "@/types";
+import apiClient from "@/lib/apiClient";
 
 type ApiResponse<T> = {
   status: number;
@@ -20,14 +20,16 @@ export class VehicleError extends Error {
 
 export function useGetVehicleDetails(vehicleId?: number) {
   return useQuery<Vehicle, Error>({
-    queryKey: ['vehicle', vehicleId],
+    queryKey: ["vehicle", vehicleId],
     queryFn: async () => {
       if (!vehicleId) throw new Error("No vehicle ID provided");
       try {
         const { data: body } = await apiClient.get<ApiResponse<Vehicle>>(
           `/api/vehicle/${vehicleId}`,
         );
-        return body?.data !== undefined ? body.data : (body as unknown as Vehicle);
+        return body?.data !== undefined
+          ? body.data
+          : (body as unknown as Vehicle);
       } catch (err) {
         if (axios.isAxiosError(err)) {
           const body = err.response?.data;

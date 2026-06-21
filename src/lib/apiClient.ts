@@ -15,11 +15,30 @@ apiClient.interceptors.request.use((config) => {
   const isAdminApi = url.includes("/api/admin");
   const token = isAdminApi
     ? (localStorage.getItem("adminToken") ?? "")
-    : (localStorage.getItem("dealerToken") ?? localStorage.getItem("adminToken") ?? "");
+    : (localStorage.getItem("dealerToken") ??
+      localStorage.getItem("adminToken") ??
+      "");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
+
+// Response interceptor — handle 401 Unauthorized errors globally
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      const url = error.config?.url ?? "";
+      const isAdminApi = url.includes("/api/admin");
+      window.dispatchEvent(
+        new CustomEvent("auth-session-expired", {
+          detail: { role: isAdminApi ? "admin" : "dealer" },
+        }),
+      );
+    }
+    return Promise.reject(error);
+  },
+);
 
 export default apiClient;

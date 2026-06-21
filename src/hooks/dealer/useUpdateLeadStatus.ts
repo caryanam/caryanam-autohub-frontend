@@ -1,7 +1,7 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
-import apiClient from '@/lib/apiClient';
-import type { LeadStatus } from '@/types';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import apiClient from "@/lib/apiClient";
+import type { LeadStatus } from "@/types";
 
 export class LeadStatusError extends Error {
   status: number;
@@ -13,9 +13,9 @@ export class LeadStatusError extends Error {
 }
 
 const statusMapToBackend: Record<LeadStatus, string> = {
-  New: 'NEW',
-  Contacted: 'CONTACTED',
-  Converted: 'CONVERTED'
+  New: "NEW",
+  Contacted: "CONTACTED",
+  Converted: "CONVERTED",
 };
 
 export function useUpdateLeadStatus(dealerId: string) {
@@ -25,7 +25,9 @@ export function useUpdateLeadStatus(dealerId: string) {
     mutationFn: async ({ leadId, status }) => {
       try {
         const backendStatus = statusMapToBackend[status];
-        await apiClient.put(`/api/lead/lead-status/${leadId}`, { status: backendStatus });
+        await apiClient.put(`/api/lead/lead-status/${leadId}`, {
+          status: backendStatus,
+        });
       } catch (err) {
         if (axios.isAxiosError(err)) {
           const body = err.response?.data;
@@ -38,7 +40,7 @@ export function useUpdateLeadStatus(dealerId: string) {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['leads', dealerId] });
+      queryClient.invalidateQueries({ queryKey: ["leads", dealerId] });
     },
   });
 }

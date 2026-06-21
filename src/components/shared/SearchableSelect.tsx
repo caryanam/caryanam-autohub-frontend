@@ -47,7 +47,9 @@ export function SearchableSelect({
   }, [options, search]);
 
   const exactMatchExists = React.useMemo(() => {
-    return options.some((opt) => opt.toLowerCase() === search.trim().toLowerCase());
+    return options.some(
+      (opt) => opt.toLowerCase() === search.trim().toLowerCase(),
+    );
   }, [options, search]);
 
   return (
@@ -61,14 +63,19 @@ export function SearchableSelect({
           className={cn(
             "w-full justify-between bg-white text-left font-normal border border-slate-200 rounded-xl px-3 hover:bg-slate-50 hover:text-slate-500 transition-colors shadow-sm",
             value ? "text-slate-900" : "text-slate-400",
-            triggerClassName
+            triggerClassName,
           )}
         >
           <span className="truncate">{value || placeholder}</span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className={cn("p-0 rounded-2xl shadow-lg border border-slate-100 bg-white z-50", className)}>
+      <PopoverContent
+        className={cn(
+          "p-0 rounded-2xl shadow-lg border border-slate-100 bg-white z-50",
+          className,
+        )}
+      >
         <Command shouldFilter={false} className="rounded-2xl">
           <CommandInput
             placeholder={`Search ${placeholder.toLowerCase()}...`}
@@ -105,7 +112,7 @@ export function SearchableSelect({
                   <Check
                     className={cn(
                       "h-4 w-4 text-blue-900 shrink-0",
-                      value === opt ? "opacity-100" : "opacity-0"
+                      value === opt ? "opacity-100" : "opacity-0",
                     )}
                   />
                 </CommandItem>
@@ -113,7 +120,10 @@ export function SearchableSelect({
             </CommandGroup>
 
             {allowCustom && search.trim() !== "" && !exactMatchExists && (
-              <CommandGroup heading="Custom Option" className="border-t border-slate-100 pt-1 mt-1">
+              <CommandGroup
+                heading="Custom Option"
+                className="border-t border-slate-100 pt-1 mt-1"
+              >
                 <CommandItem
                   value={search}
                   onSelect={() => {
@@ -124,7 +134,9 @@ export function SearchableSelect({
                   className="flex items-center gap-2 px-3 py-2 text-sm rounded-xl cursor-pointer !bg-blue-50 !text-blue-700 hover:!bg-blue-100 data-[selected=true]:!bg-blue-100 data-[selected=true]:!text-blue-900"
                 >
                   <Plus className="h-4 w-4 shrink-0" />
-                  <span className="truncate">Use custom: "{search.trim()}"</span>
+                  <span className="truncate">
+                    Use custom: "{search.trim()}"
+                  </span>
                 </CommandItem>
               </CommandGroup>
             )}

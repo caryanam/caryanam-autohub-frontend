@@ -1,7 +1,7 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
-import axios from 'axios';
-import apiClient from '@/lib/apiClient';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import axios from "axios";
+import apiClient from "@/lib/apiClient";
 
 export class VehicleError extends Error {
   status: number;
@@ -18,7 +18,9 @@ export function useDeleteVehicle(dealerId: string) {
   return useMutation<any, Error, string>({
     mutationFn: async (vehicleId: string) => {
       try {
-        const { data: body } = await apiClient.delete(`/api/vehicle/delete/${vehicleId}`);
+        const { data: body } = await apiClient.delete(
+          `/api/vehicle/delete/${vehicleId}`,
+        );
         return body;
       } catch (err) {
         if (axios.isAxiosError(err)) {
@@ -33,7 +35,7 @@ export function useDeleteVehicle(dealerId: string) {
     },
     onSuccess: (data) => {
       toast.success(data?.message ?? "Vehicle deleted successfully");
-      queryClient.invalidateQueries({ queryKey: ['vehicles', dealerId] });
+      queryClient.invalidateQueries({ queryKey: ["vehicles", dealerId] });
     },
     onError: (error) => {
       toast.error(error.message ?? "Failed to remove vehicle");

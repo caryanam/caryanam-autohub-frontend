@@ -43,7 +43,7 @@ export function getStoredCustomer(): CustomerUser | null {
 
 export function clearCustomer() {
   // Remove every key written during login / session
-  localStorage.removeItem(STORAGE_KEY);       // "customerUser"
+  localStorage.removeItem(STORAGE_KEY); // "customerUser"
   localStorage.removeItem("customerToken");
   localStorage.removeItem("customerDecoded");
   localStorage.removeItem("customerWishlist");
@@ -61,21 +61,24 @@ type RegisterPayload = {
 export function useCustomerRegister() {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-  const register = React.useCallback(async (payload: RegisterPayload): Promise<void> => {
-    setIsSubmitting(true);
-    try {
-      await apiClient.post("/api/customer/register", payload);
-      // ✅ No localStorage writes here — user must login after registering
-    } catch (err) {
-      if (axios.isAxiosError(err)) {
-        const body = err.response?.data;
-        throw new Error(body?.message ?? "Registration failed");
+  const register = React.useCallback(
+    async (payload: RegisterPayload): Promise<void> => {
+      setIsSubmitting(true);
+      try {
+        await apiClient.post("/api/customer/register", payload);
+        // ✅ No localStorage writes here — user must login after registering
+      } catch (err) {
+        if (axios.isAxiosError(err)) {
+          const body = err.response?.data;
+          throw new Error(body?.message ?? "Registration failed");
+        }
+        throw err;
+      } finally {
+        setIsSubmitting(false);
       }
-      throw err;
-    } finally {
-      setIsSubmitting(false);
-    }
-  }, []);
+    },
+    [],
+  );
 
   return { isSubmitting, register };
 }
@@ -86,71 +89,84 @@ type LoginPayload = { email: string; password: string };
 export function useCustomerLogin() {
   const [isLoggingIn, setIsLoggingIn] = React.useState(false);
 
-  const login = React.useCallback(async (payload: LoginPayload): Promise<CustomerUser> => {
-    setIsLoggingIn(true);
-    try {
-      const { data: body } = await apiClient.post<{
-        status: number;
-        message: string;
-        data: { token: string; customerName?: string; mobile?: string; customerCity?: string };
-      }>("/api/auth/login", payload);
+  const login = React.useCallback(
+    async (payload: LoginPayload): Promise<CustomerUser> => {
+      setIsLoggingIn(true);
+      try {
+        const { data: body } = await apiClient.post<{
+          status: number;
+          message: string;
+          data: {
+            token: string;
+            customerName?: string;
+            mobile?: string;
+            customerCity?: string;
+          };
+        }>("/api/auth/login", payload);
 
-      const token = body?.data?.token;
-      if (!token) throw new Error(body?.message ?? "Login failed — no token received");
+        const token = body?.data?.token;
+        if (!token)
+          throw new Error(body?.message ?? "Login failed — no token received");
 
-      const decoded = decodeJwt(token);
+        const decoded = decodeJwt(token);
 
-      // Role check — only CUSTOMER role allowed here
-      const rawRole = String(
-        decoded.role ?? decoded.roles ?? decoded.authority ?? "",
-      ).toUpperCase();
-      const isCustomer =
-        rawRole.includes("CUSTOMER") ||
-        (Array.isArray(decoded.roles) &&
-          (decoded.roles as string[]).some((r) => r.toUpperCase().includes("CUSTOMER")));
+        // Role check — only CUSTOMER role allowed here
+        const rawRole = String(
+          decoded.role ?? decoded.roles ?? decoded.authority ?? "",
+        ).toUpperCase();
+        const isCustomer =
+          rawRole.includes("CUSTOMER") ||
+          (Array.isArray(decoded.roles) &&
+            (decoded.roles as string[]).some((r) =>
+              r.toUpperCase().includes("CUSTOMER"),
+            ));
 
-      if (!isCustomer) {
-        throw new Error("Access denied. Please check your credentials and try again.");
+        if (!isCustomer) {
+          throw new Error(
+            "Access denied. Please check your credentials and try again.",
+          );
+        }
+
+        const user: CustomerUser = {
+          customerName:
+            body.data?.customerName ??
+            (decoded.customerName as string) ??
+            (decoded.name as string) ??
+            (decoded.sub as string) ??
+            "",
+          mobile:
+            body.data?.mobile ??
+            (decoded.mobile as string) ??
+            (decoded.mobileNumber as string) ??
+            "",
+          customerCity:
+            body.data?.customerCity ??
+            (decoded.customerCity as string) ??
+            (decoded.city as string) ??
+            "",
+          email: payload.email,
+          token,
+          decoded,
+        };
+
+        // ✅ Store token + decoded data + profile only on login
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+        localStorage.setItem("customerToken", token);
+        localStorage.setItem("customerDecoded", JSON.stringify(decoded));
+
+        return user;
+      } catch (err) {
+        if (axios.isAxiosError(err)) {
+          const body = err.response?.data;
+          throw new Error(body?.message ?? "Login failed");
+        }
+        throw err;
+      } finally {
+        setIsLoggingIn(false);
       }
-
-      const user: CustomerUser = {
-        customerName:
-          body.data?.customerName ??
-          (decoded.customerName as string) ??
-          (decoded.name as string) ??
-          (decoded.sub as string) ??
-          "",
-        mobile:
-          body.data?.mobile ??
-          (decoded.mobile as string) ??
-          (decoded.mobileNumber as string) ??
-          "",
-        customerCity:
-          body.data?.customerCity ??
-          (decoded.customerCity as string) ??
-          (decoded.city as string) ??
-          "",
-        email: payload.email,
-        token,
-        decoded,
-      };
-
-      // ✅ Store token + decoded data + profile only on login
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
-      localStorage.setItem("customerToken", token);
-      localStorage.setItem("customerDecoded", JSON.stringify(decoded));
-
-      return user;
-    } catch (err) {
-      if (axios.isAxiosError(err)) {
-        const body = err.response?.data;
-        throw new Error(body?.message ?? "Login failed");
-      }
-      throw err;
-    } finally {
-      setIsLoggingIn(false);
-    }
-  }, []);
+    },
+    [],
+  );
 
   return { isLoggingIn, login };
 }

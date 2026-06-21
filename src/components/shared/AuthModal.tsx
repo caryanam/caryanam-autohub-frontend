@@ -3,7 +3,11 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useCustomerLogin, useCustomerRegister, type CustomerUser } from "@/hooks/public/useCustomerAuth";
+import {
+  useCustomerLogin,
+  useCustomerRegister,
+  type CustomerUser,
+} from "@/hooks/public/useCustomerAuth";
 import { toast } from "sonner";
 import {
   Mail,
@@ -42,7 +46,6 @@ export function AuthModal({ open, onOpenChange, onSuccess }: AuthModalProps) {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="p-0 overflow-hidden sm:max-w-4xl border-none bg-background rounded-2xl shadow-premium">
         <div className="grid grid-cols-1 md:grid-cols-[1.1fr_1fr] min-h-[500px]">
-
           {/* Left Column: Cover Image & Trust Highlights */}
           <div className="relative hidden md:block select-none overflow-hidden bg-slate-950">
             <img
@@ -59,7 +62,9 @@ export function AuthModal({ open, onOpenChange, onSuccess }: AuthModalProps) {
                 <div className="grid h-8 w-8 place-items-center rounded-lg bg-accent text-accent-foreground font-black text-sm">
                   A
                 </div>
-                <span className="font-display font-black text-sm tracking-wide">CAPL</span>
+                <span className="font-display font-black text-sm tracking-wide">
+                  CAPL
+                </span>
               </div>
 
               <div className="space-y-6">
@@ -109,20 +114,25 @@ export function AuthModal({ open, onOpenChange, onSuccess }: AuthModalProps) {
                 <button
                   type="button"
                   onClick={() => setTab("login")}
-                  className={`flex-1 rounded-lg py-2 text-sm font-semibold transition-all ${tab === "login"
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                    }`}
+                  className={`flex-1 rounded-lg py-2 text-sm font-semibold transition-all ${
+                    tab === "login"
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
                   Login
                 </button>
                 <button
                   type="button"
-                  onClick={() => { setTab("register"); setRegisterDone(false); }}
-                  className={`flex-1 rounded-lg py-2 text-sm font-semibold transition-all ${tab === "register"
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                    }`}
+                  onClick={() => {
+                    setTab("register");
+                    setRegisterDone(false);
+                  }}
+                  className={`flex-1 rounded-lg py-2 text-sm font-semibold transition-all ${
+                    tab === "register"
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
                   Register
                 </button>
@@ -134,19 +144,25 @@ export function AuthModal({ open, onOpenChange, onSuccess }: AuthModalProps) {
                   <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-600 mt-0.5" />
                   <div>
                     <p className="font-bold">Registered successfully!</p>
-                    <p className="text-xs text-emerald-700/90 mt-0.5">Please login to start exploring.</p>
+                    <p className="text-xs text-emerald-700/90 mt-0.5">
+                      Please login to start exploring.
+                    </p>
                   </div>
                 </div>
               )}
 
               {tab === "login" ? (
-                <LoginForm onSuccess={(u) => { onSuccess(u); handleOpenChange(false); }} />
+                <LoginForm
+                  onSuccess={(u) => {
+                    onSuccess(u);
+                    handleOpenChange(false);
+                  }}
+                />
               ) : (
                 <RegisterForm onSuccess={handleRegisterSuccess} />
               )}
             </div>
           </div>
-
         </div>
       </DialogContent>
     </Dialog>
@@ -175,7 +191,9 @@ function LoginForm({ onSuccess }: { onSuccess: (u: CustomerUser) => void }) {
   return (
     <form onSubmit={submit} className="space-y-4">
       <div className="space-y-1.5">
-        <Label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Email Address</Label>
+        <Label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+          Email Address
+        </Label>
         <div className="relative">
           <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/75" />
           <Input
@@ -190,7 +208,9 @@ function LoginForm({ onSuccess }: { onSuccess: (u: CustomerUser) => void }) {
       </div>
 
       <div className="space-y-1.5">
-        <Label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Password</Label>
+        <Label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+          Password
+        </Label>
         <div className="relative">
           <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/75" />
           <Input
@@ -206,7 +226,11 @@ function LoginForm({ onSuccess }: { onSuccess: (u: CustomerUser) => void }) {
             onClick={() => setShowPassword(!showPassword)}
             className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-accent transition-colors"
           >
-            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            {showPassword ? (
+              <EyeOff className="h-4 w-4" />
+            ) : (
+              <Eye className="h-4 w-4" />
+            )}
           </button>
         </div>
       </div>
@@ -230,7 +254,13 @@ function LoginForm({ onSuccess }: { onSuccess: (u: CustomerUser) => void }) {
 
 function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
   const { isSubmitting, register } = useCustomerRegister();
-  const [form, setForm] = useState({ customerName: "", mobile: "", customerCity: "", email: "", password: "" });
+  const [form, setForm] = useState({
+    customerName: "",
+    mobile: "",
+    customerCity: "",
+    email: "",
+    password: "",
+  });
   const [showPassword, setShowPassword] = useState(false);
   const [err, setErr] = useState("");
 
@@ -250,7 +280,9 @@ function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
   return (
     <form onSubmit={submit} className="space-y-3.5">
       <div className="space-y-1">
-        <Label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Full Name</Label>
+        <Label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+          Full Name
+        </Label>
         <div className="relative">
           <User className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/75" />
           <Input
@@ -265,7 +297,9 @@ function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
 
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1">
-          <Label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Mobile</Label>
+          <Label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            Mobile
+          </Label>
           <div className="relative">
             <Phone className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/75" />
             <Input
@@ -280,7 +314,9 @@ function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
         </div>
 
         <div className="space-y-1">
-          <Label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">City</Label>
+          <Label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            City
+          </Label>
           <div className="relative">
             <MapPin className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <Input
@@ -295,7 +331,9 @@ function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
       </div>
 
       <div className="space-y-1">
-        <Label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Email Address</Label>
+        <Label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+          Email Address
+        </Label>
         <div className="relative">
           <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/75" />
           <Input
@@ -310,7 +348,9 @@ function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
       </div>
 
       <div className="space-y-1">
-        <Label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Password</Label>
+        <Label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+          Password
+        </Label>
         <div className="relative">
           <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/75" />
           <Input
@@ -327,7 +367,11 @@ function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
             onClick={() => setShowPassword(!showPassword)}
             className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-accent transition-colors"
           >
-            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            {showPassword ? (
+              <EyeOff className="h-4 w-4" />
+            ) : (
+              <Eye className="h-4 w-4" />
+            )}
           </button>
         </div>
       </div>

@@ -1,5 +1,5 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import apiClient from '@/lib/apiClient';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import apiClient from "@/lib/apiClient";
 
 export interface SubscriptionPlan {
   planName: string;
@@ -21,9 +21,11 @@ export interface CurrentPlan {
 
 export function useGetSubscriptionPlans() {
   return useQuery<SubscriptionPlan[]>({
-    queryKey: ['subscription-plans'],
+    queryKey: ["subscription-plans"],
     queryFn: async () => {
-      const { data: body } = await apiClient.get('/api/dealer/subscription/plans');
+      const { data: body } = await apiClient.get(
+        "/api/dealer/subscription/plans",
+      );
       return body.data;
     },
   });
@@ -31,13 +33,15 @@ export function useGetSubscriptionPlans() {
 
 export function useGetCurrentPlan(dealerId: string) {
   return useQuery<{ plan: CurrentPlan | null; message: string }>({
-    queryKey: ['current-plan', dealerId],
+    queryKey: ["current-plan", dealerId],
     queryFn: async () => {
       try {
-        const { data: body } = await apiClient.get(`/api/dealer/current-plan/${dealerId}`);
-        return { plan: body.data, message: body?.message ?? '' };
+        const { data: body } = await apiClient.get(
+          `/api/dealer/current-plan/${dealerId}`,
+        );
+        return { plan: body.data, message: body?.message ?? "" };
       } catch (err: any) {
-        const msg = err?.response?.data?.message ?? 'No active plan';
+        const msg = err?.response?.data?.message ?? "No active plan";
         return { plan: null, message: msg };
       }
     },
@@ -49,14 +53,17 @@ export function usePurchaseSubscription(dealerId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (subscriptionPlan: string) => {
-      const { data: body } = await apiClient.post('/api/payment/subscription/purchase', {
-        dealerId: Number(dealerId),
-        subscriptionPlan,
-      });
+      const { data: body } = await apiClient.post(
+        "/api/payment/subscription/purchase",
+        {
+          dealerId: Number(dealerId),
+          subscriptionPlan,
+        },
+      );
       return body;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['current-plan', dealerId] });
+      queryClient.invalidateQueries({ queryKey: ["current-plan", dealerId] });
     },
   });
 }

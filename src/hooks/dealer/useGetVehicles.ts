@@ -1,7 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
-import type { Vehicle } from '@/types';
-import apiClient from '@/lib/apiClient';
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import type { Vehicle } from "@/types";
+import apiClient from "@/lib/apiClient";
 
 export class VehicleError extends Error {
   status: number;
@@ -14,11 +14,13 @@ export class VehicleError extends Error {
 
 export function useGetVehicles(dealerId: string) {
   return useQuery<Vehicle[], Error>({
-    queryKey: ['vehicles', dealerId],
+    queryKey: ["vehicles", dealerId],
     queryFn: async () => {
       if (!dealerId) return [];
       try {
-        const { data: body } = await apiClient.get(`/api/vehicle/dealer/${dealerId}`);
+        const { data: body } = await apiClient.get(
+          `/api/vehicle/dealer/${dealerId}`,
+        );
         const data = body?.data !== undefined ? body.data : body;
         return Array.isArray(data) ? data : [];
       } catch (err) {

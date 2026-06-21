@@ -1,11 +1,24 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Users, CarFront, Inbox, Clock, IndianRupee, TrendingUp, InboxIcon } from "lucide-react";
+import {
+  Users,
+  CarFront,
+  Inbox,
+  Clock,
+  IndianRupee,
+  TrendingUp,
+  InboxIcon,
+} from "lucide-react";
 import {
   ResponsiveContainer,
-  BarChart, Bar,
-  XAxis, YAxis, Tooltip, CartesianGrid,
-  LineChart, Line,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  LineChart,
+  Line,
 } from "recharts";
 import {
   useMonthlyDealerRegistrations,
@@ -24,7 +37,11 @@ function ChartSkeleton({ height = "h-56" }: { height?: string }) {
   return (
     <div className={`${height} flex items-end gap-1 px-2 pb-2`}>
       {[40, 60, 45, 80, 55, 90, 50, 70, 65, 85, 48, 75].map((h, i) => (
-        <Skeleton key={i} className="flex-1 rounded-sm" style={{ height: `${h}%` }} />
+        <Skeleton
+          key={i}
+          className="flex-1 rounded-sm"
+          style={{ height: `${h}%` }}
+        />
       ))}
     </div>
   );
@@ -57,14 +74,19 @@ const gridProps = {
 
 export default function AdminDashboard() {
   // ── Stat count hooks ──────────────────────────────────────────────────────────
-  const { data: dealersData, isLoading: loadingDealers } = useAdminDealerCount();
-  const { data: vehiclesData, isLoading: loadingVehicles } = useAdminVehicleCount();
-  const { data: pendingData, isLoading: loadingPending } = useAdminPendingCount();
+  const { data: dealersData, isLoading: loadingDealers } =
+    useAdminDealerCount();
+  const { data: vehiclesData, isLoading: loadingVehicles } =
+    useAdminVehicleCount();
+  const { data: pendingData, isLoading: loadingPending } =
+    useAdminPendingCount();
   const { data: leadsData, isLoading: loadingLeads } = useAdminLeadCount();
-  const { data: revenueData, isLoading: loadingRevenue } = useAdminTotalRevenue();
+  const { data: revenueData, isLoading: loadingRevenue } =
+    useAdminTotalRevenue();
 
   // ── Chart data hooks ──────────────────────────────────────────────────────────
-  const { data: dealerRegs, isLoading: loadingDealerRegs } = useMonthlyDealerRegistrations();
+  const { data: dealerRegs, isLoading: loadingDealerRegs } =
+    useMonthlyDealerRegistrations();
   const { data: monthLeads, isLoading: loadingMonthLeads } = useMonthlyLeads();
   const { data: monthRev, isLoading: loadingMonthRev } = useMonthlyRevenue();
 
@@ -97,9 +119,10 @@ export default function AdminDashboard() {
     {
       icon: <IndianRupee className="h-5 w-5" />,
       label: "Total Revenue",
-      value: revenueData?.totalRevenue != null
-        ? `₹${revenueData.totalRevenue.toLocaleString("en-IN")}`
-        : undefined,
+      value:
+        revenueData?.totalRevenue != null
+          ? `₹${revenueData.totalRevenue.toLocaleString("en-IN")}`
+          : undefined,
       loading: loadingRevenue,
       green: true,
     },
@@ -107,19 +130,19 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-6">
-
       {/* ── Stat cards ──────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-4">
         {stats.map((s) => (
           <Card key={s.label}>
             <CardContent className="p-5">
               <div
-                className={`w-10 h-10 grid place-items-center rounded-xl mb-3 ${s.accent
-                  ? "bg-warning text-warning-foreground"
-                  : s.green
-                    ? "bg-emerald-500 text-white"
-                    : "gradient-primary text-white"
-                  }`}
+                className={`w-10 h-10 grid place-items-center rounded-xl mb-3 ${
+                  s.accent
+                    ? "bg-warning text-warning-foreground"
+                    : s.green
+                      ? "bg-emerald-500 text-white"
+                      : "gradient-primary text-white"
+                }`}
               >
                 {s.icon}
               </div>
@@ -130,7 +153,9 @@ export default function AdminDashboard() {
                   {s.value ?? "—"}
                 </div>
               )}
-              <div className="text-xs text-muted-foreground mt-1">{s.label}</div>
+              <div className="text-xs text-muted-foreground mt-1">
+                {s.label}
+              </div>
             </CardContent>
           </Card>
         ))}
@@ -138,23 +163,26 @@ export default function AdminDashboard() {
 
       {/* ── Top row: Dealer Registrations (wider) + Lead Analytics ────────────── */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
-
         {/* Monthly Dealer Registrations */}
         <Card>
           <CardContent className="p-5">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2 mb-10">
                 <TrendingUp className="h-5 w-5 text-primary" />
-                <h2 className="font-bold text-lg">Monthly Dealer Registrations</h2>
+                <h2 className="font-bold text-lg">
+                  Monthly Dealer Registrations
+                </h2>
               </div>
-
             </div>
             {loadingDealerRegs ? (
               <ChartSkeleton height="h-56" />
             ) : (
               <div className="h-56">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={dealerRegs} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
+                  <BarChart
+                    data={dealerRegs}
+                    margin={{ top: 4, right: 8, left: 0, bottom: 0 }}
+                  >
                     <CartesianGrid {...gridProps} />
                     <XAxis {...xAxisProps} />
                     <YAxis {...yAxisProps} />
@@ -163,7 +191,12 @@ export default function AdminDashboard() {
                       contentStyle={{ borderRadius: 8, fontSize: 12 }}
                       formatter={(v: number) => [v, "Dealers"]}
                     />
-                    <Bar dataKey="dealer" fill="#3b82f6" radius={[4, 4, 0, 0]} maxBarSize={40} />
+                    <Bar
+                      dataKey="dealer"
+                      fill="#3b82f6"
+                      radius={[4, 4, 0, 0]}
+                      maxBarSize={40}
+                    />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -183,7 +216,10 @@ export default function AdminDashboard() {
             ) : (
               <div className="h-56">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={monthLeads} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
+                  <LineChart
+                    data={monthLeads}
+                    margin={{ top: 4, right: 8, left: 0, bottom: 0 }}
+                  >
                     <CartesianGrid {...gridProps} />
                     <XAxis {...xAxisProps} />
                     <YAxis {...yAxisProps} />
@@ -195,7 +231,12 @@ export default function AdminDashboard() {
                       dataKey="leads"
                       stroke="#1e293b"
                       strokeWidth={2}
-                      dot={{ r: 3, fill: "#fff", stroke: "#1e293b", strokeWidth: 2 }}
+                      dot={{
+                        r: 3,
+                        fill: "#fff",
+                        stroke: "#1e293b",
+                        strokeWidth: 2,
+                      }}
                       activeDot={{ r: 5 }}
                     />
                   </LineChart>
@@ -218,7 +259,10 @@ export default function AdminDashboard() {
           ) : (
             <div className="h-56">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={monthRev} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
+                <BarChart
+                  data={monthRev}
+                  margin={{ top: 4, right: 8, left: 0, bottom: 0 }}
+                >
                   <CartesianGrid {...gridProps} />
                   <XAxis {...xAxisProps} />
                   <YAxis
@@ -231,16 +275,23 @@ export default function AdminDashboard() {
                   <Tooltip
                     cursor={{ fill: "#f0fdf4" }}
                     contentStyle={{ borderRadius: 8, fontSize: 12 }}
-                    formatter={(v: number) => [`₹${v.toLocaleString("en-IN")}`, "Revenue"]}
+                    formatter={(v: number) => [
+                      `₹${v.toLocaleString("en-IN")}`,
+                      "Revenue",
+                    ]}
                   />
-                  <Bar dataKey="revenue" fill="#22c55e" radius={[4, 4, 0, 0]} maxBarSize={48} />
+                  <Bar
+                    dataKey="revenue"
+                    fill="#22c55e"
+                    radius={[4, 4, 0, 0]}
+                    maxBarSize={48}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </div>
           )}
         </CardContent>
       </Card>
-
     </div>
   );
 }

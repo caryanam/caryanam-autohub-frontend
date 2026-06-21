@@ -8,7 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getWishlist, toggleWishlist } from "@/hooks/public/useCustomerAuth";
 
-const FALLBACK_IMG = "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&h=533&fit=crop";
+const FALLBACK_IMG =
+  "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&h=533&fit=crop";
 
 interface VehicleCardProps {
   vehicle: Vehicle;
@@ -16,9 +17,18 @@ interface VehicleCardProps {
   isLoggedIn?: boolean;
 }
 
-export function VehicleCard({ vehicle, onWishlistRequireLogin, isLoggedIn }: VehicleCardProps) {
-  const imageUrl = vehicle.images && vehicle.images.length > 0 ? vehicle.images[0] : FALLBACK_IMG;
-  const [wishlisted, setWishlisted] = useState(() => getWishlist().includes(vehicle.id));
+export function VehicleCard({
+  vehicle,
+  onWishlistRequireLogin,
+  isLoggedIn,
+}: VehicleCardProps) {
+  const imageUrl =
+    vehicle.images && vehicle.images.length > 0
+      ? vehicle.images[0]
+      : FALLBACK_IMG;
+  const [wishlisted, setWishlisted] = useState(() =>
+    getWishlist().includes(vehicle.id),
+  );
 
   const handleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -44,10 +54,15 @@ export function VehicleCard({ vehicle, onWishlistRequireLogin, isLoggedIn }: Veh
             alt={`${vehicle.brand} ${vehicle.model}`}
             loading="lazy"
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-            onError={(e) => { (e.currentTarget as HTMLImageElement).src = FALLBACK_IMG; }}
+            onError={(e) => {
+              (e.currentTarget as HTMLImageElement).src = FALLBACK_IMG;
+            }}
           />
           <div className="absolute top-3 right-3 flex items-center gap-1.5">
-            <Badge variant="secondary" className="bg-background/90 backdrop-blur text-foreground font-semibold">
+            <Badge
+              variant="secondary"
+              className="bg-background/90 backdrop-blur text-foreground font-semibold"
+            >
               {vehicle.registrationYear}
             </Badge>
           </div>
@@ -84,13 +99,17 @@ export function VehicleCard({ vehicle, onWishlistRequireLogin, isLoggedIn }: Veh
               </span>
             </div>
           </Link>
-          <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">{vehicle.variant} {vehicle.fuelType}</p>
+          <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
+            {vehicle.variant} {vehicle.fuelType}
+          </p>
         </div>
 
         <div className="grid grid-cols-3 gap-2 text-xs text-muted-foreground border-y border-border py-3">
           <div className="flex items-center gap-1.5">
             <Gauge className="h-3.5 w-3.5" />
-            <span className="truncate">{formatKM(vehicle.kilometerDriven)}</span>
+            <span className="truncate">
+              {formatKM(vehicle.kilometerDriven)}
+            </span>
           </div>
           <div className="flex items-center gap-1.5">
             <Fuel className="h-3.5 w-3.5" />
@@ -108,12 +127,18 @@ export function VehicleCard({ vehicle, onWishlistRequireLogin, isLoggedIn }: Veh
             <span className="truncate">{vehicle.city}</span>
           </div>
           {vehicle.dealerContactName && (
-            <span className="text-muted-foreground truncate ml-2">{vehicle.dealerContactName}</span>
+            <span className="text-muted-foreground truncate ml-2">
+              {vehicle.dealerContactName}
+            </span>
           )}
         </div>
 
         <div className="flex gap-2 pt-1">
-          <Button asChild size="sm" className="flex-1 gradient-primary text-white border-0 hover:opacity-90">
+          <Button
+            asChild
+            size="sm"
+            className="flex-1 gradient-primary text-white border-0 hover:opacity-90"
+          >
             <Link to={`/car/${vehicle.id}`}>View Details</Link>
           </Button>
         </div>

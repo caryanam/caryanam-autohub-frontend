@@ -1,4 +1,10 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  type ReactNode,
+} from "react";
 import type { AuthUser } from "@/types";
 
 interface AdminAuthContextValue {
@@ -22,7 +28,9 @@ function restoreAdmin(): AuthUser | null {
   try {
     const raw = localStorage.getItem("adminData");
     if (raw) return buildAdmin(JSON.parse(raw));
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   return null;
 }
 
@@ -40,7 +48,9 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
         method: "POST",
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
     localStorage.removeItem("adminToken");
     localStorage.removeItem("adminData");
     setUser(null);
@@ -55,6 +65,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
 export function useAdminAuth() {
   const ctx = useContext(AdminAuthContext);
-  if (!ctx) throw new Error("useAdminAuth must be used within AdminAuthProvider");
+  if (!ctx)
+    throw new Error("useAdminAuth must be used within AdminAuthProvider");
   return ctx;
 }

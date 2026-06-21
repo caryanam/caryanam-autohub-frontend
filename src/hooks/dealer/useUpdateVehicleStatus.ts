@@ -1,6 +1,6 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
-import apiClient from '@/lib/apiClient';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import apiClient from "@/lib/apiClient";
 
 export class VehicleStatusError extends Error {
   status: number;
@@ -30,7 +30,7 @@ export function useUpdateVehicleStatus(dealerId: string) {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['vehicles', dealerId] });
+      queryClient.invalidateQueries({ queryKey: ["vehicles", dealerId] });
     },
   });
 }

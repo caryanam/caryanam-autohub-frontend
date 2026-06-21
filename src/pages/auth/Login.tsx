@@ -1,11 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import {
-  Car, ShieldCheck, Mail,
-  Lock,
-  Eye,
-  EyeOff,
-} from "lucide-react";
+import { Car, ShieldCheck, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -34,7 +29,10 @@ export default function Login() {
 
   const onSubmit = async (data: FormData) => {
     try {
-      const result = await login({ email: data.email, password: data.password });
+      const result = await login({
+        email: data.email,
+        password: data.password,
+      });
       if (result.role === "admin") {
         setAdmin(result.data);
       } else {
@@ -42,15 +40,17 @@ export default function Login() {
       }
 
       const payload = result.data as Record<string, any>;
-      const dealerName = String(payload.businessName ?? payload.ownerName ?? payload.name ?? "Dealer");
+      const dealerName = String(
+        payload.businessName ?? payload.ownerName ?? payload.name ?? "Dealer",
+      );
 
       toast.success(
-        result.role === "admin" ? "Welcome, Admin!" : `Welcome back, ${dealerName}!`,
+        result.role === "admin"
+          ? "Welcome, Admin!"
+          : `Welcome back, ${dealerName}!`,
         {
           description:
-            result.role === "admin"
-              ? "Admin Dashboard"
-              : "Dealer Dashboard",
+            result.role === "admin" ? "Admin Dashboard" : "Dealer Dashboard",
         },
       );
 
@@ -83,9 +83,7 @@ export default function Login() {
             </div>
 
             <div>
-              <div className="font-display font-black text-lg">
-                CAPL
-              </div>
+              <div className="font-display font-black text-lg">CAPL</div>
               <div className="text-xs text-white/70">
                 Dealer Management Portal
               </div>
@@ -123,9 +121,7 @@ export default function Login() {
 
               <div>
                 <div className="text-3xl font-black">100%</div>
-                <div className="mt-1 text-sm text-white/70">
-                  KYC verified
-                </div>
+                <div className="mt-1 text-sm text-white/70">KYC verified</div>
               </div>
             </div>
 
@@ -147,7 +143,9 @@ export default function Login() {
         <div className="flex items-center justify-center p-6">
           <Card className="w-full max-w-md shadow-lg">
             <CardContent className="p-8">
-              <h1 className="font-display text-2xl font-black text-slate-900">Sign in</h1>
+              <h1 className="font-display text-2xl font-black text-slate-900">
+                Sign in
+              </h1>
               <p className="text-sm text-slate-500 mt-1">
                 Enter your credentials to access your portal.
               </p>
@@ -265,7 +263,7 @@ export default function Login() {
             </CardContent>
           </Card>
         </div>
-      </div >
+      </div>
     </>
   );
 }

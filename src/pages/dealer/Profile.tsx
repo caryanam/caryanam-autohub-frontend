@@ -4,13 +4,22 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useDealerAuth } from "@/contexts/DealerAuthContext";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useGetDealerProfile } from "@/hooks/dealer/useGetDealerProfile";
 import { useUpdateDealerProfile } from "@/hooks/dealer/useUpdateDealerProfile";
-import { useSendOtp, useVerifyOtp, useResetPassword } from "@/hooks/dealer/useChangePassword";
+import {
+  useSendOtp,
+  useVerifyOtp,
+  useResetPassword,
+} from "@/hooks/dealer/useChangePassword";
 
 export default function DealerProfile() {
   const { user, updateUserFields } = useDealerAuth();
@@ -43,11 +52,21 @@ export default function DealerProfile() {
   const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await updateMutation.mutateAsync({ businessName, ownerName, mobile, whatsapp, address, city, state });
+      await updateMutation.mutateAsync({
+        businessName,
+        ownerName,
+        mobile,
+        whatsapp,
+        address,
+        city,
+        state,
+      });
       updateUserFields({ businessName, ownerName });
       toast.success("Profile updated successfully");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to update profile");
+      toast.error(
+        err instanceof Error ? err.message : "Failed to update profile",
+      );
     }
   };
 
@@ -103,11 +122,17 @@ export default function DealerProfile() {
       return;
     }
     try {
-      await resetPasswordMutation.mutateAsync({ email, oldPassword, newPassword });
+      await resetPasswordMutation.mutateAsync({
+        email,
+        oldPassword,
+        newPassword,
+      });
       toast.success("Password changed successfully");
       setPwModal(false);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to reset password");
+      toast.error(
+        err instanceof Error ? err.message : "Failed to reset password",
+      );
     }
   };
 
@@ -163,17 +188,22 @@ export default function DealerProfile() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold">Profile</h1>
-        <p className="text-muted-foreground">Manage your business information</p>
+        <p className="text-muted-foreground">
+          Manage your business information
+        </p>
       </div>
 
       <Card className="rounded-3xl">
         <CardContent className="p-6 md:p-8">
-
           {/* Header */}
           <div className="flex items-center justify-between gap-4 mb-8 flex-wrap">
             <div className="flex items-center gap-4">
               {profile?.dealerLogo ? (
-                <img src={profile.dealerLogo.trim()} alt="logo" className="h-20 w-20 rounded-3xl object-cover" />
+                <img
+                  src={profile.dealerLogo.trim()}
+                  alt="logo"
+                  className="h-20 w-20 rounded-3xl object-cover"
+                />
               ) : (
                 <div className="h-20 w-20 rounded-3xl bg-blue-600 flex items-center justify-center text-white text-4xl font-bold">
                   {businessName?.charAt(0)?.toUpperCase()}
@@ -184,7 +214,11 @@ export default function DealerProfile() {
                 <p className="text-muted-foreground">{profile?.email}</p>
               </div>
             </div>
-            <Button variant="outline" className="rounded-xl" onClick={openPasswordModal}>
+            <Button
+              variant="outline"
+              className="rounded-xl"
+              onClick={openPasswordModal}
+            >
               Change Password
             </Button>
           </div>
@@ -194,44 +228,81 @@ export default function DealerProfile() {
             <div className="grid md:grid-cols-2 gap-6">
               <div>
                 <Label>Business Name</Label>
-                <Input value={businessName} onChange={(e) => setBusinessName(e.target.value)} className="mt-2 rounded-xl h-12" required />
+                <Input
+                  value={businessName}
+                  onChange={(e) => setBusinessName(e.target.value)}
+                  className="mt-2 rounded-xl h-12"
+                  required
+                />
               </div>
               <div>
                 <Label>Owner Name</Label>
-                <Input value={ownerName} onChange={(e) => setOwnerName(e.target.value)} className="mt-2 rounded-xl h-12" required />
+                <Input
+                  value={ownerName}
+                  onChange={(e) => setOwnerName(e.target.value)}
+                  className="mt-2 rounded-xl h-12"
+                  required
+                />
               </div>
               <div>
                 <Label>Phone</Label>
-                <Input value={mobile} onChange={(e) => setMobile(e.target.value)} className="mt-2 rounded-xl h-12" required />
+                <Input
+                  value={mobile}
+                  onChange={(e) => setMobile(e.target.value)}
+                  className="mt-2 rounded-xl h-12"
+                  required
+                />
               </div>
               <div>
                 <Label>WhatsApp</Label>
-                <Input value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} className="mt-2 rounded-xl h-12" />
+                <Input
+                  value={whatsapp}
+                  onChange={(e) => setWhatsapp(e.target.value)}
+                  className="mt-2 rounded-xl h-12"
+                />
               </div>
             </div>
 
             <div>
               <Label>Address</Label>
-              <Input value={address} onChange={(e) => setAddress(e.target.value)} className="mt-2 rounded-xl h-12" />
+              <Input
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                className="mt-2 rounded-xl h-12"
+              />
             </div>
 
             <div className="grid md:grid-cols-2 gap-6">
               <div>
                 <Label>City</Label>
-                <Input value={city} onChange={(e) => setCity(e.target.value)} className="mt-2 rounded-xl h-12" />
+                <Input
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  className="mt-2 rounded-xl h-12"
+                />
               </div>
               <div>
                 <Label>State</Label>
-                <Input value={state} onChange={(e) => setState(e.target.value)} className="mt-2 rounded-xl h-12" />
+                <Input
+                  value={state}
+                  onChange={(e) => setState(e.target.value)}
+                  className="mt-2 rounded-xl h-12"
+                />
               </div>
             </div>
 
-            <Button type="submit" size="lg" className="rounded-xl px-8 gradient-primary text-white hover:opacity-90" disabled={updateMutation.isPending}>
-              {updateMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            <Button
+              type="submit"
+              size="lg"
+              className="rounded-xl px-8 gradient-primary text-white hover:opacity-90"
+              disabled={updateMutation.isPending}
+            >
+              {updateMutation.isPending && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
               Save Changes
             </Button>
           </form>
-
         </CardContent>
       </Card>
 
@@ -250,18 +321,27 @@ export default function DealerProfile() {
           <div className="flex items-center gap-2 mb-2">
             {(["send", "verify", "reset"] as const).map((s, i) => (
               <div key={s} className="flex items-center gap-2">
-                <div className={`h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold ${
-                  step === s ? "gradient-primary text-white" :
-                  (step === "verify" && i === 0) || (step === "reset" && i <= 1) ? "bg-green-100 text-green-700" :
-                  "bg-muted text-muted-foreground"
-                }`}>
+                <div
+                  className={`h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold ${
+                    step === s
+                      ? "gradient-primary text-white"
+                      : (step === "verify" && i === 0) ||
+                          (step === "reset" && i <= 1)
+                        ? "bg-green-100 text-green-700"
+                        : "bg-muted text-muted-foreground"
+                  }`}
+                >
                   {i + 1}
                 </div>
                 {i < 2 && <div className="h-px w-8 bg-muted" />}
               </div>
             ))}
             <span className="ml-2 text-xs text-muted-foreground">
-              {step === "send" ? "Enter email" : step === "verify" ? "Enter OTP" : "Set password"}
+              {step === "send"
+                ? "Enter email"
+                : step === "verify"
+                  ? "Enter OTP"
+                  : "Set password"}
             </span>
           </div>
 
@@ -270,10 +350,22 @@ export default function DealerProfile() {
             <form onSubmit={handleSendOtp} className="space-y-4">
               <div>
                 <Label>Email</Label>
-                <Input value={email} onChange={(e) => setEmail(e.target.value)} type="email" className="mt-1 rounded-xl" required />
+                <Input
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  type="email"
+                  className="mt-1 rounded-xl"
+                  required
+                />
               </div>
-              <Button type="submit" className="w-full gradient-primary text-white border-0 rounded-xl" disabled={sendOtpMutation.isPending}>
-                {sendOtpMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              <Button
+                type="submit"
+                className="w-full gradient-primary text-white border-0 rounded-xl"
+                disabled={sendOtpMutation.isPending}
+              >
+                {sendOtpMutation.isPending && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
                 Send OTP
               </Button>
             </form>
@@ -282,19 +374,47 @@ export default function DealerProfile() {
           {/* Step 2: Verify OTP */}
           {step === "verify" && (
             <form onSubmit={handleVerifyOtp} className="space-y-4">
-              <p className="text-sm text-muted-foreground">OTP sent to <span className="font-medium text-foreground">{email}</span></p>
+              <p className="text-sm text-muted-foreground">
+                OTP sent to{" "}
+                <span className="font-medium text-foreground">{email}</span>
+              </p>
               <div>
                 <Label>Enter OTP</Label>
-                <Input value={otp} onChange={(e) => setOtp(e.target.value)} placeholder="6-digit OTP" maxLength={6} className="mt-1 rounded-xl tracking-widest text-center text-lg" required />
+                <Input
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  placeholder="6-digit OTP"
+                  maxLength={6}
+                  className="mt-1 rounded-xl tracking-widest text-center text-lg"
+                  required
+                />
               </div>
               <div className="flex gap-2">
-                <Button type="button" variant="outline" className="flex-1 rounded-xl" onClick={() => setStep("send")}>Back</Button>
-                <Button type="submit" className="flex-1 gradient-primary text-white border-0 rounded-xl" disabled={verifyOtpMutation.isPending}>
-                  {verifyOtpMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex-1 rounded-xl"
+                  onClick={() => setStep("send")}
+                >
+                  Back
+                </Button>
+                <Button
+                  type="submit"
+                  className="flex-1 gradient-primary text-white border-0 rounded-xl"
+                  disabled={verifyOtpMutation.isPending}
+                >
+                  {verifyOtpMutation.isPending && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
                   Verify OTP
                 </Button>
               </div>
-              <button type="button" className="text-xs text-primary underline w-full text-center" onClick={handleSendOtp as any} disabled={sendOtpMutation.isPending}>
+              <button
+                type="button"
+                className="text-xs text-primary underline w-full text-center"
+                onClick={handleSendOtp as any}
+                disabled={sendOtpMutation.isPending}
+              >
                 Resend OTP
               </button>
             </form>
@@ -305,18 +425,42 @@ export default function DealerProfile() {
             <form onSubmit={handleResetPassword} className="space-y-4">
               <div>
                 <Label>Current Password</Label>
-                <Input value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} type="password" className="mt-1 rounded-xl" required />
+                <Input
+                  value={oldPassword}
+                  onChange={(e) => setOldPassword(e.target.value)}
+                  type="password"
+                  className="mt-1 rounded-xl"
+                  required
+                />
               </div>
               <div>
                 <Label>New Password</Label>
-                <Input value={newPassword} onChange={(e) => setNewPassword(e.target.value)} type="password" className="mt-1 rounded-xl" required />
+                <Input
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  type="password"
+                  className="mt-1 rounded-xl"
+                  required
+                />
               </div>
               <div>
                 <Label>Confirm New Password</Label>
-                <Input value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} type="password" className="mt-1 rounded-xl" required />
+                <Input
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  type="password"
+                  className="mt-1 rounded-xl"
+                  required
+                />
               </div>
-              <Button type="submit" className="w-full gradient-primary text-white border-0 rounded-xl" disabled={resetPasswordMutation.isPending}>
-                {resetPasswordMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              <Button
+                type="submit"
+                className="w-full gradient-primary text-white border-0 rounded-xl"
+                disabled={resetPasswordMutation.isPending}
+              >
+                {resetPasswordMutation.isPending && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
                 Change Password
               </Button>
             </form>
