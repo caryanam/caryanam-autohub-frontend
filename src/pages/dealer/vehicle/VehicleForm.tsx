@@ -34,6 +34,7 @@ export default function VehicleForm({ vehicleId, onSuccess, onCancel }: VehicleF
   const [fuelType, setFuelType] = useState("Petrol");
   const [transmission, setTransmission] = useState("Manual");
   const [ownershipDetails, setOwnershipDetails] = useState("First Owner");
+  const [vehicleType, setVehicleType] = useState("NON_PREMIUM");
 
   const [model, setModel] = useState("");
   const [variant, setVariant] = useState("");
@@ -54,7 +55,7 @@ export default function VehicleForm({ vehicleId, onSuccess, onCancel }: VehicleF
   };
   const [registrationYear, setRegistrationYear] = useState(new Date().getFullYear().toString());
   const [kilometerDriven, setKilometerDriven] = useState("");
-  const [insuranceStatus, setInsuranceStatus] = useState("Valid");
+  const [insuranceStatus, setInsuranceStatus] = useState("");
   const [vehicleDescription, setVehicleDescription] = useState("");
 
   useEffect(() => {
@@ -69,7 +70,8 @@ export default function VehicleForm({ vehicleId, onSuccess, onCancel }: VehicleF
       setAskingPrice(vehicleDetails.askingPrice ? vehicleDetails.askingPrice.toString() : "");
       setRegistrationYear(vehicleDetails.registrationYear ? vehicleDetails.registrationYear.toString() : "");
       setKilometerDriven(vehicleDetails.kilometerDriven ? vehicleDetails.kilometerDriven.toString() : "");
-      setInsuranceStatus(vehicleDetails.insuranceStatus || "Valid");
+      setInsuranceStatus(vehicleDetails.insuranceStatus || "");
+      setVehicleType(vehicleDetails.vehicleType || "NON_PREMIUM");
       setVehicleDescription(vehicleDetails.vehicleDescription || "");
     }
   }, [vehicleDetails]);
@@ -100,6 +102,7 @@ export default function VehicleForm({ vehicleId, onSuccess, onCancel }: VehicleF
       fuelType,
       transmission,
       ownershipDetails,
+      vehicleType,
       insuranceStatus,
       city,
       vehicleDescription,
@@ -209,7 +212,18 @@ export default function VehicleForm({ vehicleId, onSuccess, onCancel }: VehicleF
           </Select>
         </div>
 
-        <Field label="Insurance Status" placeholder="e.g. Valid" value={insuranceStatus} onChange={(e) => setInsuranceStatus(e.target.value)} required />
+        <div className="text-left">
+          <Label>Vehicle Type <span className="text-red-500">*</span></Label>
+          <Select value={vehicleType} onValueChange={setVehicleType} required>
+            <SelectTrigger className="mt-1"><SelectValue placeholder="Select Vehicle Type" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="NON_PREMIUM">NON_PREMIUM</SelectItem>
+              <SelectItem value="PREMIUM">PREMIUM</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <Field label="Insurance Status" placeholder="e.g. Yes" value={insuranceStatus} onChange={(e) => setInsuranceStatus(e.target.value)} required />
       </div>
 
       <div>
