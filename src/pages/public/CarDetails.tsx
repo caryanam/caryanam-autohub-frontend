@@ -19,6 +19,7 @@ import {
   Play,
   Star,
   Heart,
+  Car,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -37,11 +38,11 @@ import { AuthModal } from "@/components/shared/AuthModal";
 import { useGetVehicleDetails } from "@/hooks/dealer/useGetVehicleDetails";
 import { useGenerateLead, useGenerateView } from "@/hooks/public/useLeads";
 import {
+  useCustomer,
   getStoredCustomer,
-  getWishlist,
-  toggleWishlist,
   type CustomerUser,
 } from "@/hooks/public/useCustomerAuth";
+import { useWishlist } from "@/hooks/public/useWishlist";
 import { formatINR, formatKM } from "@/utils/helpers";
 import { toast } from "sonner";
 
@@ -68,10 +69,9 @@ export default function CarDetails() {
   const [showContact, setShowContact] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
   const [revealed, setRevealed] = useState(false);
-  const [customer, setCustomer] = useState<CustomerUser | null>(
-    getStoredCustomer,
-  );
-  const [wishlisted, setWishlisted] = useState(false);
+  const customer = useCustomer();
+  const { wishlistIds, toggleWishlist: apiToggleWishlist } = useWishlist();
+  const wishlisted = vehicleId ? wishlistIds.includes(vehicleId) : false;
 
   // Lead form fields (autofilled from localStorage)
   const [leadName, setLeadName] = useState("");
@@ -86,10 +86,7 @@ export default function CarDetails() {
     }
   }, [vehicleId, customer, generateView]);
 
-  // Sync wishlist state
-  useEffect(() => {
-    if (vehicleId) setWishlisted(getWishlist().includes(vehicleId));
-  }, [vehicleId]);
+
 
   // Autofill lead form from customer data
   const openContactDialog = () => {
@@ -112,7 +109,6 @@ export default function CarDetails() {
   };
 
   const handleAuthSuccess = (user: CustomerUser) => {
-    setCustomer(user);
     // After login, open contact dialog with autofill
     const mobile =
       user.mobile ||
@@ -149,10 +145,20 @@ export default function CarDetails() {
     }
   };
 
-  const handleWishlist = () => {
+  const handleWishlist = async () => {
     if (!vehicleId) return;
-    const next = toggleWishlist(vehicleId);
-    setWishlisted(next.includes(vehicleId));
+    if (!customer) {
+      setAuthOpen(true);
+      return;
+    }
+    try {
+      const msg = await apiToggleWishlist(vehicleId);
+      if (msg) {
+        toast.success(msg);
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update wishlist");
+    }
   };
 
   if (!vehicleId || isNaN(vehicleId)) {
@@ -259,10 +265,15 @@ export default function CarDetails() {
                     </button>
                   </>
                 )}
-                <div className="absolute top-4 left-4 flex gap-2">
+                <div className="absolute top-4 left-4 flex flex-col gap-1.5 z-10">
                   {vehicle.vehicleStatus === "FEATURED" && (
                     <Badge className="gradient-primary text-white border-0 gap-1">
                       <Star className="h-3 w-3 fill-current" /> Featured
+                    </Badge>
+                  )}
+                  {vehicle.vehicleType === "PREMIUM" && (
+                    <Badge className="bg-amber-500 text-white border-0 font-bold shadow">
+                      Premium
                     </Badge>
                   )}
                 </div>
@@ -366,6 +377,13 @@ export default function CarDetails() {
                     label="Insurance"
                     value={vehicle.insuranceStatus}
                   />
+                  {vehicle.vehicleType && (
+                    <Spec
+                      icon={<Car className="h-4 w-4" />}
+                      label="Vehicle Type"
+                      value={vehicle.vehicleType}
+                    />
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -434,11 +452,10 @@ export default function CarDetails() {
                         <button
                           key={i}
                           onClick={() => setActiveVideo(i)}
-                          className={`relative shrink-0 aspect-video w-28 rounded-lg overflow-hidden border-2 transition-all ${
-                            activeVideo === i
-                              ? "border-accent"
-                              : "border-transparent opacity-60 hover:opacity-100"
-                          }`}
+                          className={`relative shrink-0 aspect-video w-28 rounded-lg overflow-hidden border-2 transition-all ${activeVideo === i
+                            ? "border-accent"
+                            : "border-transparent opacity-60 hover:opacity-100"
+                            }`}
                         >
                           <video
                             src={src}
@@ -506,28 +523,62 @@ export default function CarDetails() {
               <div className="border-t border-border" />
 
               {/* Dealer section */}
+              {vehicle.dealerShowroomImage && (
+                <div className="h-28 w-full bg-slate-100 overflow-hidden relative shrink-0">
+                  <img
+                    src={vehicle.dealerShowroomImage}
+                    alt="Showroom"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).style.display =
+                        "none";
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                </div>
+              )}
               <div className="p-5">
                 {/* Dealer avatar + name */}
                 <div className="flex items-center gap-3 mb-4">
-                  <DealerAvatar
-                    name={
-                      vehicle.dealerBusinessName ??
-                      vehicle.dealerContactName ??
-                      "D"
-                    }
-                  />
-                  <div className="min-w-0">
+                  {vehicle.dealerLogo ? (
+                    <img
+                      src={vehicle.dealerLogo}
+                      alt="Logo"
+                      className="h-11 w-11 rounded-xl object-cover border border-slate-100 shadow-sm shrink-0"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).style.display =
+                          "none";
+                      }}
+                    />
+                  ) : (
+                    <DealerAvatar
+                      name={
+                        vehicle.dealerBusinessName ??
+                        vehicle.dealerContactName ??
+                        "D"
+                      }
+                    />
+                  )}
+                  <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1 flex-wrap">
-                      <span className="font-bold text-sm leading-tight truncate">
+                      <span className="font-bold text-sm leading-tight capitalize truncate">
                         {vehicle.dealerBusinessName ??
                           vehicle.dealerContactName ??
                           "Dealer"}
                       </span>
                       <BadgeCheck className="h-4 w-4 text-blue-500 shrink-0" />
                     </div>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      {vehicle.city ?? ""}
-                    </p>
+                    <div className="flex items-center gap-1.5 flex-wrap mt-0.5 capitalize text-xs text-muted-foreground">
+                      <span>{vehicle.city ?? ""}</span>
+                      {vehicle.dealerYearsInBusiness !== undefined && vehicle.dealerYearsInBusiness !== null && (
+                        <>
+                          <span>·</span>
+                          <span className="font-bold text-[10px] text-blue-700 bg-blue-50/50 px-1.5 py-0.5 rounded border border-blue-100/50">
+                            {vehicle.dealerYearsInBusiness} yrs
+                          </span>
+                        </>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -555,20 +606,20 @@ export default function CarDetails() {
                       )}
                       {(vehicle.dealerWhatsappNumber ??
                         vehicle.dealerContactNumber) && (
-                        <a
-                          href={`https://wa.me/${(vehicle.dealerWhatsappNumber ?? vehicle.dealerContactNumber)!.replace(/\D/g, "")}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="flex-1"
-                        >
-                          <Button
-                            variant="outline"
-                            className="w-full gap-2 border-green-500 text-green-600 hover:bg-green-50 dark:hover:bg-green-950 font-semibold"
+                          <a
+                            href={`https://wa.me/${(vehicle.dealerWhatsappNumber ?? vehicle.dealerContactNumber)!.replace(/\D/g, "")}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="flex-1"
                           >
-                            <MessageCircle className="h-4 w-4" /> WhatsApp
-                          </Button>
-                        </a>
-                      )}
+                            <Button
+                              variant="outline"
+                              className="w-full gap-2 border-green-500 text-green-600 hover:bg-green-50 dark:hover:bg-green-950 font-semibold"
+                            >
+                              <MessageCircle className="h-4 w-4" /> WhatsApp
+                            </Button>
+                          </a>
+                        )}
                     </div>
 
                     {/* Phone number */}

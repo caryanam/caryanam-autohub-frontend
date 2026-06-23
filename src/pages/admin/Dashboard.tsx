@@ -105,7 +105,7 @@ export default function AdminDashboard() {
     },
     {
       icon: <Clock className="h-5 w-5" />,
-      label: "Pending",
+      label: "Pending Dealer",
       value: pendingData?.totalPendingDealers,
       loading: loadingPending,
       accent: true,
@@ -136,13 +136,12 @@ export default function AdminDashboard() {
           <Card key={s.label}>
             <CardContent className="p-5">
               <div
-                className={`w-10 h-10 grid place-items-center rounded-xl mb-3 ${
-                  s.accent
+                className={`w-10 h-10 grid place-items-center rounded-xl mb-3 ${s.accent
                     ? "bg-warning text-warning-foreground"
                     : s.green
                       ? "bg-emerald-500 text-white"
                       : "gradient-primary text-white"
-                }`}
+                  }`}
               >
                 {s.icon}
               </div>

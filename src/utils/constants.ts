@@ -28,3 +28,11 @@ export const FUELS: FuelType[] = [
 ];
 export const TRANSMISSIONS: Transmission[] = ["Manual", "Automatic"];
 export const OWNERSHIPS: Ownership[] = ["1st Owner", "2nd Owner", "3rd Owner"];
+
+export const INSURANCE_STATUSES = [
+  { value: "ACTIVE", label: "Active" },
+  { value: "EXPIRED", label: "Expired" },
+  { value: "RENEWAL_DUE", label: "Renewal Due" },
+  { value: "CANCELLED", label: "Cancelled" },
+];
+

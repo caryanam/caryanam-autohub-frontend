@@ -1,6 +1,6 @@
 import * as React from "react";
 import axios from "axios";
-import apiClient from "@/lib/apiClient";
+import apiClient from "@/lib/customerApiClient";
 
 // ── JWT decoder (no external lib) ────────────────────────────────────────────
 function decodeJwt(token: string): Record<string, unknown> {
@@ -31,6 +31,29 @@ export interface CustomerUser {
 
 const STORAGE_KEY = "customerUser";
 
+// Global listeners for reactive customer state
+const listeners = new Set<() => void>();
+
+export function useCustomer() {
+  const [customer, setCustomer] = React.useState<CustomerUser | null>(getStoredCustomer());
+
+  React.useEffect(() => {
+    const handleUpdate = () => {
+      setCustomer(getStoredCustomer());
+    };
+    listeners.add(handleUpdate);
+    return () => {
+      listeners.delete(handleUpdate);
+    };
+  }, []);
+
+  return customer;
+}
+
+export function notifyCustomerChanged() {
+  listeners.forEach((listener) => listener());
+}
+
 // ── Storage helpers ───────────────────────────────────────────────────────────
 export function getStoredCustomer(): CustomerUser | null {
   try {
@@ -47,6 +70,7 @@ export function clearCustomer() {
   localStorage.removeItem("customerToken");
   localStorage.removeItem("customerDecoded");
   localStorage.removeItem("customerWishlist");
+  notifyCustomerChanged();
 }
 
 // ── Register — only hits API, stores NOTHING ──────────────────────────────────
@@ -154,6 +178,8 @@ export function useCustomerLogin() {
         localStorage.setItem("customerToken", token);
         localStorage.setItem("customerDecoded", JSON.stringify(decoded));
 
+        notifyCustomerChanged();
+
         return user;
       } catch (err) {
         if (axios.isAxiosError(err)) {
@@ -171,21 +197,11 @@ export function useCustomerLogin() {
   return { isLoggingIn, login };
 }
 
-// ── Wishlist ──────────────────────────────────────────────────────────────────
-const WISHLIST_KEY = "customerWishlist";
-
-export function getWishlist(): number[] {
-  try {
-    const raw = localStorage.getItem(WISHLIST_KEY);
-    return raw ? (JSON.parse(raw) as number[]) : [];
-  } catch {
-    return [];
-  }
+export function getCustomerId(): string | null {
+  const customer = getStoredCustomer();
+  if (!customer) return null;
+  const decoded = customer.decoded || {};
+  const resolvedId = decoded.id || decoded.customerId || decoded.userId || decoded.sub;
+  return resolvedId ? String(resolvedId) : null;
 }
 
-export function toggleWishlist(id: number): number[] {
-  const list = getWishlist();
-  const next = list.includes(id) ? list.filter((x) => x !== id) : [...list, id];
-  localStorage.setItem(WISHLIST_KEY, JSON.stringify(next));
-  return next;
-}

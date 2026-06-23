@@ -22,17 +22,19 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { AuthModal } from "@/components/shared/AuthModal";
 import {
-  getStoredCustomer,
+  useCustomer,
   clearCustomer,
   type CustomerUser,
 } from "@/hooks/public/useCustomerAuth";
+import apiClient from "@/lib/customerApiClient";
 import { toast } from "sonner";
 import footerBg from "@/assets/footer-bg.png";
 const nav = [
   { to: "/", label: "Home" },
   { to: "/cars", label: "Browse Cars" },
-  { to: "/primium", label: "Premium Cars" },
-  { to: "/contact", label: "Contact" },
+  { to: "/premium", label: "Premium Cars" },
+  { to: "/about", label: "About" },
+
 ];
 
 export default function PublicLayout() {
@@ -40,9 +42,7 @@ export default function PublicLayout() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
-  const [customer, setCustomer] = useState<CustomerUser | null>(
-    getStoredCustomer,
-  );
+  const customer = useCustomer();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -63,7 +63,7 @@ export default function PublicLayout() {
   }, []);
 
   const handleAuthSuccess = (user: CustomerUser) => {
-    setCustomer(user);
+    // State updates automatically via useCustomer hook
   };
 
   const handleWishlistClick = () => {
@@ -82,11 +82,16 @@ export default function PublicLayout() {
     }
   };
 
-  const handleLogout = () => {
-    clearCustomer();
-    setCustomer(null);
-    setUserMenuOpen(false);
-    toast.success("Logged out");
+  const handleLogout = async () => {
+    try {
+      await apiClient.post("/api/auth/logout");
+    } catch (error) {
+      console.error("Logout API failed:", error);
+    } finally {
+      clearCustomer();
+      setUserMenuOpen(false);
+      toast.success("Logged out");
+    }
   };
 
   return (
@@ -122,11 +127,10 @@ export default function PublicLayout() {
             <div className="relative" ref={menuRef}>
               <button
                 onClick={handleUserClick}
-                className={`h-9 w-9 flex items-center justify-center rounded-full transition-colors overflow-hidden ${
-                  customer
-                    ? "gradient-primary text-white hover:opacity-90"
-                    : "bg-muted hover:bg-accent/10"
-                }`}
+                className={`h-9 w-9 flex items-center justify-center rounded-full transition-colors overflow-hidden ${customer
+                  ? "gradient-primary text-white hover:opacity-90"
+                  : "bg-muted hover:bg-accent/10"
+                  }`}
                 title={
                   customer ? customer.customerName || customer.email : "Login"
                 }
@@ -229,6 +233,7 @@ export default function PublicLayout() {
         >
           <Outlet />
         </motion.main>
+
       </AnimatePresence>
 
       <footer
@@ -312,10 +317,21 @@ export default function PublicLayout() {
             </ul>
           </div>
         </div>
-        <div className="border-t border-white/10">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 text-xs text-white/50 flex flex-wrap gap-2 justify-between">
-            <span>© {new Date().getFullYear()} CAPL. All rights reserved.</span>
-            <span>Verified dealers · Trusted listings</span>
+        <div className="relative overflow-hidden border-t border-white/10 bg-zinc-950/85 py-8">
+          {/* Giant watermark background */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0">
+            <span className="text-[12vw] font-black uppercase tracking-[0.25em] text-white/[0.03] leading-none">
+              CAPL
+            </span>
+          </div>
+
+          <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/50">
+            <span>
+              Copyright © {new Date().getFullYear()} CAPL. All Rights Reserved.
+            </span>
+            <span className="flex items-center gap-1.5">
+              Made by team <span className="font-bold text-white">CAPL</span> with <span className="text-red-500">❤️</span>
+            </span>
           </div>
         </div>
       </footer>

@@ -18,9 +18,10 @@ import { ProtectedRoute } from "@/components/shared/ProtectedRoute";
 
 import Home from "@/pages/public/Home";
 import Cars from "@/pages/public/Cars";
+import PremiumCars from "@/pages/public/PremiumCars";
 import CarDetails from "@/pages/public/CarDetails";
 import Wishlist from "@/pages/public/Wishlist";
-import Contact from "@/pages/public/Contact";
+
 import About from "@/pages/public/About";
 import PrivacyPolicy from "@/pages/public/PrivacyPolicy";
 import TermsAndConditions from "@/pages/public/TermsAndConditions";
@@ -33,6 +34,7 @@ import DealerVehicles from "@/pages/dealer/vehicle/Vehicles";
 import DealerVehicleDetails from "@/pages/dealer/vehicle/VehicleDetails";
 import DealerLeads from "@/pages/dealer/Leads";
 import DealerProfile from "@/pages/dealer/Profile";
+import DealerWishlist from "@/pages/dealer/CustomerWishlist";
 
 import DealerSubscription from "@/pages/dealer/subscription/Subscription";
 
@@ -54,9 +56,9 @@ export default function App() {
             <Route element={<PublicLayout />}>
               <Route index element={<Home />} />
               <Route path="/cars" element={<Cars />} />
+              <Route path="/premium" element={<PremiumCars />} />
               <Route path="/car/:id" element={<CarDetails />} />
               <Route path="/wishlist" element={<Wishlist />} />
-              <Route path="/contact" element={<Contact />} />
               <Route path="/about" element={<About />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/terms" element={<TermsAndConditions />} />
@@ -80,6 +82,7 @@ export default function App() {
                   element={<DealerVehicleDetails />}
                 />
                 <Route path="leads" element={<DealerLeads />} />
+                <Route path="wishlist" element={<DealerWishlist />} />
                 <Route path="profile" element={<DealerProfile />} />
 
                 <Route path="subscription" element={<DealerSubscription />} />

@@ -10,9 +10,11 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useAdminAuth } from "@/contexts/AdminAuthContext";
 import { useDealerAuth } from "@/contexts/DealerAuthContext";
+import { clearCustomer } from "@/hooks/public/useCustomerAuth";
 
 export function SessionExpiredModal() {
   const [open, setOpen] = useState(false);
+  const [expiredUserType, setExpiredUserType] = useState<"admin" | "dealer" | "customer" | null>(null);
   const { logout: logoutAdmin } = useAdminAuth();
   const { logout: logoutDealer } = useDealerAuth();
 
@@ -26,6 +28,7 @@ export function SessionExpiredModal() {
 
       // Clear local storage and state for the expired session
       if (role === "admin") {
+        setExpiredUserType("admin");
         localStorage.removeItem("adminToken");
         localStorage.removeItem("adminData");
         try {
@@ -34,6 +37,7 @@ export function SessionExpiredModal() {
           // ignore
         }
       } else {
+        setExpiredUserType("dealer");
         localStorage.removeItem("dealerToken");
         localStorage.removeItem("dealerData");
         try {
@@ -46,15 +50,35 @@ export function SessionExpiredModal() {
       setOpen(true);
     };
 
+    const handleCustomerExpired = () => {
+      if (open) return;
+      setExpiredUserType("customer");
+      clearCustomer();
+      setOpen(true);
+    };
+
     window.addEventListener("auth-session-expired", handleExpired);
+    window.addEventListener("customer-session-expired", handleCustomerExpired);
     return () => {
       window.removeEventListener("auth-session-expired", handleExpired);
+      window.removeEventListener("customer-session-expired", handleCustomerExpired);
     };
   }, [open, logoutAdmin, logoutDealer]);
 
   const handleConfirm = () => {
     setOpen(false);
-    window.location.href = "/auth/login";
+    if (expiredUserType === "customer") {
+      window.location.href = "/";
+    } else {
+      window.location.href = "/auth/login";
+    }
+  };
+
+  const getModalDescription = () => {
+    if (expiredUserType === "customer") {
+      return "Your customer session has expired. Please login again to continue.";
+    }
+    return "Your session has expired. Please login again to continue.";
   };
 
   return (
@@ -65,7 +89,7 @@ export function SessionExpiredModal() {
             Session Expired
           </AlertDialogTitle>
           <AlertDialogDescription className="text-slate-600 mt-2">
-            Your session has expired. Please login again to continue.
+            {getModalDescription()}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="mt-6">

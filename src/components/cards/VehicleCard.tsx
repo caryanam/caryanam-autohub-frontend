@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Fuel, Gauge, Settings2, MapPin, Star, Heart } from "lucide-react";
+import { Fuel, Gauge, Settings2, MapPin, Star, Heart, Sparkles } from "lucide-react";
 import type { Vehicle } from "@/types";
 import { formatINR, formatKM } from "@/utils/helpers";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { getWishlist, toggleWishlist } from "@/hooks/public/useCustomerAuth";
+import { useWishlist } from "@/hooks/public/useWishlist";
+import { toast } from "sonner";
 
 const FALLBACK_IMG =
   "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&h=533&fit=crop";
@@ -26,26 +27,33 @@ export function VehicleCard({
     vehicle.images && vehicle.images.length > 0
       ? vehicle.images[0]
       : FALLBACK_IMG;
-  const [wishlisted, setWishlisted] = useState(() =>
-    getWishlist().includes(vehicle.id),
-  );
+  const { wishlistIds, toggleWishlist: apiToggleWishlist } = useWishlist();
+  const wishlisted = wishlistIds.includes(vehicle.id);
 
-  const handleWishlist = (e: React.MouseEvent) => {
+  const handleWishlist = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (!isLoggedIn && onWishlistRequireLogin) {
       onWishlistRequireLogin();
       return;
     }
-    const next = toggleWishlist(vehicle.id);
-    setWishlisted(next.includes(vehicle.id));
+    try {
+      const msg = await apiToggleWishlist(vehicle.id);
+      if (msg) {
+        toast.success(msg);
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update wishlist");
+    }
   };
+
+  const isPremium = vehicle.vehicleType === "PREMIUM";
 
   return (
     <motion.div
       whileHover={{ y: -4 }}
       transition={{ type: "spring", stiffness: 300, damping: 22 }}
-      className="group relative overflow-hidden rounded-2xl bg-card shadow-card hover:shadow-premium transition-shadow"
+      className="group relative overflow-hidden rounded-2xl bg-card text-foreground shadow-card hover:shadow-premium border border-border/50 transition-shadow"
     >
       <Link to={`/car/${vehicle.id}`} className="block">
         <div className="relative aspect-[16/10] overflow-hidden bg-muted">
@@ -61,18 +69,18 @@ export function VehicleCard({
           <div className="absolute top-3 right-3 flex items-center gap-1.5">
             <Badge
               variant="secondary"
-              className="bg-background/90 backdrop-blur text-foreground font-semibold"
+              className="bg-background/90 backdrop-blur text-foreground hover:text-foreground hover:bg-background/90 font-semibold"
             >
               {vehicle.registrationYear}
             </Badge>
           </div>
-          {vehicle.vehicleStatus === "FEATURED" && (
-            <div className="absolute top-3 left-3">
-              <Badge className="gradient-primary text-white border-0 text-xs">
+          <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
+            {vehicle.vehicleStatus === "FEATURED" && (
+              <Badge className="gradient-primary text-white border-0 text-xs shadow-md">
                 <Star className="h-3 w-3 fill-current mr-1" /> Featured
               </Badge>
-            </div>
-          )}
+            )}
+          </div>
 
           {/* Wishlist heart */}
           <button
@@ -91,8 +99,9 @@ export function VehicleCard({
         <div>
           <Link to={`/car/${vehicle.id}`} className="block">
             <div className="flex items-baseline justify-between gap-2">
-              <h3 className="font-bold text-md leading-tight truncate flex-1 hover:text-accent transition-colors">
+              <h3 className="font-bold text-md leading-tight truncate flex-1 hover:text-accent transition-colors flex items-center gap-1">
                 {vehicle.registrationYear} {vehicle.brand} {vehicle.model}
+
               </h3>
               <span className="shrink-0 font-black text-md font-display text-foreground">
                 {formatINR(vehicle.askingPrice)}
@@ -100,7 +109,9 @@ export function VehicleCard({
             </div>
           </Link>
           <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
-            {vehicle.variant} {vehicle.fuelType}
+            {vehicle.variant} {vehicle.fuelType} {isPremium && (
+              <Star className="h-4 w-4 fill-amber-400 text-amber-400 shrink-0 inline-block animate-pulse" />
+            )}
           </p>
         </div>
 

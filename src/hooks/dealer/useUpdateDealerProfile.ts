@@ -9,6 +9,7 @@ export interface UpdateProfilePayload {
   address: string;
   city: string;
   state: string;
+  pinCode: string;
 }
 
 export function useUpdateDealerProfile(dealerId: string) {

@@ -32,7 +32,7 @@ import {
   useLatestVehicles,
   useFeaturedVehicles,
 } from "@/hooks/public/useHomeVehicles";
-import { getStoredCustomer } from "@/hooks/public/useCustomerAuth";
+import { useCustomer, getStoredCustomer } from "@/hooks/public/useCustomerAuth";
 import { toast } from "sonner";
 import { AuthModal } from "@/components/shared/AuthModal";
 import hero from "@/assets/hero1.mp4";
@@ -99,7 +99,7 @@ export default function Home() {
     refetch: refetchFeatured,
   } = useFeaturedVehicles();
 
-  const [customer, setCustomer] = useState(() => getStoredCustomer());
+  const customer = useCustomer();
   const isLoggedIn = !!customer;
   const [authOpen, setAuthOpen] = useState(false);
 
@@ -472,8 +472,7 @@ export default function Home() {
         open={authOpen}
         onOpenChange={setAuthOpen}
         onSuccess={(user) => {
-          setCustomer(user);
-          window.location.reload();
+          // Updates automatically via useCustomer hook
         }}
       />
     </>

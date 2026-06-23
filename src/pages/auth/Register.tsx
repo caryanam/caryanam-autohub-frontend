@@ -179,6 +179,7 @@ export default function Register() {
           <div className="mb-6">
             <button
               onClick={() => navigate(-1)}
+              type="button"
               className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-900 transition-colors"
             >
               <ChevronLeft className="h-4 w-4" />
@@ -230,12 +231,11 @@ export default function Register() {
                           <div className="flex flex-col items-center gap-1 text-center w-16 sm:w-auto">
                             <div
                               className={`flex h-9 w-9 items-center justify-center rounded-full border-2 text-sm font-bold transition-all
-                                ${
-                                  active
-                                    ? "border-blue-600 bg-blue-600 text-white shadow-md shadow-blue-200"
-                                    : completed
-                                      ? "border-green-500 bg-green-50 text-green-600"
-                                      : "border-slate-200 bg-white text-slate-400"
+                                ${active
+                                  ? "border-blue-600 bg-blue-600 text-white shadow-md shadow-blue-200"
+                                  : completed
+                                    ? "border-green-500 bg-green-50 text-green-600"
+                                    : "border-slate-200 bg-white text-slate-400"
                                 }`}
                             >
                               {completed ? (

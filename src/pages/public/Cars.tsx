@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { AuthModal } from "@/components/shared/AuthModal";
 import {
+  useCustomer,
   getStoredCustomer,
   type CustomerUser,
 } from "@/hooks/public/useCustomerAuth";
@@ -57,9 +58,7 @@ export default function Cars() {
     refetch,
     isRefetching,
   } = useAllVehicles(page - 1, PAGE);
-  const [customer, setCustomer] = useState<CustomerUser | null>(
-    getStoredCustomer,
-  );
+  const customer = useCustomer();
   const [authOpen, setAuthOpen] = useState(false);
 
   const get = (k: string) => params.get(k) || "";
@@ -541,7 +540,7 @@ export default function Cars() {
       <AuthModal
         open={authOpen}
         onOpenChange={setAuthOpen}
-        onSuccess={(u) => setCustomer(u)}
+        onSuccess={(u) => {}}
       />
     </>
   );

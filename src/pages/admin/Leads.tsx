@@ -172,13 +172,13 @@ export default function AdminLeads() {
                     <TableCell className="text-center text-slate-400 text-sm font-medium py-4">
                       {idx + 1}
                     </TableCell>
-                    <TableCell className="font-semibold text-slate-900 text-sm py-4">
+                    <TableCell className="font-semibold capitalize text-slate-900 text-sm py-4">
                       {l.customerName}
                     </TableCell>
                     <TableCell className="text-sm text-slate-500 py-4">
                       {l.customerMobile}
                     </TableCell>
-                    <TableCell className="text-sm text-slate-500 py-4">
+                    <TableCell className="text-sm text-slate-500 capitalize py-4">
                       {l.customerCity ?? "—"}
                     </TableCell>
                     <TableCell className="text-sm font-medium text-slate-600 truncate max-w-[240px] py-4">

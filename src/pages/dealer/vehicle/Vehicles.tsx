@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
 import { useDealerAuth } from "@/contexts/DealerAuthContext";
 import { formatINR, formatKM } from "@/utils/helpers";
 import { useState } from "react";
@@ -94,7 +95,8 @@ export default function DealerVehicles() {
       v.city?.toLowerCase().includes(searchLower) ||
       v.fuelType?.toLowerCase().includes(searchLower) ||
       v.transmission?.toLowerCase().includes(searchLower) ||
-      v.registrationYear?.toString().includes(searchLower)
+      v.registrationYear?.toString().includes(searchLower) ||
+      v.vehicleType?.toLowerCase().includes(searchLower)
     );
   });
 
@@ -248,8 +250,19 @@ export default function DealerVehicles() {
                             </div>
                           )}
                           <div>
-                            <div className="font-semibold text-slate-900 text-left text-sm leading-snug">
+                            <div className="font-semibold text-slate-900 text-left text-sm leading-snug flex items-center gap-2 flex-wrap">
                               {v.registrationYear} {v.brand} {v.model}
+                              {v.vehicleType && (
+                                <Badge
+                                  className={`${
+                                    v.vehicleType === "PREMIUM"
+                                      ? "bg-amber-100 text-amber-700 hover:bg-amber-100"
+                                      : "bg-slate-100 text-slate-700 hover:bg-slate-100"
+                                  } border-0 text-[10px] px-1.5 py-0.5 font-bold rounded`}
+                                >
+                                  {v.vehicleType}
+                                </Badge>
+                              )}
                             </div>
                             <div className="text-xs text-slate-400 text-left mt-0.5">
                               {v.variant} • {v.fuelType} • {v.transmission} •{" "}

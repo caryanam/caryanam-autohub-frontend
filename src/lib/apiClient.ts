@@ -1,8 +1,8 @@
 import axios from "axios";
 
 /**
- * Shared Axios instance for all API calls.
- * Automatically injects the Bearer token from localStorage on every request.
+ * Shared Axios instance for Dealer and Admin API calls.
+ * Automatically injects the adminToken or dealerToken from localStorage.
  */
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL as string,

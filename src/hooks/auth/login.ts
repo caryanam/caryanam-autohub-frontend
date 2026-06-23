@@ -70,14 +70,26 @@ export function useLogin() {
             r.toUpperCase().includes("ADMIN"),
           ));
 
+      const isDealer =
+        rawRole.includes("DEALER") ||
+        (Array.isArray(decoded.roles) &&
+          (decoded.roles as string[]).some((r) =>
+            r.toUpperCase().includes("DEALER"),
+          ));
+
       if (isAdmin) {
         localStorage.setItem("adminToken", token);
         localStorage.setItem("adminData", JSON.stringify(decoded));
         return { role: "admin" as const, token, data: decoded };
-      } else {
+      } else if (isDealer) {
         localStorage.setItem("dealerToken", token);
         localStorage.setItem("dealerData", JSON.stringify(decoded));
         return { role: "dealer" as const, token, data: decoded };
+      } else {
+        throw new LoginError(
+          "Access denied. Only dealers and administrators are allowed to access this portal.",
+          403,
+        );
       }
     } catch (err) {
       if (axios.isAxiosError(err)) {

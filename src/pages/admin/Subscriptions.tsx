@@ -164,12 +164,12 @@ export default function AdminSubscriptions() {
                     <TableCell className="text-center text-slate-400 text-sm font-medium py-4">
                       {idx + 1}
                     </TableCell>
-                    <TableCell className="font-semibold text-slate-900 text-sm py-4 pl-4">
+                    <TableCell className="font-semibold capitalize text-slate-900 text-sm py-4 pl-4">
                       {s.dealerName}
                     </TableCell>
                     <TableCell className="py-4">
                       {s.subscriptionPlan ? (
-                        <Badge className="bg-blue-50 text-blue-700 border border-blue-200 text-xs font-bold rounded-full px-3">
+                        <Badge className="bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-50 hover:text-blue-700 text-xs font-bold rounded-full px-3">
                           {s.subscriptionPlan}
                         </Badge>
                       ) : (
@@ -193,8 +193,8 @@ export default function AdminSubscriptions() {
                       <Badge
                         className={
                           s.subscriptionActive
-                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold rounded-full px-3"
-                            : "bg-slate-100 text-slate-500 border border-slate-200 text-xs font-bold rounded-full px-3"
+                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700 text-xs font-bold rounded-full px-3"
+                            : "bg-slate-100 text-slate-500 border border-slate-200 hover:bg-slate-100 hover:text-slate-500 text-xs font-bold rounded-full px-3"
                         }
                       >
                         {s.subscriptionActive ? "Active" : "Inactive"}

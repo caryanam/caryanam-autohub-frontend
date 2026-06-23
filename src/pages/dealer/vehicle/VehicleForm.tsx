@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CITIES, FUELS, TRANSMISSIONS } from "@/utils/constants";
+import { CITIES, FUELS, TRANSMISSIONS, INSURANCE_STATUSES } from "@/utils/constants";
 import { CAR_BRANDS, getModels, getVariants } from "@/data/carDatabase";
 import { SearchableSelect } from "@/components/shared/SearchableSelect";
 import { useDealerAuth } from "@/contexts/DealerAuthContext";
@@ -343,13 +343,23 @@ export default function VehicleForm({
           </Select>
         </div>
 
-        <Field
-          label="Insurance Status"
-          placeholder="e.g. Yes"
-          value={insuranceStatus}
-          onChange={(e) => setInsuranceStatus(e.target.value)}
-          required
-        />
+        <div className="text-left">
+          <Label>
+            Insurance Status <span className="text-red-500">*</span>
+          </Label>
+          <Select value={insuranceStatus} onValueChange={setInsuranceStatus} required>
+            <SelectTrigger className="mt-1">
+              <SelectValue placeholder="Select Insurance Status" />
+            </SelectTrigger>
+            <SelectContent>
+              {INSURANCE_STATUSES.map((o) => (
+                <SelectItem key={o.value} value={o.value}>
+                  {o.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <div>

@@ -5,11 +5,18 @@ export interface AdminDealer {
   id: number;
   businessName: string;
   ownerName: string;
+  gstNumber?: string | null;
+  yearsInBusiness?: number | null;
   mobile: string;
+  whatsapp?: string | null;
   email: string;
+  password?: string | null;
+  address?: string | null;
   city: string;
   state: string;
+  pinCode?: string | null;
   dealerLogo: string;
+  showroomImage?: string | null;
   dealerAccountStatus: string;
   createdAt: string;
 }

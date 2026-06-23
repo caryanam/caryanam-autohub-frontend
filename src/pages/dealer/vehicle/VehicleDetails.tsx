@@ -69,7 +69,7 @@ export default function DealerVehicleDetails() {
         className="gap-2 pl-0 cursor-pointer"
         onClick={() => navigate(-1)}
       >
-        <ArrowLeft className="h-4 w-4" /> Back to Inventory
+        <ArrowLeft className="h-4 w-4 ml-3" /> Back to Inventory
       </Button>
 
       <div className="grid lg:grid-cols-2 gap-6">
@@ -116,6 +116,16 @@ export default function DealerVehicleDetails() {
               >
                 {vehicle.vehicleStatus}
               </Badge>
+              {vehicle.vehicleType && (
+                <Badge
+                  className={`${vehicle.vehicleType === "PREMIUM"
+                    ? "bg-amber-100 text-amber-700 hover:bg-amber-100"
+                    : "bg-slate-100 text-slate-700 hover:bg-slate-100"
+                    } border-0 text-xs font-semibold`}
+                >
+                  {vehicle.vehicleType}
+                </Badge>
+              )}
             </div>
             <h1 className="text-2xl font-black">
               {vehicle.registrationYear} {vehicle.brand} {vehicle.model}{" "}
@@ -160,15 +170,20 @@ export default function DealerVehicleDetails() {
               label="City"
               value={vehicle.city}
             />
+            {vehicle.vehicleType && (
+              <SpecBox
+                icon={<Car className="h-4 w-4" />}
+                label="Vehicle Type"
+                value={vehicle.vehicleType}
+              />
+            )}
+            <SpecBox
+              icon={<Shield className="h-4 w-4" />}
+              label="Insurance Status"
+              value={vehicle.insuranceStatus}
+            />
           </div>
 
-          <div className="flex items-center gap-2 text-sm">
-            <Shield className="h-4 w-4 text-muted-foreground" />
-            <span className="text-muted-foreground">Insurance:</span>
-            <span className="font-medium capitalize">
-              {vehicle.insuranceStatus}
-            </span>
-          </div>
         </div>
       </div>
 

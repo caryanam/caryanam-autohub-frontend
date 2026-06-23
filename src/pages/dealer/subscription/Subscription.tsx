@@ -33,14 +33,13 @@ export default function DealerSubscription() {
       const res = await purchaseMutation.mutateAsync(planName);
 
       toast.success(
-        `${
-          res.data?.subscriptionPlan ?? planName
+        `${res.data?.subscriptionPlan ?? planName
         } plan purchased! Transaction ID: ${res.data?.transactionId ?? ""}`,
       );
     } catch (err: any) {
       toast.error(
         err?.response?.data?.message ??
-          (err instanceof Error ? err.message : "Purchase failed"),
+        (err instanceof Error ? err.message : "Purchase failed"),
       );
     }
   };
@@ -168,11 +167,10 @@ export default function DealerSubscription() {
                   </p>
 
                   <p
-                    className={`text-3xl font-black mt-2 ${
-                      activePlan.remainingDays <= 7
+                    className={`text-3xl font-black mt-2 ${activePlan.remainingDays <= 7
                         ? "text-red-600"
                         : "text-green-600"
-                    }`}
+                      }`}
                   >
                     {activePlan.remainingDays}
                   </p>
@@ -236,13 +234,12 @@ export default function DealerSubscription() {
           return (
             <Card
               key={plan.planName}
-              className={`relative transition-all duration-300 hover:shadow-xl ${
-                isCurrent
+              className={`relative transition-all duration-300 hover:shadow-xl ${isCurrent
                   ? "border-2 border-green-500 shadow-lg"
                   : isPopular
                     ? "border-primary shadow-lg"
                     : ""
-              }`}
+                }`}
             >
               {isPopular && !isCurrent && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
@@ -288,13 +285,12 @@ export default function DealerSubscription() {
                   onClick={() => handlePurchase(plan.planName)}
                   disabled={isCurrent || purchaseMutation.isPending}
                   variant="default"
-                  className={`w-full mt-6 ${
-                    isCurrent
+                  className={`w-full mt-6 ${isCurrent
                       ? "bg-green-600 hover:bg-green-700 text-white"
                       : isPopular
                         ? "gradient-primary text-white border-0"
                         : ""
-                  }`}
+                    }`}
                 >
                   {isPending && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
