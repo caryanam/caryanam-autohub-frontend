@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ImageIcon, Video, Loader2, X, Upload } from "lucide-react";
+import { ImageIcon, Video, Loader2, X, Upload, Camera, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -38,7 +38,20 @@ export default function VehicleForm({
   const { data: vehicleDetails, isLoading: loadingDetails } =
     useGetVehicleDetails(vehicleId);
 
-  const [images, setImages] = useState<File[]>([]);
+  const PHOTO_SLOTS = [
+    "Front View",
+    "Rear View",
+    "Left Side View",
+    "Right Side View",
+    "Engine Bay",
+    "Dashboard / Interior",
+    "Front Seats",
+    "Rear Seats",
+    "Boot / Trunk",
+    "Odometer / Console",
+  ];
+  const [slotImages, setSlotImages] = useState<(File | null)[]>(Array(10).fill(null));
+  const [extraSlotsCount, setExtraSlotsCount] = useState(0);
   const [videos, setVideos] = useState<File[]>([]);
 
   const [brand, setBrand] = useState("");
@@ -108,9 +121,33 @@ export default function VehicleForm({
     }
   }, [vehicleDetails]);
 
-  const handleImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files)
-      setImages((prev) => [...prev, ...Array.from(e.target.files!)]);
+  const handleSlotImageChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setSlotImages((prev) => {
+        const next = [...prev];
+        next[index] = file;
+        return next;
+      });
+    }
+  };
+
+  const removeSlotImage = (index: number) => {
+    setSlotImages((prev) => {
+      const next = [...prev];
+      if (index >= 10) {
+        next.splice(index, 1);
+        setExtraSlotsCount((c) => c - 1);
+      } else {
+        next[index] = null;
+      }
+      return next;
+    });
+  };
+
+  const addExtraSlot = () => {
+    setExtraSlotsCount((c) => c + 1);
+    setSlotImages((prev) => [...prev, null]);
   };
 
   const handleVideosChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -121,9 +158,12 @@ export default function VehicleForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const images = slotImages.filter((file): file is File => file !== null);
+
     if (!vehicleId) {
-      if (images.length < 10) {
-        toast.error("Please select at least 10 images.");
+      const missingRequired = slotImages.slice(0, 10).some((img) => img === null);
+      if (missingRequired) {
+        toast.error("Please upload all 10 required images.");
         return;
       }
       if (videos.length < 1) {
@@ -412,51 +452,86 @@ export default function VehicleForm({
 
       {!vehicleId && (
         <div className="grid gap-4 md:grid-cols-1">
-          <div className="rounded-2xl border-2 border-dashed border-slate-200 p-6 text-center hover:border-primary transition-colors">
-            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-              <ImageIcon className="h-6 w-6 text-primary" />
+          <div className="rounded-2xl border border-slate-100 p-6 bg-slate-50/50">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                <ImageIcon className="h-5 w-5 text-primary" />
+              </div>
+              <div className="text-left">
+                <h3 className="font-bold text-slate-800 text-lg">
+                  Vehicle Images <span className="text-red-500">*</span>
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  Upload at least 10 required photos (Selected: {slotImages.filter(Boolean).length} photos)
+                </p>
+              </div>
             </div>
-            <h3 className="font-semibold text-slate-800">
-              Vehicle Images <span className="text-red-500">*</span>
-            </h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              Upload at least 10 high-quality photos (Selected: {images.length})
-            </p>
-            <label className="mt-4 inline-flex items-center gap-2 rounded-lg bg-primary hover:bg-primary/90 text-white px-4 py-2 text-sm font-semibold cursor-pointer transition-colors shadow-sm">
-              <Upload className="h-4 w-4" /> Choose Images
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                className="sr-only"
-                onChange={handleImagesChange}
-              />
-            </label>
-            {images.length > 0 && (
-              <div className="grid grid-cols-4 gap-2 mt-4 max-h-72 overflow-y-auto p-1">
-                {images.map((file, idx) => (
+
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mt-4">
+              {slotImages.map((file, idx) => {
+                const isRequired = idx < 10;
+                const slotName = isRequired ? PHOTO_SLOTS[idx] : `Extra Photo ${idx - 9}`;
+                return (
                   <div
                     key={idx}
-                    className="relative group aspect-square rounded-lg overflow-hidden border border-slate-200 bg-slate-50 shadow-sm"
+                    className="relative aspect-square rounded-xl border-2 border-dashed border-slate-200 bg-white shadow-sm flex flex-col items-center justify-center overflow-hidden hover:border-primary transition-all group"
                   >
-                    <img
-                      src={URL.createObjectURL(file)}
-                      alt=""
-                      className="h-full w-full object-cover"
-                    />
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setImages((prev) => prev.filter((_, i) => i !== idx))
-                      }
-                      className="absolute top-1 right-1 p-1 bg-red-600 hover:bg-red-700 text-white rounded-full shadow transition-all hover:scale-105"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
+                    {file ? (
+                      <>
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt={slotName}
+                          className="h-full w-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-2 text-center">
+                          <p className="text-[10px] font-semibold text-white truncate max-w-full mb-1">
+                            {slotName}
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() => removeSlotImage(idx)}
+                            className="p-1.5 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-lg transition-transform hover:scale-105"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <label className="h-full w-full flex flex-col items-center justify-center cursor-pointer p-3 text-center hover:bg-slate-50/50 transition-colors">
+                        <Camera className="h-5 w-5 text-slate-400 mb-1.5" />
+                        <span className="text-xs font-semibold text-slate-700 leading-tight">
+                          {slotName}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground mt-0.5">
+                          Click to upload
+                        </span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="sr-only"
+                          onChange={(e) => handleSlotImageChange(idx, e)}
+                        />
+                      </label>
+                    )}
                   </div>
-                ))}
-              </div>
-            )}
+                );
+              })}
+
+              {/* Add Extra Photo Slot Button Card */}
+              <button
+                type="button"
+                onClick={addExtraSlot}
+                className="relative aspect-square rounded-xl border-2 border-dashed border-slate-200 bg-white hover:bg-slate-50/50 hover:border-primary transition-all flex flex-col items-center justify-center cursor-pointer p-3 text-center"
+              >
+                <Plus className="h-5 w-5 text-slate-400 mb-1.5" />
+                <span className="text-xs font-semibold text-slate-700 leading-tight">
+                  Add Extra Photo
+                </span>
+                <span className="text-[10px] text-muted-foreground mt-0.5">
+                  Slot {11 + extraSlotsCount}
+                </span>
+              </button>
+            </div>
           </div>
 
           <div className="rounded-2xl border-2 border-dashed border-slate-200 p-6 text-center hover:border-primary transition-colors">
