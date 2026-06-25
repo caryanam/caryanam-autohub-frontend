@@ -16,6 +16,10 @@ import {
   Heart,
   User,
   LogOut,
+  Youtube,
+  Instagram,
+  Facebook,
+  Twitter,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
@@ -236,95 +240,104 @@ export default function PublicLayout() {
 
       </AnimatePresence>
 
-      <footer
-        className=" text-white mt-16"
-        style={{
-          backgroundImage: `url(${footerBg})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 grid gap-8 md:grid-cols-4">
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <div className="grid h-9 w-9 place-items-center rounded-xl bg-accent">
-                <Car className="h-5 w-5" />
-              </div>
-              <div className="font-display font-black text-lg">CAPL</div>
-            </div>
-            <p className="text-sm text-white/70">
-              India's most trusted used-car dealer marketplace. Verified
-              inventory across 150+ cities.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-bold mb-3">Explore</h4>
-            <ul className="space-y-2 text-sm text-white/70">
-              <li>
-                <Link to="/cars" className="hover:text-white">
-                  Browse Cars
-                </Link>
-              </li>
-              <li>
-                <Link to="/primium" className="hover:text-white">
-                  Primium Cars
-                </Link>
-              </li>
-              <li>
-                <Link to="/auth/register" className="hover:text-white">
-                  Dealer Registration
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-bold mb-3">Company</h4>
-            <ul className="space-y-2 text-sm text-white/70">
-              <li>
-                <Link to="/contact" className="hover:text-white">
-                  Contact
-                </Link>
-              </li>
-              <li>
-                <Link to="/about" className="hover:text-white">
-                  About
-                </Link>
-              </li>
-              <li>
-                <Link to="/privacy-policy" className="hover:text-white">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link to="/terms" className="hover:text-white">
-                  Terms &amp; Conditions
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-bold mb-3">Reach us</h4>
-            <ul className="space-y-2 text-sm text-white/70">
-              <li className="flex items-center gap-2">
-                <Phone className="h-4 w-4" /> +91 1800 123 4567
-              </li>
-              <li className="flex items-center gap-2">
-                <Mail className="h-4 w-4" /> hello@CAPL.in
-              </li>
-              <li className="flex items-center gap-2">
-                <MapPin className="h-4 w-4" /> Mumbai · Delhi · Bangalore
-              </li>
-            </ul>
-          </div>
+      <footer className="relative text-white mt-16 overflow-hidden bg-[#0c1328]">
+        {/* Giant watermark background spanning the bottom */}
+        <div className="absolute inset-x-0 bottom-0 flex items-end justify-center pointer-events-none select-none z-0">
+          <span className="text-[18vw] font-black uppercase tracking-[0.2em] text-white/[0.015] leading-none translate-y-[15%]">
+            CAPL
+          </span>
         </div>
-        <div className="relative overflow-hidden border-t border-white/10 bg-zinc-950/85 py-8">
-          {/* Giant watermark background */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0">
-            <span className="text-[12vw] font-black uppercase tracking-[0.25em] text-white/[0.03] leading-none">
-              CAPL
+
+        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+
+          {/* Top Explore bar */}
+          <div className="mb-8">
+            <span className="text-xs font-bold text-white/95 uppercase tracking-wider flex items-center gap-1.5">
+              <span className="text-blue-400 font-extrabold text-sm">+</span> Explore more on CAPL
             </span>
           </div>
 
+          {/* 4-Column Grid */}
+          <div className="grid gap-10 md:grid-cols-4">
+            {/* Col 1: Logo & Description */}
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="grid h-9 w-9 place-items-center rounded-xl gradient-primary text-white">
+                  <Car className="h-5 w-5" />
+                </div>
+                <div className="font-display font-black text-lg">CAPL</div>
+              </div>
+              <p className="text-sm text-white/70 leading-relaxed">
+                India's most trusted used-car dealer marketplace. Verified
+                inventory across 150+ cities.
+              </p>
+            </div>
+
+            {/* Col 2: Explore */}
+            <div>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-white mb-4">Explore</h4>
+              <ul className="space-y-2.5 text-sm text-white/70">
+                <li>
+                  <Link to="/cars" className="transition-colors duration-200 hover:text-blue-400">
+                    Browse Cars
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/premium" className="transition-colors duration-200 hover:text-blue-400">
+                    Premium Cars
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/auth/register" className="transition-colors duration-200 hover:text-blue-400">
+                    Dealer Registration
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Col 3: Company */}
+            <div>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-white mb-4">Company</h4>
+              <ul className="space-y-2.5 text-sm text-white/70">
+
+                <li>
+                  <Link to="/about" className="transition-colors duration-200 hover:text-blue-400">
+                    About
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/privacy-policy" className="transition-colors duration-200 hover:text-blue-400">
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/terms" className="transition-colors duration-200 hover:text-blue-400">
+                    Terms &amp; Conditions
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Col 4: Reach us */}
+            <div>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-white mb-4">Reach us</h4>
+              <ul className="space-y-2.5 text-sm text-white/70">
+                <li className="flex items-center gap-2.5">
+                  <Phone className="h-4 w-4 text-blue-400 shrink-0" /> +91 1800 123 4567
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <Mail className="h-4 w-4 text-blue-400 shrink-0" /> hello@CAPL.in
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <MapPin className="h-4 w-4 text-blue-400 shrink-0" /> Mumbai · Delhi · Bangalore
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom bar */}
+        <div className="relative z-10 border-t border-white/10 py-8">
           <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/50">
             <span>
               Copyright © {new Date().getFullYear()} CAPL. All Rights Reserved.

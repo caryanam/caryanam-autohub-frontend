@@ -35,7 +35,29 @@ import {
 import { useCustomer, getStoredCustomer } from "@/hooks/public/useCustomerAuth";
 import { toast } from "sonner";
 import { AuthModal } from "@/components/shared/AuthModal";
-import hero from "@/assets/hero1.mp4";
+import hero from "@/assets/hero2.mp4";
+
+import kia from '@/assets/BrandLogo/kia.jpg';
+import honda from "@/assets/BrandLogo/honda.png";
+import hyundai from "@/assets/BrandLogo/hyundai.png";
+import mahindra from "@/assets/BrandLogo/mahindra.webp";
+import marutisuzuki from "@/assets/BrandLogo/maruti-suzuki.png";
+import tata from "@/assets/BrandLogo/Tata.png";
+import Toyota from "@/assets/BrandLogo/Toyota.avif";
+import mg from "@/assets/BrandLogo/mg.png";
+
+const BRAND_LOGOS: Record<string, string> = {
+  Hyundai: hyundai,
+  "Maruti Suzuki": marutisuzuki,
+  Tata: tata,
+  Mahindra: mahindra,
+  Toyota: Toyota,
+  Honda: honda,
+  Kia: kia,
+  MG: mg,
+};
+
+
 
 const stats = [
   { label: "Verified Dealers", value: "500+" },
@@ -67,23 +89,7 @@ const why = [
   },
 ];
 
-const testimonials = [
-  {
-    name: "Rohit Mehra",
-    role: "Buyer · Pune",
-    text: "Found a certified 2022 Creta in 3 days. Dealer was responsive, paperwork was clean.",
-  },
-  {
-    name: "Mumbai Motors",
-    role: "Verified Dealer",
-    text: "CAPL doubled our lead flow in the first month. The premium plan is well worth it.",
-  },
-  {
-    name: "Priya Nair",
-    role: "Buyer · Bangalore",
-    text: "Loved the transparency — verified badges and direct dealer contact saved me hours.",
-  },
-];
+
 
 export default function Home() {
   const {
@@ -340,9 +346,13 @@ export default function Home() {
               <Link key={b} to={`/cars?brand=${encodeURIComponent(b)}`}>
                 <Card className="hover:shadow-premium hover:border-accent/50 transition-all hover:-translate-y-0.5">
                   <CardContent className="p-5 text-center">
-                    <div className="w-12 h-12 mx-auto rounded-xl gradient-premium grid place-items-center text-white font-display font-black">
-                      {b[0]}
-                    </div>
+                    <img
+                      src={BRAND_LOGOS[b]}
+                      alt={`${b} logo`}
+                      className="w-12 h-12 mx-auto rounded-full object-contain"
+                    />
+
+
                     <div className="mt-2 text-sm font-semibold">{b}</div>
                   </CardContent>
                 </Card>

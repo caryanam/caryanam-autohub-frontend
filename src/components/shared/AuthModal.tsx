@@ -8,6 +8,11 @@ import {
   useCustomerRegister,
   type CustomerUser,
 } from "@/hooks/public/useCustomerAuth";
+import {
+  useCustomerSendOtp,
+  useCustomerVerifyOtp,
+  useCustomerResetPassword,
+} from "@/hooks/auth/resetPassword";
 import { toast } from "sonner";
 import {
   Mail,
@@ -20,6 +25,7 @@ import {
   CheckCircle2,
   ShieldCheck,
   BadgeCheck,
+  Loader2,
 } from "lucide-react";
 
 interface AuthModalProps {
@@ -29,7 +35,7 @@ interface AuthModalProps {
 }
 
 export function AuthModal({ open, onOpenChange, onSuccess }: AuthModalProps) {
-  const [tab, setTab] = useState<"login" | "register">("login");
+  const [tab, setTab] = useState<"login" | "register" | "forgot">("login");
   const [registerDone, setRegisterDone] = useState(false);
 
   const handleRegisterSuccess = () => {
@@ -100,43 +106,51 @@ export function AuthModal({ open, onOpenChange, onSuccess }: AuthModalProps) {
             <div className="space-y-6 my-auto">
               <div className="space-y-1">
                 <h2 className="font-display text-2xl font-black tracking-tight text-foreground">
-                  {tab === "login" ? "Welcome back" : "Create account"}
+                  {tab === "login"
+                    ? "Welcome back"
+                    : tab === "register"
+                    ? "Create account"
+                    : "Reset password"}
                 </h2>
                 <p className="text-sm text-muted-foreground">
                   {tab === "login"
                     ? "Enter your credentials to access your account."
-                    : "Register to unlock direct contact and wishlists."}
+                    : tab === "register"
+                    ? "Register to unlock direct contact and wishlists."
+                    : "Follow the steps to reset your account password."}
                 </p>
               </div>
 
               {/* Tabs Toggle */}
-              <div className="flex rounded-xl bg-muted p-1 gap-1">
-                <button
-                  type="button"
-                  onClick={() => setTab("login")}
-                  className={`flex-1 rounded-lg py-2 text-sm font-semibold transition-all ${
-                    tab === "login"
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  Login
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setTab("register");
-                    setRegisterDone(false);
-                  }}
-                  className={`flex-1 rounded-lg py-2 text-sm font-semibold transition-all ${
-                    tab === "register"
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  Register
-                </button>
-              </div>
+              {tab !== "forgot" && (
+                <div className="flex rounded-xl bg-muted p-1 gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setTab("login")}
+                    className={`flex-1 rounded-lg py-2 text-sm font-semibold transition-all ${
+                      tab === "login"
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    Login
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTab("register");
+                      setRegisterDone(false);
+                    }}
+                    className={`flex-1 rounded-lg py-2 text-sm font-semibold transition-all ${
+                      tab === "register"
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    Register
+                  </button>
+                </div>
+              )}
 
               {/* Successful registration notice */}
               {registerDone && (
@@ -157,9 +171,12 @@ export function AuthModal({ open, onOpenChange, onSuccess }: AuthModalProps) {
                     onSuccess(u);
                     handleOpenChange(false);
                   }}
+                  onForgotPassword={() => setTab("forgot")}
                 />
-              ) : (
+              ) : tab === "register" ? (
                 <RegisterForm onSuccess={handleRegisterSuccess} />
+              ) : (
+                <ForgotPasswordForm onBackToLogin={() => setTab("login")} />
               )}
             </div>
           </div>
@@ -169,7 +186,13 @@ export function AuthModal({ open, onOpenChange, onSuccess }: AuthModalProps) {
   );
 }
 
-function LoginForm({ onSuccess }: { onSuccess: (u: CustomerUser) => void }) {
+function LoginForm({
+  onSuccess,
+  onForgotPassword,
+}: {
+  onSuccess: (u: CustomerUser) => void;
+  onForgotPassword: () => void;
+}) {
   const { isLoggingIn, login } = useCustomerLogin();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -233,6 +256,16 @@ function LoginForm({ onSuccess }: { onSuccess: (u: CustomerUser) => void }) {
             )}
           </button>
         </div>
+      </div>
+
+      <div className="flex justify-end mt-1">
+        <button
+          type="button"
+          onClick={onForgotPassword}
+          className="text-xs font-semibold text-primary hover:underline bg-transparent border-0 cursor-pointer"
+        >
+          Forgot password?
+        </button>
       </div>
 
       {err && (
@@ -390,5 +423,260 @@ function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
         {isSubmitting ? "Creating account…" : "Create Account"}
       </Button>
     </form>
+  );
+}
+
+function ForgotPasswordForm({ onBackToLogin }: { onBackToLogin: () => void }) {
+  const [step, setStep] = useState<"send" | "verify" | "reset">("send");
+  const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [err, setErr] = useState("");
+
+  const { isPending: sendingOtp, sendOtp } = useCustomerSendOtp();
+  const { isPending: verifyingOtp, verifyOtp } = useCustomerVerifyOtp();
+  const { isPending: resettingPassword, resetPassword } = useCustomerResetPassword();
+
+  const handleSendOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErr("");
+    try {
+      const res = await sendOtp(email);
+      toast.success(
+        typeof res === "string"
+          ? res
+          : (res?.message || res?.data?.message || "OTP sent to your email")
+      );
+      setStep("verify");
+    } catch (error: any) {
+      setErr(error.message);
+    }
+  };
+
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErr("");
+    try {
+      const res = await verifyOtp({ email, otp });
+      toast.success(
+        typeof res === "string"
+          ? res
+          : (res?.message || res?.data?.message || "OTP verified successfully")
+      );
+      setStep("reset");
+    } catch (error: any) {
+      setErr(error.message);
+    }
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErr("");
+    if (newPassword !== confirmPassword) {
+      setErr("Passwords do not match");
+      return;
+    }
+    try {
+      const res = await resetPassword({ email, otp, newPassword });
+      toast.success(
+        typeof res === "string"
+          ? res
+          : (res?.message || res?.data?.message || "Password changed successfully")
+      );
+      onBackToLogin();
+    } catch (error: any) {
+      setErr(error.message);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Step indicators */}
+      <div className="flex items-center gap-2 mb-2">
+        {(["send", "verify", "reset"] as const).map((s, i) => (
+          <div key={s} className="flex items-center gap-2">
+            <div
+              className={`h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold ${
+                step === s
+                  ? "gradient-primary text-white"
+                  : (step === "verify" && i === 0) || (step === "reset" && i <= 1)
+                  ? "bg-green-100 text-green-700"
+                  : "bg-muted text-muted-foreground"
+              }`}
+            >
+              {i + 1}
+            </div>
+            {i < 2 && <div className="h-px w-8 bg-muted" />}
+          </div>
+        ))}
+        <span className="ml-2 text-xs text-muted-foreground">
+          {step === "send"
+            ? "Enter email"
+            : step === "verify"
+            ? "Enter OTP"
+            : "Set password"}
+        </span>
+      </div>
+
+      {err && (
+        <div className="text-xs font-semibold text-red-500 bg-red-50/50 border border-red-100 rounded-lg p-2.5">
+          {err}
+        </div>
+      )}
+
+      {/* Step 1: Send OTP */}
+      {step === "send" && (
+        <form onSubmit={handleSendOtp} className="space-y-4">
+          <div className="space-y-1.5">
+            <Label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              Email Address
+            </Label>
+            <div className="relative">
+              <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/75" />
+              <Input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="name@example.com"
+                className="h-11 pl-11 rounded-xl bg-muted/30 focus-visible:ring-offset-0 focus-visible:ring-accent"
+                required
+              />
+            </div>
+          </div>
+
+          <Button
+            type="submit"
+            className="w-full h-11 rounded-xl gradient-primary text-white border-0 hover:opacity-90 font-semibold transition-all hover:shadow-md"
+            disabled={sendingOtp}
+          >
+            {sendingOtp && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Send OTP
+          </Button>
+        </form>
+      )}
+
+      {/* Step 2: Verify OTP */}
+      {step === "verify" && (
+        <form onSubmit={handleVerifyOtp} className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            OTP sent to <span className="font-semibold text-foreground">{email}</span>
+          </p>
+          <div className="space-y-1.5">
+            <Label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              Enter OTP
+            </Label>
+            <Input
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+              placeholder="6-digit OTP"
+              maxLength={6}
+              className="h-11 rounded-xl tracking-widest text-center text-lg bg-muted/30 focus-visible:ring-offset-0 focus-visible:ring-accent"
+              required
+            />
+          </div>
+
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              className="flex-1 h-11 rounded-xl"
+              onClick={() => setStep("send")}
+            >
+              Back
+            </Button>
+            <Button
+              type="submit"
+              className="flex-1 h-11 rounded-xl gradient-primary text-white border-0 hover:opacity-90 font-semibold"
+              disabled={verifyingOtp}
+            >
+              {verifyingOtp && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Verify OTP
+            </Button>
+          </div>
+
+          <button
+            type="button"
+            className="text-xs text-primary underline w-full text-center hover:opacity-80 bg-transparent border-0 cursor-pointer"
+            onClick={handleSendOtp as any}
+            disabled={sendingOtp}
+          >
+            Resend OTP
+          </button>
+        </form>
+      )}
+
+      {/* Step 3: Reset Password */}
+      {step === "reset" && (
+        <form onSubmit={handleResetPassword} className="space-y-4">
+          <div className="space-y-1.5">
+            <Label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              New Password
+            </Label>
+            <div className="relative">
+              <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/75" />
+              <Input
+                type={showPassword ? "text" : "password"}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="••••••••"
+                className="h-11 pl-11 pr-10 rounded-xl bg-muted/30 focus-visible:ring-offset-0 focus-visible:ring-accent"
+                minLength={6}
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-accent transition-colors"
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </button>
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              Confirm New Password
+            </Label>
+            <div className="relative">
+              <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/75" />
+              <Input
+                type={showPassword ? "text" : "password"}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="••••••••"
+                className="h-11 pl-11 pr-10 rounded-xl bg-muted/30 focus-visible:ring-offset-0 focus-visible:ring-accent"
+                minLength={6}
+                required
+              />
+            </div>
+          </div>
+
+          <Button
+            type="submit"
+            className="w-full h-11 rounded-xl gradient-primary text-white border-0 hover:opacity-90 font-semibold"
+            disabled={resettingPassword}
+          >
+            {resettingPassword && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Reset Password
+          </Button>
+        </form>
+      )}
+
+      {step === "send" && (
+        <button
+          type="button"
+          onClick={onBackToLogin}
+          className="text-xs text-primary underline w-full text-center hover:opacity-80 bg-transparent border-0 cursor-pointer mt-2"
+        >
+          Back to Login
+        </button>
+      )}
+    </div>
   );
 }

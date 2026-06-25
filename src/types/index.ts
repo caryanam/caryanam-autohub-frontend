@@ -34,6 +34,8 @@ export interface Vehicle {
   vehicleType?: string;
   images?: string[];
   videos?: string[];
+  rtoInformation?: string;
+  financeAvailability?: boolean;
 }
 
 export interface Dealer {
@@ -59,12 +61,14 @@ export interface Dealer {
 export interface Lead {
   id: string;
   customerName: string;
+  uniqueLeadId: string;
   mobile: string;
   vehicleId: string;
   vehicleTitle: string;
   dealerId: string;
   status: LeadStatus;
   createdAt: string;
+  customerCity?: string;
 }
 
 export interface SubscriptionPlan {

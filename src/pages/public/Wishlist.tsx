@@ -33,7 +33,7 @@ export default function Wishlist() {
       <SEO title="My Wishlist — CAPL" description="Your saved cars on CAPL." />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center gap-3 mb-8">
-          <Heart className="h-7 w-7 text-accent fill-accent animate-pulse" />
+
           <h1 className="font-display text-3xl font-black tracking-tight">My Wishlist</h1>
         </div>
 

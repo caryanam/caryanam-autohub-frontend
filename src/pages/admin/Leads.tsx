@@ -16,11 +16,11 @@ import { Search, RefreshCw } from "lucide-react";
 import { useAdminLeads, type AdminLead } from "@/hooks/admin/useAdminLeads";
 
 const leadStatusStyle: Record<string, string> = {
-  NEW: "bg-blue-50 text-blue-700 border-blue-200",
-  CONVERTED: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  CLOSED: "bg-slate-100 text-slate-500 border-slate-200",
-  PENDING: "bg-amber-50 text-amber-700 border-amber-200",
-  CONTACTED: "bg-amber-50 text-amber-700 border-amber-200",
+  NEW: "bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200",
+  CONVERTED: "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200",
+  CLOSED: "bg-slate-100 text-slate-500 border-slate-200 hover:bg-slate-100 hover:text-slate-500 hover:border-slate-200",
+  PENDING: "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-50 hover:text-amber-700 hover:border-amber-200",
+  CONTACTED: "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-50 hover:text-amber-700 hover:border-amber-200",
 };
 
 export default function AdminLeads() {
@@ -104,6 +104,9 @@ export default function AdminLeads() {
                 <TableHead className="w-16 text-center text-xs font-bold text-slate-100 uppercase tracking-wider py-4">
                   Sr No
                 </TableHead>
+                <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider text-center py-4">
+                  Lead Id
+                </TableHead>
                 <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4">
                   Customer
                 </TableHead>
@@ -171,6 +174,9 @@ export default function AdminLeads() {
                   >
                     <TableCell className="text-center text-slate-400 text-sm font-medium py-4">
                       {idx + 1}
+                    </TableCell>
+                    <TableCell className="font-semibold capitalize text-slate-900 text-center text-sm py-4">
+                      {l.uniqueLeadId || "-"}
                     </TableCell>
                     <TableCell className="font-semibold capitalize text-slate-900 text-sm py-4">
                       {l.customerName}

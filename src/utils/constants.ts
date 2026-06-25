@@ -1,3 +1,5 @@
+
+
 import type { FuelType, Transmission, Ownership } from "@/types";
 
 export const BUDGET_BANDS = [

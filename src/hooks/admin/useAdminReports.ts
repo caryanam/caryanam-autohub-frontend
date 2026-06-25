@@ -21,7 +21,7 @@ async function downloadReport(
     ? filenameMatch[1].replace(/['"]/g, "")
     : null;
 
-  const contentType = response.headers["content-type"] ?? "";
+  const contentType = String(response.headers["content-type"] ?? "");
   let ext = ".csv";
   if (contentType.includes("pdf")) ext = ".pdf";
   else if (

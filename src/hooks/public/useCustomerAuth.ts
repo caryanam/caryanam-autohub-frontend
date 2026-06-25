@@ -205,3 +205,5 @@ export function getCustomerId(): string | null {
   return resolvedId ? String(resolvedId) : null;
 }
 
+
+

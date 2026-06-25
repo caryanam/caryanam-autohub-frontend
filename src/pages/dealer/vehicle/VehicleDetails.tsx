@@ -15,6 +15,8 @@ import {
   Shield,
   Phone,
   Mail,
+  DollarSign,
+  FileText,
 } from "lucide-react";
 import { useState } from "react";
 import { useGetVehicleDetails } from "@/hooks/dealer/useGetVehicleDetails";
@@ -181,6 +183,18 @@ export default function DealerVehicleDetails() {
               icon={<Shield className="h-4 w-4" />}
               label="Insurance Status"
               value={vehicle.insuranceStatus}
+            />
+            {vehicle.rtoInformation && (
+              <SpecBox
+                icon={<FileText className="h-4 w-4" />}
+                label="RTO Info"
+                value={vehicle.rtoInformation}
+              />
+            )}
+            <SpecBox
+              icon={<DollarSign className="h-4 w-4" />}
+              label="Finance"
+              value={vehicle.financeAvailability ? "Available" : "Not Available"}
             />
           </div>
 

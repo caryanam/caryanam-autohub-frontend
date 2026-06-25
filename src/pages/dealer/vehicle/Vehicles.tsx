@@ -6,6 +6,7 @@ import {
   Search,
   RefreshCw,
   Eye,
+  Download,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -100,6 +101,78 @@ export default function DealerVehicles() {
     );
   });
 
+  const handleExportCSV = () => {
+    const headers = [
+      "Sr No",
+      "Brand",
+      "Model",
+      "Variant",
+      "Registration Year",
+      "KM Driven",
+      "Asking Price",
+      "Fuel Type",
+      "Transmission",
+      "Ownership",
+      "City",
+      "Vehicle Type",
+      "Insurance Status",
+      "Status",
+      "RTO Info",
+      "Finance Availability"
+    ];
+
+    const csvData = filteredVehicles.map((v, idx) => ({
+      srNo: idx + 1,
+      brand: v.brand || "",
+      model: v.model || "",
+      variant: v.variant || "",
+      registrationYear: v.registrationYear || "",
+      kilometerDriven: v.kilometerDriven || 0,
+      askingPrice: v.askingPrice || 0,
+      fuelType: v.fuelType || "",
+      transmission: v.transmission || "",
+      ownershipDetails: v.ownershipDetails || "",
+      city: v.city || "",
+      vehicleType: v.vehicleType || "NON_PREMIUM",
+      insuranceStatus: v.insuranceStatus || "",
+      vehicleStatus: v.vehicleStatus || "",
+      rtoInformation: v.rtoInformation || "",
+      financeAvailability: v.financeAvailability !== undefined ? (v.financeAvailability ? "Available" : "Not Available") : "Available",
+    }));
+
+    const csvContent = [
+      headers.join(","),
+      ...csvData.map(row => [
+        row.srNo,
+        `"${row.brand.replace(/"/g, '""')}"`,
+        `"${row.model.replace(/"/g, '""')}"`,
+        `"${row.variant.replace(/"/g, '""')}"`,
+        row.registrationYear,
+        row.kilometerDriven,
+        row.askingPrice,
+        `"${row.fuelType.replace(/"/g, '""')}"`,
+        `"${row.transmission.replace(/"/g, '""')}"`,
+        `"${row.ownershipDetails.replace(/"/g, '""')}"`,
+        `"${row.city.replace(/"/g, '""')}"`,
+        `"${row.vehicleType.replace(/"/g, '""')}"`,
+        `"${row.insuranceStatus.replace(/"/g, '""')}"`,
+        `"${row.vehicleStatus.replace(/"/g, '""')}"`,
+        `"${row.rtoInformation.replace(/"/g, '""')}"`,
+        `"${row.financeAvailability.replace(/"/g, '""')}"`
+      ].join(","))
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `inventory_export_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -122,6 +195,16 @@ export default function DealerVehicles() {
               className="pl-9 h-10 bg-white rounded-xl w-full"
             />
           </div>
+
+          <Button
+            variant="outline"
+            onClick={handleExportCSV}
+            disabled={filteredVehicles.length === 0}
+            className="gap-2 h-10 bg-white rounded-xl hover:bg-slate-50 hover:text-slate-900 shrink-0"
+          >
+            <Download className="h-4 w-4" />
+            <span className="hidden md:inline">Export CSV</span>
+          </Button>
 
           <Button
             variant="outline"
@@ -254,11 +337,10 @@ export default function DealerVehicles() {
                               {v.registrationYear} {v.brand} {v.model}
                               {v.vehicleType && (
                                 <Badge
-                                  className={`${
-                                    v.vehicleType === "PREMIUM"
+                                  className={`${v.vehicleType === "PREMIUM"
                                       ? "bg-amber-100 text-amber-700 hover:bg-amber-100"
                                       : "bg-slate-100 text-slate-700 hover:bg-slate-100"
-                                  } border-0 text-[10px] px-1.5 py-0.5 font-bold rounded`}
+                                    } border-0 text-[10px] px-1.5 py-0.5 font-bold rounded`}
                                 >
                                   {v.vehicleType}
                                 </Badge>
@@ -289,13 +371,12 @@ export default function DealerVehicles() {
                           disabled={statusMutation.isPending}
                         >
                           <SelectTrigger
-                            className={`h-8 w-[110px] text-[11px] font-bold border-0 rounded-full px-3 py-1 shadow-sm shrink-0 cursor-pointer ${
-                              v.vehicleStatus === "ACTIVE"
+                            className={`h-8 w-[110px] text-[11px] font-bold border-0 rounded-full px-3 py-1 shadow-sm shrink-0 cursor-pointer ${v.vehicleStatus === "ACTIVE"
                                 ? "bg-emerald-50 text-emerald-700 hover:bg-emerald-100/80"
                                 : v.vehicleStatus === "INACTIVE"
                                   ? "bg-rose-50 text-rose-700 hover:bg-rose-100/80"
                                   : "bg-amber-50 text-amber-700 hover:bg-amber-100/80"
-                            }`}
+                              }`}
                           >
                             <SelectValue />
                           </SelectTrigger>

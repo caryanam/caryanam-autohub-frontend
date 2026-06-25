@@ -20,6 +20,8 @@ import {
   Star,
   Heart,
   Car,
+  FileText,
+  DollarSign,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -384,6 +386,18 @@ export default function CarDetails() {
                       value={vehicle.vehicleType}
                     />
                   )}
+                  {vehicle.rtoInformation && (
+                    <Spec
+                      icon={<FileText className="h-4 w-4" />}
+                      label="RTO Info"
+                      value={vehicle.rtoInformation}
+                    />
+                  )}
+                  <Spec
+                    icon={<DollarSign className="h-4 w-4" />}
+                    label="Finance"
+                    value={vehicle.financeAvailability ? "Available" : "Not Available"}
+                  />
                 </div>
               </CardContent>
             </Card>

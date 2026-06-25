@@ -4,18 +4,19 @@ import apiClient from "@/lib/apiClient";
 export interface AdminLead {
   id: number;
   customerName: string;
+  uniqueLeadId: string;
   customerMobile: string;
   customerCity: string;
   enquiryDate: string;
   leadStatus: string;
   vehicleName:
-    | {
-        brand: string;
-        model: string;
-        variant: string;
-      }
-    | string
-    | null;
+  | {
+    brand: string;
+    model: string;
+    variant: string;
+  }
+  | string
+  | null;
 }
 
 export function useAdminLeads() {
@@ -30,10 +31,10 @@ export function useAdminLeads() {
         vehicleName:
           l.vehicleName && typeof l.vehicleName === "object"
             ? {
-                brand: l.vehicleName.brand,
-                model: l.vehicleName.model,
-                variant: l.vehicleName.variant,
-              }
+              brand: l.vehicleName.brand,
+              model: l.vehicleName.model,
+              variant: l.vehicleName.variant,
+            }
             : l.vehicleName,
       }));
     },

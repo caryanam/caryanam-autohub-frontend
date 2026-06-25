@@ -85,9 +85,10 @@ export default function DealerProfile() {
       });
       updateUserFields({ businessName, ownerName });
       toast.success("Profile updated successfully");
-    } catch (err) {
+    } catch (err: any) {
       toast.error(
-        err instanceof Error ? err.message : "Failed to update profile",
+        err?.response?.data?.message ||
+          (err instanceof Error ? err.message : String(err))
       );
     }
   };
@@ -118,22 +119,36 @@ export default function DealerProfile() {
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await sendOtpMutation.mutateAsync(email);
-      toast.success("OTP sent to your email");
+      const res = await sendOtpMutation.mutateAsync(email);
+      toast.success(
+        typeof res === "string"
+          ? res
+          : (res?.message || res?.data?.message || "OTP sent to your email")
+      );
       setStep("verify");
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to send OTP");
+    } catch (err: any) {
+      toast.error(
+        err?.response?.data?.message ||
+          (err instanceof Error ? err.message : String(err))
+      );
     }
   };
 
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await verifyOtpMutation.mutateAsync({ email, otp });
-      toast.success("OTP verified");
+      const res = await verifyOtpMutation.mutateAsync({ email, otp });
+      toast.success(
+        typeof res === "string"
+          ? res
+          : (res?.message || res?.data?.message || "OTP verified")
+      );
       setStep("reset");
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Invalid OTP");
+    } catch (err: any) {
+      toast.error(
+        err?.response?.data?.message ||
+          (err instanceof Error ? err.message : String(err))
+      );
     }
   };
 
@@ -144,16 +159,21 @@ export default function DealerProfile() {
       return;
     }
     try {
-      await resetPasswordMutation.mutateAsync({
+      const res = await resetPasswordMutation.mutateAsync({
         email,
         oldPassword,
         newPassword,
       });
-      toast.success("Password changed successfully");
+      toast.success(
+        typeof res === "string"
+          ? res
+          : (res?.message || res?.data?.message || "Password changed successfully")
+      );
       setPwModal(false);
-    } catch (err) {
+    } catch (err: any) {
       toast.error(
-        err instanceof Error ? err.message : "Failed to reset password",
+        err?.response?.data?.message ||
+          (err instanceof Error ? err.message : String(err))
       );
     }
   };

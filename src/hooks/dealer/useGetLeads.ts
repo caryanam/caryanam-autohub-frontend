@@ -14,6 +14,7 @@ export class LeadError extends Error {
 
 export interface ApiLead {
   id: number;
+  uniqueLeadId: string;
   customerName: string;
   customerMobile: string;
   customerEmail: string;
@@ -46,6 +47,7 @@ export function useGetLeads(dealerId: string) {
         if (!Array.isArray(data)) return [];
         return data.map((l: ApiLead) => ({
           id: String(l.id),
+          uniqueLeadId: l.uniqueLeadId,
           customerName: l.customerName,
           mobile: l.customerMobile,
           vehicleId: "",
@@ -53,6 +55,7 @@ export function useGetLeads(dealerId: string) {
           dealerId: String(l.dealer),
           status: statusMapToFrontend[l.leadStatus] || "New",
           createdAt: l.enquiryDate,
+          customerCity: l.customerCity || "",
         }));
       } catch (err) {
         if (axios.isAxiosError(err)) {

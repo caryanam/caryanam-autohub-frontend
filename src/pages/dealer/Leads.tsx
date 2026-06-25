@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Phone, MessageCircle, Search, RefreshCw } from "lucide-react";
+import { Phone, MessageCircle, Search, RefreshCw, Download } from "lucide-react";
 import { useDealerAuth } from "@/contexts/DealerAuthContext";
 import { useState } from "react";
 import type { LeadStatus } from "@/types";
@@ -61,10 +61,49 @@ export default function DealerLeads() {
     return (
       l.customerName?.toLowerCase().includes(searchLower) ||
       l.mobile?.toLowerCase().includes(searchLower) ||
+      l.customerCity?.toLowerCase().includes(searchLower) ||
       l.vehicleTitle?.toLowerCase().includes(searchLower) ||
       l.status?.toLowerCase().includes(searchLower)
     );
   });
+
+  const handleExportCSV = () => {
+    const headers = ["Sr No", "Lead ID", "Customer Name", "Mobile", "City", "Vehicle", "Date", "Status"];
+    const csvData = filteredLeads.map((l, idx) => ({
+      srNo: idx + 1,
+      uniqueLeadId: l.uniqueLeadId || "",
+      customerName: l.customerName || "",
+      mobile: l.mobile || "",
+      customerCity: l.customerCity || "",
+      vehicleTitle: l.vehicleTitle || "",
+      createdAt: formatDate(l.createdAt),
+      status: l.status || "",
+    }));
+
+    const csvContent = [
+      headers.join(","),
+      ...csvData.map(row => [
+        row.srNo,
+        `"${row.uniqueLeadId.replace(/"/g, '""')}"`,
+        `"${row.customerName.replace(/"/g, '""')}"`,
+        `"${row.mobile.replace(/"/g, '""')}"`,
+        `"${row.customerCity.replace(/"/g, '""')}"`,
+        `"${row.vehicleTitle.replace(/"/g, '""')}"`,
+        `"${row.createdAt.replace(/"/g, '""')}"`,
+        `"${row.status.replace(/"/g, '""')}"`
+      ].join(","))
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `leads_export_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <div className="space-y-4">
@@ -91,6 +130,16 @@ export default function DealerLeads() {
 
           <Button
             variant="outline"
+            onClick={handleExportCSV}
+            disabled={filteredLeads.length === 0}
+            className="gap-2 h-10 bg-white rounded-xl hover:bg-slate-50 hover:text-slate-900 shrink-0"
+          >
+            <Download className="h-4 w-4" />
+            <span className="hidden md:inline">Export CSV</span>
+          </Button>
+
+          <Button
+            variant="outline"
             size="icon"
             onClick={() => refetch()}
             disabled={fetching || isRefetching}
@@ -111,11 +160,17 @@ export default function DealerLeads() {
                 <TableHead className="w-16 text-center text-xs font-bold text-slate-100 uppercase tracking-wider py-4">
                   Sr No
                 </TableHead>
+                <TableHead className="w-16 text-center text-xs font-bold text-slate-100 uppercase tracking-wider py-4">
+                  Lead ID
+                </TableHead>
                 <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4">
                   Customer
                 </TableHead>
                 <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4">
                   Mobile
+                </TableHead>
+                <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4">
+                  City
                 </TableHead>
                 <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4">
                   Vehicle
@@ -126,9 +181,7 @@ export default function DealerLeads() {
                 <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4">
                   Status
                 </TableHead>
-                <TableHead className="text-right text-xs font-bold text-slate-100 uppercase tracking-wider py-4 pr-6">
-                  Actions
-                </TableHead>
+
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -151,6 +204,9 @@ export default function DealerLeads() {
                       <Skeleton className="h-4 w-32" />
                     </TableCell>
                     <TableCell className="py-4">
+                      <Skeleton className="h-4 w-16" />
+                    </TableCell>
+                    <TableCell className="py-4">
                       <Skeleton className="h-4 w-20" />
                     </TableCell>
                     <TableCell className="py-4">
@@ -167,7 +223,7 @@ export default function DealerLeads() {
               ) : filteredLeads.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={7}
+                    colSpan={8}
                     className="text-center py-12 text-muted-foreground font-medium"
                   >
                     {searchQuery
@@ -184,11 +240,17 @@ export default function DealerLeads() {
                     <TableCell className="text-center text-slate-400 text-sm font-medium py-4">
                       {idx + 1}
                     </TableCell>
-                    <TableCell className="font-semibold text-slate-900 text-left text-sm py-4">
-                      {l.customerName}
+                    <TableCell className="font-semibold capitalize text-slate-900 text-center text-sm py-4">
+                      {l.uniqueLeadId || "-"}
+                    </TableCell>
+                    <TableCell className="font-semibold capitalize text-slate-900 text-left text-sm py-4">
+                      {l.customerName || "N/A"}
                     </TableCell>
                     <TableCell className="text-sm text-slate-500 text-left py-4">
                       {l.mobile}
+                    </TableCell>
+                    <TableCell className="text-sm text-slate-500 text-left py-4 capitalize">
+                      {l.customerCity || "-"}
                     </TableCell>
                     <TableCell className="text-sm font-medium text-slate-600 truncate max-w-[240px] text-left py-4">
                       {l.vehicleTitle}
@@ -237,32 +299,7 @@ export default function DealerLeads() {
                         </SelectContent>
                       </Select>
                     </TableCell>
-                    <TableCell className="text-right py-4 pr-6">
-                      <div className="flex gap-1.5 justify-end">
-                        <a href={`tel:${l.mobile}`}>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-8 w-8 rounded-lg bg-slate-100 text-slate-400 hover:bg-slate-300 hover:text-slate-700 transition-colors cursor-pointer"
-                          >
-                            <Phone className="h-4 w-4" />
-                          </Button>
-                        </a>
-                        <a
-                          href={`https://wa.me/${l.mobile.replace(/\D/g, "")}`}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-8 w-8 rounded-lg bg-emerald-100 text-emerald-400 hover:bg-emerald-300 hover:text-emerald-600 transition-colors cursor-pointer"
-                          >
-                            <MessageCircle className="h-4 w-4" />
-                          </Button>
-                        </a>
-                      </div>
-                    </TableCell>
+
                   </TableRow>
                 ))
               )}

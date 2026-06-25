@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { useAddVehicle } from "@/hooks/dealer/useAddVehicle";
 import { useGetVehicleDetails } from "@/hooks/dealer/useGetVehicleDetails";
 import { useUpdateVehicle } from "@/hooks/dealer/useUpdateVehicle";
+import { Switch } from "@/components/ui/switch";
 
 export interface VehicleFormProps {
   vehicleId?: number;
@@ -70,6 +71,8 @@ export default function VehicleForm({
   const [kilometerDriven, setKilometerDriven] = useState("");
   const [insuranceStatus, setInsuranceStatus] = useState("");
   const [vehicleDescription, setVehicleDescription] = useState("");
+  const [rtoInformation, setRtoInformation] = useState("");
+  const [financeAvailability, setFinanceAvailability] = useState(true);
 
   useEffect(() => {
     if (vehicleDetails) {
@@ -96,6 +99,12 @@ export default function VehicleForm({
       setInsuranceStatus(vehicleDetails.insuranceStatus || "");
       setVehicleType(vehicleDetails.vehicleType || "NON_PREMIUM");
       setVehicleDescription(vehicleDetails.vehicleDescription || "");
+      setRtoInformation(vehicleDetails.rtoInformation || "");
+      setFinanceAvailability(
+        vehicleDetails.financeAvailability !== undefined
+          ? vehicleDetails.financeAvailability
+          : true,
+      );
     }
   }, [vehicleDetails]);
 
@@ -137,6 +146,8 @@ export default function VehicleForm({
       insuranceStatus,
       city,
       vehicleDescription,
+      rtoInformation,
+      financeAvailability,
     };
 
     try {
@@ -359,6 +370,29 @@ export default function VehicleForm({
               ))}
             </SelectContent>
           </Select>
+        </div>
+
+        <Field
+          label="RTO Information"
+          type="text"
+          placeholder="e.g. MH12"
+          value={rtoInformation}
+          onChange={(e) => setRtoInformation(e.target.value)}
+          required
+        />
+
+        <div className="text-left flex flex-col justify-end pb-1">
+          <Label className="mb-2">Finance Availability</Label>
+          <div className="flex items-center space-x-2 h-10 border rounded-md px-3 bg-background">
+            <Switch
+              id="financeAvailability"
+              checked={financeAvailability}
+              onCheckedChange={setFinanceAvailability}
+            />
+            <Label htmlFor="financeAvailability" className="text-sm font-medium cursor-pointer text-muted-foreground">
+              {financeAvailability ? "Available" : "Not Available"}
+            </Label>
+          </div>
         </div>
       </div>
 
