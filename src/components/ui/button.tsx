@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium cursor-pointer transition-all duration-300 active:scale-95 hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
@@ -42,14 +42,38 @@ export interface ButtonProps
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, children, ...props }, ref) => {
     const Comp = asChild ? Slot : "button";
+
+    const renderChildren = () => {
+      if (asChild) {
+        return children;
+      }
+      return React.Children.map(children, (child) => {
+        if (typeof child === "string" || typeof child === "number") {
+          return (
+            <span className="relative inline-block overflow-hidden h-[1.5em] leading-[1.5em] pointer-events-none">
+              <span className="block transition-transform duration-300 group-hover:-translate-y-full ease-out">
+                {child}
+              </span>
+              <span className="absolute inset-0 block transition-transform duration-300 translate-y-full group-hover:translate-y-0 ease-out">
+                {child}
+              </span>
+            </span>
+          );
+        }
+        return child;
+      });
+    };
+
     return (
       <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
+        className={cn(buttonVariants({ variant, size, className }), "group")}
         ref={ref}
         {...props}
-      />
+      >
+        {renderChildren()}
+      </Comp>
     );
   },
 );

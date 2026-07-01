@@ -340,9 +340,8 @@ export default function CarDetails() {
                             setActiveImg(i);
                           }
                         }}
-                        className={`relative aspect-[4/3] rounded-lg overflow-hidden border-2 transition-all cursor-pointer ${
-                          activeImg === i ? "border-rose-900" : "border-transparent opacity-85 hover:opacity-100"
-                        }`}
+                        className={`relative aspect-[4/3] rounded-lg overflow-hidden border-2 transition-all cursor-pointer ${activeImg === i ? "border-rose-900" : "border-transparent opacity-85 hover:opacity-100"
+                          }`}
                       >
                         <img
                           src={src}
@@ -685,7 +684,7 @@ export default function CarDetails() {
                           >
                             <Button
                               variant="outline"
-                              className="w-full gap-2 border-green-500 text-green-600 hover:bg-green-50 dark:hover:bg-green-950 font-semibold"
+                              className="w-full gap-2 border-green-500 text-green-600 hover:bg-green-50 hover:text-green-700 bg-green-50 font-semibold"
                             >
                               <MessageCircle className="h-4 w-4" /> WhatsApp
                             </Button>
@@ -870,9 +869,8 @@ export default function CarDetails() {
                 <button
                   key={i}
                   onClick={() => setActiveImg(i)}
-                  className={`shrink-0 aspect-[4/3] w-16 rounded-lg overflow-hidden border-2 transition-all cursor-pointer ${
-                    activeImg === i ? "border-rose-900 scale-105" : "border-transparent opacity-50 hover:opacity-85"
-                  }`}
+                  className={`shrink-0 aspect-[4/3] w-16 rounded-lg overflow-hidden border-2 transition-all cursor-pointer ${activeImg === i ? "border-rose-900 scale-105" : "border-transparent opacity-50 hover:opacity-85"
+                    }`}
                 >
                   <img
                     src={src}
