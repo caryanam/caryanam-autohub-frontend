@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { AuthModal } from "@/components/shared/AuthModal";
 import { motion } from "framer-motion";
@@ -26,25 +26,24 @@ export default function PremiumCars() {
 
   const {
     vehicles = [],
-    totalPages,
-    totalElements,
     loading,
     error,
     refetch,
     isRefetching,
-  } = usePremiumVehicles(page - 1, PAGE_SIZE);
+  } = usePremiumVehicles();
 
   const customer = useCustomer();
   const [authOpen, setAuthOpen] = useState(false);
 
+  const totalPages = Math.ceil(vehicles.length / PAGE_SIZE) || 1;
+  const paged = vehicles.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
   return (
     <div className="bg-gradient-to-b from-white via-rose-50/20 to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 min-h-screen pb-16">
       <SEO
-        title="Premium Cars Collection â€” Caryanam"
+        title="Premium Cars Collection — Caryanam"
         description="Explore our exclusive, hand-picked collection of premium luxury cars. Certified and verified with direct dealer contact."
       />
-
-
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         <div className="min-h-[500px]">
@@ -77,14 +76,14 @@ export default function PremiumCars() {
             </div>
           )}
 
-          {!error && !loading && vehicles.length > 0 && (
+          {!error && !loading && paged.length > 0 && (
             <motion.div
               variants={containerVariants}
               initial="hidden"
               animate="visible"
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
             >
-              {vehicles.map((v, i) => (
+              {paged.map((v, i) => (
                 <VehicleCard
                   key={v.id}
                   vehicle={v}

@@ -4,19 +4,22 @@ import type { Vehicle } from "@/types";
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:8081";
 
-interface SpringPageResponse {
-  content: Vehicle[];
-  totalPages: number;
-  totalElements: number;
-}
+type ApiResponse = Vehicle[] | {
+  status?: number;
+  message?: string;
+  data?: Vehicle[];
+  content?: Vehicle[];
+  totalPages?: number;
+  totalElements?: number;
+};
 
-export function useAllVehicles(page: number = 0, size: number = 7) {
+export function useAllVehicles() {
   const { data, isLoading, isError, error, refetch, isRefetching } =
-    useQuery<SpringPageResponse>({
-      queryKey: ["all-vehicles", page, size],
+    useQuery<ApiResponse>({
+      queryKey: ["all-vehicles"],
       queryFn: async () => {
         const res = await fetch(
-          `${API_BASE_URL}/api/vehicle/non-premium/all-vehicle?page=${page}&size=${size}`,
+          `${API_BASE_URL}/api/vehicle/non-premium/all-vehicle`,
         );
         const body = await res.json();
         if (!res.ok)
@@ -26,10 +29,24 @@ export function useAllVehicles(page: number = 0, size: number = 7) {
       staleTime: 1000 * 60 * 2, // 2 minutes
     });
 
+  let vehicles: Vehicle[] = [];
+  let totalPages = 1;
+  let totalElements = 0;
+
+  if (Array.isArray(data)) {
+    vehicles = data;
+    totalPages = 1;
+    totalElements = data.length;
+  } else if (data) {
+    vehicles = data.data || data.content || [];
+    totalPages = data.totalPages ?? 1;
+    totalElements = data.totalElements ?? vehicles.length;
+  }
+
   return {
-    vehicles: data?.content ?? [],
-    totalPages: data?.totalPages ?? 1,
-    totalElements: data?.totalElements ?? 0,
+    vehicles,
+    totalPages,
+    totalElements,
     loading: isLoading,
     error: isError ? (error?.message ?? "Failed to load vehicles") : null,
     refetch,

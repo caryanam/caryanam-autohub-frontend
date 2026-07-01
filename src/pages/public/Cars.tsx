@@ -57,13 +57,11 @@ export default function Cars() {
   const [page, setPage] = useState(1);
   const {
     vehicles: all,
-    totalPages: backendTotalPages,
-    totalElements: backendTotalElements,
     loading,
     error,
     refetch,
     isRefetching,
-  } = useAllVehicles(page - 1, PAGE);
+  } = useAllVehicles();
   const customer = useCustomer();
   const [authOpen, setAuthOpen] = useState(false);
 
@@ -212,8 +210,11 @@ export default function Cars() {
     sort,
   ]);
 
-  const totalPages = backendTotalPages || 1;
-  const paged = filtered;
+  const totalPages = Math.ceil(filtered.length / PAGE) || 1;
+  const paged = useMemo(() => {
+    const start = (page - 1) * PAGE;
+    return filtered.slice(start, start + PAGE);
+  }, [filtered, page]);
 
   const activeFilterCount =
     [
@@ -435,7 +436,7 @@ export default function Cars() {
           <p className="text-xs sm:text-sm text-muted-foreground font-medium">
             {loading
               ? "Loading verified vehicles…"
-              : `${backendTotalElements?.toLocaleString() ?? "–"} verified vehicles available`}
+              : `${all.length.toLocaleString()} verified vehicles available`}
           </p>
         </div>
         {/* Sort & Filter Toggle Controls */}
