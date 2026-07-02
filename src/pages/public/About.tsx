@@ -62,13 +62,14 @@ export default function About() {
           className="text-center max-w-5xl mx-auto"
         >
           <span className="inline-block text-rose-900 text-4xl font-semibold uppercase tracking-widest mb-4">
-            About Caryanam
+            About Us
           </span>
 
-          <p className="mt-6 text-lg sm:text-xl text-slate-500 dark:text-slate-400 leading-relaxed max-w-25xl mx-auto">
-            Caryanam was founded with a single mission — to make buying and
-            selling used cars in India simple, safe, and transparent. We connect
-            lakhs of buyers with verified dealers across 150+ cities.
+          <p className="mt-6 text-lg sm:text-xl text-slate-500 dark:text-slate-400 leading-relaxed max-w-5xl mx-auto">
+            Welcome to Caryanam, your trusted destination for buying, selling, and exchanging cars. We are committed to making the car buying and selling experience simple, transparent, and hassle-free.
+          </p>
+          <p className="mt-4 text-lg sm:text-xl text-slate-500 dark:text-slate-400 leading-relaxed max-w-5xl mx-auto">
+            Whether you're looking for a new or pre-owned vehicle, vehicle inspection, finance assistance, or insurance support, Caryanam offers reliable services to meet your automotive needs.
           </p>
         </motion.div>
       </section>
@@ -93,18 +94,16 @@ export default function About() {
               Our Mission
             </span>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white leading-tight">
-              Making Every Car Purchase a Confident Decision
+              Quality, Trust &amp; Customer Satisfaction
             </h2>
             <p className="text-base sm:text-lg text-slate-500 dark:text-slate-400 leading-relaxed">
-              The used car market in India has historically been plagued by
-              uncertainty — unknown vehicle history, inflated prices, and
-              untrustworthy sellers. Caryanam was built to fix this.
+              Our mission is to provide customers with quality vehicles, trusted services, and a seamless experience backed by transparency and customer satisfaction.
             </p>
             <p className="text-base sm:text-lg text-slate-500 dark:text-slate-400 leading-relaxed">
-              We built a platform where every listing is dealer-verified,
-              pricing is transparent, and buyers can connect directly with
-              sellers. Whether you're looking for your first car or upgrading
-              your ride, Caryanam puts the power back in your hands.
+              At Caryanam, we believe in building long-term relationships through honesty, reliability, and exceptional service.
+            </p>
+            <p className="text-lg font-bold text-rose-900 dark:text-rose-400 leading-relaxed">
+              Drive with Confidence. Drive with Caryanam.
             </p>
           </motion.div>
 

@@ -48,7 +48,7 @@ export default function DealerDetails() {
   const { id } = useParams<{ id: string }>();
   const dealerId = Number(id);
 
-  const [activeTab, setActiveTab] = useState<"leads" | "vehicles">("leads");
+  const [activeTab, setActiveTab] = useState<"leads" | "vehicles">("vehicles");
 
   // Fetch dealer dashboard, leads and vehicles
   const { data: details, isLoading: isDetailsLoading } =

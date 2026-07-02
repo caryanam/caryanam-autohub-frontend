@@ -26,6 +26,7 @@ import CustomerChat from "@/pages/public/Chat";
 import About from "@/pages/public/About";
 import PrivacyPolicy from "@/pages/public/PrivacyPolicy";
 import TermsAndConditions from "@/pages/public/TermsAndConditions";
+import RefundPolicy from "@/pages/public/RefundPolicy";
 import Login from "@/pages/auth/Login";
 import Register from "@/pages/auth/Register";
 import NotFound from "@/pages/NotFound";
@@ -67,6 +68,7 @@ export default function App() {
               <Route path="/about" element={<About />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/terms" element={<TermsAndConditions />} />
+              <Route path="/refund-policy" element={<RefundPolicy />} />
               
               {/* Customer Protected */}
               <Route element={<ProtectedRoute allow={["customer"]} />}>

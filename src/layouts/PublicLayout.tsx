@@ -449,6 +449,11 @@ export default function PublicLayout() {
                     Terms &amp; Conditions
                   </Link>
                 </li>
+                <li>
+                  <Link to="/refund-policy" className="transition-colors duration-200 hover:text-rose-400">
+                    Refund Policy
+                  </Link>
+                </li>
               </ul>
             </div>
 
@@ -457,13 +462,13 @@ export default function PublicLayout() {
               <h4 className="text-xs font-bold uppercase tracking-wider text-white mb-4">Reach us</h4>
               <ul className="space-y-2.5 text-sm text-white/70">
                 <li className="flex items-center gap-2.5">
-                  <Phone className="h-4 w-4 text-rose-400 shrink-0" /> +91 1800 123 4567
+                  <Phone className="h-4 w-4 text-rose-400 shrink-0" /> +91 7755994123
                 </li>
                 <li className="flex items-center gap-2.5">
-                  <Mail className="h-4 w-4 text-rose-400 shrink-0" /> hello@Caryanam.in
+                  <Mail className="h-4 w-4 text-rose-400 shrink-0" /> support@caryanam.com
                 </li>
                 <li className="flex items-center gap-2.5">
-                  <MapPin className="h-4 w-4 text-rose-400 shrink-0" /> Mumbai · Delhi · Bangalore
+                  <MapPin className="h-4 w-4 text-rose-400 shrink-0" /> Kharadi, Pune, 411014
                 </li>
               </ul>
             </div>
