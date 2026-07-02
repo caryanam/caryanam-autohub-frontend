@@ -965,10 +965,10 @@ export default function Home() {
             </div>
 
             {/* Bottom-Left: Quick Search inputs container */}
-            <div className="absolute bottom-10 left-8 sm:left-12 z-10 pointer-events-auto w-full max-w-xs sm:max-w-xs md:max-w-sm bg-black/40 backdrop-blur-md border border-white/10 rounded-2xl p-4 sm:p-5 shadow-2xl">
+            {/* <div className="absolute bottom-10 left-8 sm:left-12 z-10 pointer-events-auto w-full max-w-xs sm:max-w-xs md:max-w-sm bg-black/40 backdrop-blur-md border border-white/10 rounded-2xl p-4 sm:p-5 shadow-2xl">
               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-rose-500 block mb-3">Quick Search</span>
               <form onSubmit={submit} className="flex flex-col gap-3">
-                {/* Line 1: Search Input & Icon-Only Button */}
+               
                 <div className="flex gap-2">
                   <input
                     type="text"
@@ -986,7 +986,7 @@ export default function Home() {
                   </button>
                 </div>
 
-                {/* Line 2: Brand and Year Selects */}
+          
                 <div className="grid grid-cols-2 gap-3">
                   <Select value={brand} onValueChange={handleBrandChange}>
                     <SelectTrigger className="bg-white/5 border-white/10 hover:bg-white/10 text-white rounded-xl h-10 transition-colors">
@@ -1015,7 +1015,7 @@ export default function Home() {
                   </Select>
                 </div>
               </form>
-            </div>
+            </div> */}
 
             <div className="absolute bottom-8 right-8 lg:right-12 z-10 pointer-events-auto text-white max-w-[280px] sm:max-w-xs md:max-w-sm lg:max-w-md hidden lg:block">
               <p

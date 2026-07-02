@@ -1,4 +1,4 @@
-﻿import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Fuel, Gauge, Settings2, MapPin, Star, Heart } from "lucide-react";
 import type { Vehicle } from "@/types";
@@ -124,7 +124,9 @@ export function VehicleCard({
         </Link>
 
         {/* Clean Spec Grid Container */}
-        <div className="grid grid-cols-3 gap-2 text-xs font-bold text-muted-foreground/80 border-t border-b border-slate-100 dark:border-slate-800/60 py-3 bg-slate-50/50 dark:bg-slate-900/30 px-2 rounded-xl select-none">
+        <div className={`grid gap-2 text-xs font-bold text-muted-foreground/80 border-t border-b border-slate-100 dark:border-slate-800/60 py-3 bg-slate-50/50 dark:bg-slate-900/30 px-2 rounded-xl select-none ${
+          vehicle.transmission ? "grid-cols-3" : "grid-cols-2"
+        }`}>
           <div className="flex items-center gap-1.5 justify-center min-w-0">
             <Gauge className="h-3.5 w-3.5 shrink-0 text-rose-900/70 dark:text-rose-400/80" />
             <span className="truncate">{formatKM(vehicle.kilometerDriven)}</span>
@@ -133,10 +135,13 @@ export function VehicleCard({
             <Fuel className="h-3.5 w-3.5 shrink-0 text-rose-900/70 dark:text-rose-400/80" />
             <span className="truncate capitalize">{vehicle.fuelType}</span>
           </div>
-          <div className="flex items-center gap-1.5 justify-center min-w-0">
-            <Settings2 className="h-3.5 w-3.5 shrink-0 text-rose-900/70 dark:text-rose-400/80" />
-            <span className="truncate capitalize">{vehicle.transmission}</span>
-          </div>
+
+          {vehicle.transmission && (
+            <div className="flex items-center gap-1.5 justify-center min-w-0">
+              <Settings2 className="h-3.5 w-3.5 shrink-0 text-rose-900/70 dark:text-rose-400/80" />
+              <span className="truncate capitalize">{vehicle.transmission}</span>
+            </div>
+          )}
         </div>
 
         {/* Footer Area */}
