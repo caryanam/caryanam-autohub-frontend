@@ -114,7 +114,7 @@ export function useCustomerRegister() {
 }
 
 // ── Login — hits API, decodes JWT, stores everything ─────────────────────────
-type LoginPayload = { mobile: string; password: string };
+type LoginPayload = { username: string; password: string };
 
 export function useCustomerLogin() {
   const [isLoggingIn, setIsLoggingIn] = React.useState(false);

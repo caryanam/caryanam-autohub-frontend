@@ -43,12 +43,37 @@ import {
 } from "@/components/cards/VehicleCard";
 import { SEO } from "@/components/shared/SEO";
 import { useAllVehicles } from "@/hooks/public/useAllVehicles";
-import { CAR_BRANDS, getModels, getVariants } from "@/data/carDatabase";
+import { CAR_BRANDS } from "@/data/carDatabase";
 import { SearchableSelect } from "@/components/shared/SearchableSelect";
 import { BUDGET_BANDS } from "@/utils/constants";
 import { formatINR } from "@/utils/helpers";
 import type { Vehicle } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
+
+const isPCMC = (area: string) => {
+  const pcmcAreas = [
+    "pcmc",
+    "chinchwad",
+    "pimpri",
+    "akurdi",
+    "nigdi",
+    "bhosari",
+    "sangvi",
+    "wakad",
+    "hinjawadi",
+    "hinjeweadi",
+    "tathawade",
+    "ravet",
+    "moshi",
+    "talawade",
+    "kalewadi",
+    "thergaon",
+    "rahatani",
+    "pimple saudagar",
+    "pimple nilakh",
+  ];
+  return pcmcAreas.some((a) => area.toLowerCase().includes(a));
+};
 
 const PAGE = 9;
 
@@ -106,9 +131,45 @@ export default function Cars() {
 
   const budget = BUDGET_BANDS.find((b) => b.label === budgetLabel);
 
-  // Cascading options from carDatabase
-  const models = brand ? getModels(brand) : [];
-  const variants = brand && model ? getVariants(brand, model) : [];
+  // Cascading options dynamically generated from the fetched data
+  const models = useMemo(() => {
+    if (!brand) return [];
+    return Array.from(
+      new Set(
+        all
+          .filter((v) => v.brand?.toLowerCase() === brand.toLowerCase())
+          .map((v) => {
+            let m = v.model?.toLowerCase() || "";
+            const b = brand.toLowerCase();
+            if (m.startsWith(`${b}-`)) {
+              m = m.substring(b.length + 1);
+            } else if (m.startsWith(b)) {
+              m = m.substring(b.length);
+            }
+            return m.trim();
+          })
+          .filter(Boolean)
+      )
+    )
+      .map((m) => m.charAt(0).toUpperCase() + m.slice(1))
+      .sort();
+  }, [all, brand]);
+
+  const variants = useMemo(() => {
+    if (!brand || !model) return [];
+    return Array.from(
+      new Set(
+        all
+          .filter((v) => {
+            const matchBrand = v.brand?.toLowerCase() === brand.toLowerCase();
+            const matchModel = v.model?.toLowerCase().includes(model.toLowerCase());
+            return matchBrand && matchModel;
+          })
+          .map((v) => v.variant?.trim())
+          .filter(Boolean)
+      )
+    ).sort();
+  }, [all, brand, model]);
 
   const handleBrandChange = (v: string) => {
     const next = new URLSearchParams(params);
@@ -129,38 +190,79 @@ export default function Cars() {
     setPage(1);
   };
 
-  // Static filter options
-  const CITIES = ["Pune", "PCMC"];
+  // Dynamic location list including broad and specific choices
+  const CITIES = useMemo(() => {
+    const uniqueAreas = Array.from(new Set(all.map((v) => v.city).filter(Boolean)))
+      .map((c) => c.trim())
+      .filter((c) => c.length > 0 && c.toLowerCase() !== "pune" && c.toLowerCase() !== "pcmc")
+      .sort();
+    return ["Pune", "PCMC", ...uniqueAreas];
+  }, [all]);
+
   const FUELS = ["Petrol", "Diesel", "CNG", "Electric", "Hybrid"];
   const TRANSMISSIONS = ["Manual", "Automatic"];
   const OWNERSHIPS = ["First Owner", "Second Owner", "Third Owner", "Others"];
 
   const filtered = useMemo(() => {
     let list: Vehicle[] = all;
-    if (brand) list = list.filter((v) => v.brand === brand);
-    if (model)
+    if (brand) {
+      list = list.filter((v) => v.brand?.toLowerCase() === brand.toLowerCase());
+    }
+    if (model) {
       list = list.filter((v) =>
         v.model?.toLowerCase().includes(model.toLowerCase()),
       );
-    if (variant)
+    }
+    if (variant) {
       list = list.filter((v) =>
         v.variant?.toLowerCase().includes(variant.toLowerCase()),
       );
-    if (city) list = list.filter((v) => v.city === city);
-    if (fuel) list = list.filter((v) => v.fuelType === fuel);
-    if (transmission)
-      list = list.filter((v) => v.transmission === transmission);
-    if (ownership) list = list.filter((v) => v.ownershipDetails === ownership);
+    }
+    if (city) {
+      if (city.toLowerCase() === "pcmc") {
+        list = list.filter((v) => v.city && isPCMC(v.city));
+      } else if (city.toLowerCase() === "pune") {
+        list = list.filter((v) => v.city && !isPCMC(v.city));
+      } else {
+        list = list.filter((v) => v.city?.toLowerCase() === city.toLowerCase());
+      }
+    }
+    if (fuel) {
+      list = list.filter((v) => v.fuelType?.toLowerCase() === fuel.toLowerCase());
+    }
+    if (transmission) {
+      list = list.filter((v) => v.transmission?.toLowerCase() === transmission.toLowerCase());
+    }
+    if (ownership) {
+      list = list.filter((v) => {
+        const value = String(v.ownershipDetails);
+        if (ownership === "First Owner") {
+          return value === "First Owner" || value === "1";
+        }
+        if (ownership === "Second Owner") {
+          return value === "Second Owner" || value === "2";
+        }
+        if (ownership === "Third Owner") {
+          return value === "Third Owner" || value === "3";
+        }
+        if (ownership === "Others") {
+          return !["First Owner", "Second Owner", "Third Owner", "1", "2", "3"].includes(value);
+        }
+        return false;
+      });
+    }
     if (minYear) list = list.filter((v) => v.registrationYear >= minYear);
     if (maxKm) list = list.filter((v) => v.kilometerDriven <= maxKm);
-    if (budget)
+    if (budget) {
       list = list.filter(
         (v) => v.askingPrice >= budget.min && v.askingPrice < budget.max,
       );
-    if (minPrice || maxPrice < 5000000)
+    }
+    if (minPrice || maxPrice < 5000000) {
       list = list.filter(
         (v) => v.askingPrice >= minPrice && v.askingPrice <= maxPrice,
       );
+    }
     if (q) {
       const s = q.toLowerCase();
       list = list.filter(

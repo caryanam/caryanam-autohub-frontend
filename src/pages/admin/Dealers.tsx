@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
@@ -44,7 +45,7 @@ const statusStyle: Record<string, string> = {
 
 export default function AdminDealers() {
   const [search, setSearch] = useState("");
-  const [selectedDealer, setSelectedDealer] = useState<AdminDealer | null>(null);
+  const navigate = useNavigate();
 
   const {
     data: dealers = [],
@@ -67,13 +68,6 @@ export default function AdminDealers() {
       {
         onSuccess: (res) => {
           toast.success(res?.message ?? "Dealer approved");
-          // Update selected dealer status if modal is open
-          if (selectedDealer && selectedDealer.id === dealerId) {
-            setSelectedDealer({
-              ...selectedDealer,
-              dealerAccountStatus: "APPROVED",
-            });
-          }
         },
         onError: (err: any) =>
           toast.error(err?.response?.data?.message ?? "Action failed"),
@@ -173,16 +167,13 @@ export default function AdminDealers() {
                       </div>
                     </TableCell>
                     <TableCell className="py-4">
-                      <Skeleton className="h-4 w-16 rounded" />
-                    </TableCell>
-                    <TableCell className="py-4">
                       <div className="space-y-1.5">
-                        <Skeleton className="h-3.5 w-24 rounded" />
+                        <Skeleton className="h-4 w-24 rounded" />
                         <Skeleton className="h-3 w-32 rounded" />
                       </div>
                     </TableCell>
                     <TableCell className="py-4">
-                      <Skeleton className="h-4 w-16 rounded" />
+                      <Skeleton className="h-4 w-20 rounded" />
                     </TableCell>
                     <TableCell className="py-4">
                       <Skeleton className="h-7 w-20 rounded-full" />
@@ -195,7 +186,7 @@ export default function AdminDealers() {
               ) : filtered.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={7}
+                    colSpan={6}
                     className="text-center py-12 text-muted-foreground font-medium"
                   >
                     No dealers found.
@@ -206,7 +197,7 @@ export default function AdminDealers() {
                   <TableRow
                     key={d.id}
                     className="hover:bg-slate-50 transition-colors border-b border-slate-200 last:border-none cursor-pointer"
-                    onClick={() => setSelectedDealer(d)}
+                    onClick={() => navigate(`/admin/dealers/${d.id}`)}
                   >
                     <TableCell
                       className="text-center text-slate-400 text-sm font-medium py-4"
@@ -249,8 +240,13 @@ export default function AdminDealers() {
 
                     <TableCell className="py-4">
                       <div className="text-slate-700 text-xs font-semibold">
-                        {d.mobile}
+                        {d.dealerMobile}
                       </div>
+                      {d.executiveMobile && (
+                        <div className="text-[10px] text-slate-400 mt-0.5">
+                          Exec: {d.executiveMobile}
+                        </div>
+                      )}
                       <div className="text-xs text-slate-400 mt-0.5">
                         {d.email}
                       </div>
@@ -290,7 +286,7 @@ export default function AdminDealers() {
                         size="icon"
                         variant="ghost"
                         className="h-8 w-8 rounded-lg bg-slate-100 hover:bg-slate-200 hover:text-blue-600 cursor-pointer"
-                        onClick={() => setSelectedDealer(d)}
+                        onClick={() => navigate(`/admin/dealers/${d.id}`)}
                       >
                         <Eye className="h-4 w-4" />
                       </Button>
@@ -301,173 +297,6 @@ export default function AdminDealers() {
             </TableBody>
           </Table>
         </CardContent>
-      </Card>
-
-      {/* Dealer Details Dialog */}
-      <Dialog open={!!selectedDealer} onOpenChange={(open) => !open && setSelectedDealer(null)}>
-        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-3xl border-0 shadow-2xl bg-white max-h-[85vh] flex flex-col">
-          {selectedDealer && (
-            <div className="flex flex-col overflow-hidden max-h-[85vh]">
-              {/* Showroom Banner Header */}
-              <div className="relative h-44 bg-slate-100 overflow-hidden shrink-0">
-                {selectedDealer.showroomImage ? (
-                  <img
-                    src={getImageUrl(selectedDealer.showroomImage)}
-                    alt="Showroom"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-r from-blue-900 to-indigo-950 flex items-center justify-center text-white/10">
-                    <Building className="h-20 w-20" />
-                  </div>
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 to-transparent" />
-                <div className="absolute bottom-4 left-6 flex items-center gap-4">
-                  {selectedDealer.dealerLogo ? (
-                    <img
-                      src={getImageUrl(selectedDealer.dealerLogo)}
-                      alt="Logo"
-                      className="h-16 w-16 rounded-2xl object-cover border-2 border-white bg-white shadow-md"
-                    />
-                  ) : (
-                    <div className="h-16 w-16 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-xl font-bold border-2 border-white shadow-md">
-                      {selectedDealer.businessName?.charAt(0)?.toUpperCase()}
-                    </div>
-                  )}
-                  <div className="text-white space-y-0.5">
-                    <h3 className="text-lg font-black capitalize leading-none">{selectedDealer.businessName}</h3>
-                    <p className="text-xs text-white/80 leading-none capitalize">Owner: {selectedDealer.ownerName}</p>
-                  </div>
-                </div>
-                <div className="absolute bottom-4 right-6">
-                  <Badge className={`${statusStyle[selectedDealer.dealerAccountStatus] ?? ""} border-0 font-bold px-3 py-1 rounded-full text-xs shadow-md`}>
-                    {selectedDealer.dealerAccountStatus}
-                  </Badge>
-                </div>
-              </div>
-
-              {/* Details Body */}
-              <div className="p-6 space-y-6 overflow-y-auto flex-1">
-
-                {/* Section 1: Business Information */}
-                <div className="space-y-3">
-                  <h4 className="text-xs font-extrabold text-blue-900 uppercase tracking-widest flex items-center gap-1.5 border-b border-slate-100 pb-1.5">
-                    <Landmark className="h-4 w-4" /> Business Identity
-                  </h4>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span className="text-slate-400 font-medium block text-xs">GST Number</span>
-                      <span className="font-bold text-slate-800">{selectedDealer.gstNumber || "—"}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400 font-medium block text-xs">Years In Business</span>
-                      <span className="font-bold text-slate-800">{selectedDealer.yearsInBusiness ?? "—"} years</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400 font-medium block text-xs">Registered Date</span>
-                      <span className="font-medium text-slate-700">{formatDate(selectedDealer.createdAt)}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400 font-medium block text-xs">Dealer ID</span>
-                      <span className="font-bold text-slate-600">#{selectedDealer.id}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Section 2: Contact Information */}
-                <div className="space-y-3">
-                  <h4 className="text-xs font-extrabold text-blue-900 uppercase tracking-widest flex items-center gap-1.5 border-b border-slate-100 pb-1.5">
-                    <Phone className="h-4 w-4" /> Contact Information
-                  </h4>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span className="text-slate-400 font-medium block text-xs">Email Address</span>
-                      <span className="font-semibold text-slate-800 block truncate" title={selectedDealer.email}>
-                        {selectedDealer.email}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400 font-medium block text-xs">Mobile Phone</span>
-                      <span className="font-bold text-slate-800">{selectedDealer.mobile}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400 font-medium block text-xs">WhatsApp Number</span>
-                      <span className="font-bold text-slate-800">{selectedDealer.whatsapp || "—"}</span>
-                    </div>
-                    {selectedDealer.mobile && (
-                      <div className="flex gap-2 items-end pt-1">
-                        <a href={`tel:${selectedDealer.mobile}`} className="inline-block">
-                          <Button size="sm" variant="outline" className="h-8 rounded-lg gap-1">
-                            <Phone className="h-3 w-3" /> Call
-                          </Button>
-                        </a>
-                        {selectedDealer.whatsapp && (
-                          <a
-                            href={`https://wa.me/${selectedDealer.whatsapp.replace(/\D/g, "")}`}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-block"
-                          >
-                            <Button size="sm" className="h-8 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white gap-1 border-0">
-                              <MessageCircle className="h-3 w-3" /> WhatsApp
-                            </Button>
-                          </a>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Section 3: Location Details */}
-                <div className="space-y-3">
-                  <h4 className="text-xs font-extrabold text-blue-900 uppercase tracking-widest flex items-center gap-1.5 border-b border-slate-100 pb-1.5">
-                    <MapPin className="h-4 w-4" /> Showroom Location
-                  </h4>
-                  <div className="space-y-2 text-sm">
-                    <div>
-                      <span className="text-slate-400 font-medium block text-xs">Showroom Address</span>
-                      <span className="font-semibold text-slate-800 capitalize leading-relaxed">
-                        {selectedDealer.address || "—"}
-                      </span>
-                    </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      <div>
-                        <span className="text-slate-400 font-medium block text-xs">City</span>
-                        <span className="font-bold text-slate-800 capitalize">{selectedDealer.city}</span>
-                      </div>
-                      <div>
-                        <span className="text-slate-400 font-medium block text-xs">State</span>
-                        <span className="font-bold text-slate-800 capitalize">{selectedDealer.state}</span>
-                      </div>
-                      <div>
-                        <span className="text-slate-400 font-medium block text-xs">PIN Code</span>
-                        <span className="font-bold text-slate-800">{selectedDealer.pinCode || "—"}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Footer Approve Action if Pending */}
-                {selectedDealer.dealerAccountStatus === "PENDING" && (
-                  <div className="pt-4 flex justify-end">
-                    <Button
-                      size="lg"
-                      className="gradient-primary text-white border-0 font-bold rounded-xl gap-2 h-11 border-none shadow-md"
-                      onClick={() => {
-                        approve(selectedDealer.id);
-                        setSelectedDealer(null);
-                      }}
-                      disabled={isPending}
-                    >
-                      <Check className="h-4 w-4" /> Approve Dealer Account
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-    </div>
+      </Card>    </div>
   );
 }

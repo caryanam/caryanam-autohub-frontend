@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import type { Vehicle } from "@/types";
 
 const API_BASE_URL =
@@ -18,13 +19,18 @@ export function useAllVehicles() {
     useQuery<ApiResponse>({
       queryKey: ["all-vehicles"],
       queryFn: async () => {
-        const res = await fetch(
-          `${API_BASE_URL}/api/vehicle/non-premium/all-vehicle`,
-        );
-        const body = await res.json();
-        if (!res.ok)
-          throw new Error(body?.message ?? "Failed to fetch vehicles");
-        return body;
+        try {
+          const { data: body } = await axios.get<ApiResponse>(
+            `${API_BASE_URL}/api/vehicle/non-premium/all-vehicle`
+          );
+          return body;
+        } catch (err) {
+          if (axios.isAxiosError(err)) {
+            const body = err.response?.data;
+            throw new Error(body?.message ?? "Failed to fetch vehicles");
+          }
+          throw err;
+        }
       },
       staleTime: 1000 * 60 * 2, // 2 minutes
     });

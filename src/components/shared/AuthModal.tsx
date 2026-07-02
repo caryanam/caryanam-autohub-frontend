@@ -304,32 +304,41 @@ function LoginForm({
   onForgotPassword: () => void;
 }) {
   const { isLoggingIn, login } = useCustomerLogin();
-  const [mobile, setMobile] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [err, setErr] = useState("");
 
-  const handleMobileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (value === "") {
-      setMobile("");
-      return;
-    }
-    const digitsOnly = value.replace(/\D/g, "");
-    if (digitsOnly.length > 0) {
-      const firstDigit = digitsOnly[0];
-      if (!["6", "7", "8", "9"].includes(firstDigit)) {
-        return;
-      }
-    }
-    setMobile(digitsOnly.slice(0, 10));
-  };
-
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErr("");
+    
+    // Quick validation
+    const trimmed = username.trim();
+    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed);
+    const isMobile = /^[6-9][0-9]{9}$/.test(trimmed);
+    if (!isEmail) {
+      if (/^\d+$/.test(trimmed)) {
+        if (!/^[6-9]/.test(trimmed)) {
+          setErr("Mobile number must start with 6, 7, 8, or 9");
+          setTimeout(() => setErr(""), 3000);
+          return;
+        }
+        if (trimmed.length < 10) {
+          setErr("Mobile number must be at least 10 digits");
+          setTimeout(() => setErr(""), 3000);
+          return;
+        }
+      }
+      if (!isMobile) {
+        setErr("Please enter a valid email address or 10-digit mobile number");
+        setTimeout(() => setErr(""), 3000);
+        return;
+      }
+    }
+
     try {
-      const user = await login({ mobile, password });
+      const user = await login({ username: trimmed, password });
       toast.success("Logged in successfully!");
       onSuccess(user);
     } catch (e: any) {
@@ -341,22 +350,32 @@ function LoginForm({
 
   return (
     <form onSubmit={submit} className="space-y-4">
-      {/* Mobile input field wrapper */}
+      {/* Username input field wrapper */}
       <div className="space-y-1.5">
         <Label className="text-xs font-semibold text-muted-foreground/90 uppercase tracking-wider pl-0.5">
-          Mobile Number
+          Email / Mobile Number
         </Label>
         <div className="relative group">
-          <Phone className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/70 group-focus-within:text-rose-900 dark:group-focus-within:text-rose-400 transition-colors duration-200" />
+          <User className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/70 group-focus-within:text-rose-900 dark:group-focus-within:text-rose-400 transition-colors duration-200" />
           <Input
-            type="tel"
-            value={mobile}
-            onChange={handleMobileChange}
-            placeholder="Enter 10-digit mobile number"
+            type="text"
+            value={username}
+            onChange={(e) => {
+              const val = e.target.value;
+              if (/^\d+$/.test(val)) {
+                if (/^[6-9]/.test(val)) {
+                  setUsername(val.slice(0, 10));
+                  return;
+                } else {
+                  setUsername("");
+                  toast.error("Mobile number must start with 6, 7, 8, or 9");
+                  return;
+                }
+              }
+              setUsername(val);
+            }}
+            placeholder="Enter email or 10-digit mobile"
             className="h-12 pl-11 rounded-xl border-border/60 hover:bg-muted/30 text-black focus-visible:ring-rose-900/15 focus-visible:border-rose-900 dark:focus-visible:border-rose-500 dark:focus-visible:ring-rose-500/20 transition-all duration-200 placeholder:text-muted-foreground/50"
-            maxLength={10}
-            pattern="[6-9][0-9]{9}"
-            title="Mobile number must start with 6-9 and be exactly 10 digits"
             required
           />
         </div>

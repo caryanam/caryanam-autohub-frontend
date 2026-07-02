@@ -152,6 +152,9 @@ export default function AdminLeads() {
                     <TableCell className="py-4">
                       <Skeleton className="h-4 w-20" />
                     </TableCell>
+                    <TableCell className="py-4">
+                      <Skeleton className="h-4 w-20" />
+                    </TableCell>
                     <TableCell className="py-4 pr-6">
                       <Skeleton className="h-7 w-24 rounded-full" />
                     </TableCell>
@@ -160,7 +163,7 @@ export default function AdminLeads() {
               ) : filtered.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={7}
+                    colSpan={8}
                     className="text-center py-12 text-muted-foreground font-medium"
                   >
                     {search ? "No matching leads found." : "No leads found."}

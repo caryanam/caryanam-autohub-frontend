@@ -3,7 +3,7 @@ import axios from "axios";
 import apiClient from "@/lib/apiClient";
 
 type LoginPayload = {
-  mobile: string;
+  username: string;
   password: string;
 };
 

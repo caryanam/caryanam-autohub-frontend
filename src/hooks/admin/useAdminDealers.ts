@@ -7,7 +7,8 @@ export interface AdminDealer {
   ownerName: string;
   gstNumber?: string | null;
   yearsInBusiness?: number | null;
-  mobile: string;
+  dealerMobile: string;
+  executiveMobile?: string | null;
   whatsapp?: string | null;
   email: string;
   password?: string | null;
@@ -28,6 +29,8 @@ export function useAdminDealers() {
       const { data } = await apiClient.get("/api/admin/all-dealers");
       return Array.isArray(data) ? data : (data?.data ?? []);
     },
+    staleTime: 5 * 60 * 1000, // Cache fresh for 5 minutes
+    refetchOnWindowFocus: false, // Avoid refetching when window gains focus
   });
 }
 

@@ -47,7 +47,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { AuthModal } from "@/components/shared/AuthModal";
-import { useGetVehicleDetails } from "@/hooks/dealer/useGetVehicleDetails";
+import { usePublicVehicleDetails } from "@/hooks/public/usePublicVehicleDetails";
 import { useGenerateLead, useGenerateView } from "@/hooks/public/useLeads";
 import {
   useCustomer,
@@ -77,7 +77,7 @@ export default function CarDetails() {
     isError,
     error,
     refetch,
-  } = useGetVehicleDetails(vehicleId);
+  } = usePublicVehicleDetails(vehicleId);
   const { generateView } = useGenerateView();
   const { isSubmitting, generateLead } = useGenerateLead();
   const { vehicles: latestVehicles, loading: latestLoading } = useLatestVehicles();
@@ -692,15 +692,25 @@ export default function CarDetails() {
                         )}
                     </div>
 
-                    {/* Phone number */}
-                    {vehicle.dealerContactNumber && (
-                      <p className="text-center text-sm font-semibold text-foreground pt-0.5">
-                        +91{" "}
-                        {vehicle.dealerContactNumber
-                          .replace(/\D/g, "")
-                          .replace(/^91/, "")}
-                      </p>
-                    )}
+                    {/* Phone numbers */}
+                    <div className="text-center text-sm font-semibold text-foreground pt-1.5 space-y-1">
+                      {vehicle.dealerContactNumber && (
+                        <p>
+                          Dealer: +91{" "}
+                          {vehicle.dealerContactNumber
+                            .replace(/\D/g, "")
+                            .replace(/^91/, "")}
+                        </p>
+                      )}
+                      {vehicle.executiveMobile && (
+                        <p>
+                          Executive: +91{" "}
+                          {vehicle.executiveMobile
+                            .replace(/\D/g, "")
+                            .replace(/^91/, "")}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>

@@ -52,7 +52,8 @@ export default function DealerProfile() {
   // Profile form state
   const [businessName, setBusinessName] = useState("");
   const [ownerName, setOwnerName] = useState("");
-  const [mobile, setMobile] = useState("");
+  const [dealerMobile, setDealerMobile] = useState("");
+  const [executiveMobile, setExecutiveMobile] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
@@ -65,7 +66,8 @@ export default function DealerProfile() {
     if (profile) {
       setBusinessName(profile.businessName || "");
       setOwnerName(profile.ownerName || "");
-      setMobile(profile.mobile || "");
+      setDealerMobile(profile.dealerMobile || profile.mobile || "");
+      setExecutiveMobile(profile.executiveMobile || "");
       setWhatsapp(profile.whatsapp || "");
       setAddress(profile.address || "");
       setCity(profile.city || "");
@@ -86,7 +88,8 @@ export default function DealerProfile() {
       await updateMutation.mutateAsync({
         businessName,
         ownerName,
-        mobile,
+        dealerMobile,
+        executiveMobile: executiveMobile || null,
         whatsapp,
         address,
         city,
@@ -376,14 +379,23 @@ export default function DealerProfile() {
                   <Phone className="h-4 w-4" /> Contact Details
                 </h4>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <Label className="text-xs font-semibold text-slate-600">Mobile Phone</Label>
+                    <Label className="text-xs font-semibold text-slate-600">Dealer Mobile</Label>
                     <Input
-                      value={mobile}
-                      onChange={(e) => setMobile(e.target.value)}
+                      value={dealerMobile}
+                      onChange={(e) => setDealerMobile(e.target.value)}
                       className="mt-1.5 rounded-xl h-11 border-slate-200 focus-visible:ring-blue-600 bg-white"
                       required
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs font-semibold text-slate-600">Executive Mobile (optional)</Label>
+                    <Input
+                      value={executiveMobile}
+                      onChange={(e) => setExecutiveMobile(e.target.value)}
+                      placeholder="Executive contact"
+                      className="mt-1.5 rounded-xl h-11 border-slate-200 focus-visible:ring-blue-600 bg-white"
                     />
                   </div>
                   <div>

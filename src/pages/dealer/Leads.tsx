@@ -210,13 +210,10 @@ export default function DealerLeads() {
                       <Skeleton className="h-4 w-20" />
                     </TableCell>
                     <TableCell className="py-4">
-                      <Skeleton className="h-8 w-28 rounded-full" />
+                      <Skeleton className="h-4 w-20" />
                     </TableCell>
-                    <TableCell className="text-right py-4 pr-6">
-                      <div className="flex gap-1.5 justify-end">
-                        <Skeleton className="h-8 w-8 rounded-lg" />
-                        <Skeleton className="h-8 w-8 rounded-lg" />
-                      </div>
+                    <TableCell className="py-4 pr-6">
+                      <Skeleton className="h-8 w-[120px] rounded-full" />
                     </TableCell>
                   </TableRow>
                 ))

@@ -470,14 +470,10 @@ export default function PublicLayout() {
           </div>
         </div>
 
-        {/* Bottom bar */}
         <div className="relative z-10 border-t border-white/10 py-8">
-          <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/50">
+          <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex items-center justify-center text-center text-xs text-white/50">
             <span>
-              Copyright © {new Date().getFullYear()} Caryanam. All Rights Reserved.
-            </span>
-            <span className="flex items-center gap-1.5">
-              Made by team <span className="font-bold text-white">Caryanam</span> with <span className="text-red-500">❤️</span>
+              © 2026 Caryanam. All rights reserved by Caryanamindia Pvt Ltd
             </span>
           </div>
         </div>

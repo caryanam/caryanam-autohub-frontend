@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { Phone, Lock, Eye, EyeOff, ArrowRight, Shield, Zap, LineChart } from "lucide-react";
+import { User, Lock, Eye, EyeOff, ArrowRight, Shield, Zap, LineChart } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,7 @@ import { useState } from "react";
 import carImg from "@/assets/download.jpg";
 
 type FormData = {
-  mobile: string;
+  username: string;
   password: string;
 };
 
@@ -24,13 +24,13 @@ export default function Login() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const form = useForm<FormData>({
-    defaultValues: { mobile: "", password: "" },
+    defaultValues: { username: "", password: "" },
   });
 
   const onSubmit = async (data: FormData) => {
     try {
       const result = await login({
-        mobile: data.mobile,
+        username: data.username,
         password: data.password,
       });
       if (result.role === "admin") {
@@ -167,38 +167,47 @@ export default function Login() {
               onSubmit={form.handleSubmit(onSubmit)}
               className="mt-8 space-y-4"
             >
-              {/* Mobile Input Container */}
+              {/* Username Input Container */}
               <div className="space-y-1.5">
                 <Label className="block text-xs font-semibold text-slate-200 md:text-slate-600">
-                  Mobile Number
+                  Email / Mobile Number
                 </Label>
                 <div className="relative group">
-                  <Phone className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50 group-focus-within:text-white md:text-rose-900/60 md:group-focus-within:text-rose-900 transition-colors" />
+                  <User className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50 group-focus-within:text-white md:text-rose-900/60 md:group-focus-within:text-rose-900 transition-colors" />
                   <Input
-                    type="tel"
+                    type="text"
                     required
-                    maxLength={10}
-                    pattern="[6-9][0-9]{9}"
-                    title="Mobile number must start with 6-9 and be exactly 10 digits"
-                    placeholder="Enter 10-digit mobile number"
+                    placeholder="Enter email or 10-digit mobile"
                     onInput={(e: React.FormEvent<HTMLInputElement>) => {
                       const target = e.currentTarget;
-                      const val = target.value.replace(/\D/g, "");
-                      if (val.length > 0) {
-                        const firstDigit = val[0];
-                        if (!["6", "7", "8", "9"].includes(firstDigit)) {
+                      const val = target.value;
+                      if (/^\d+$/.test(val)) {
+                        if (/^[6-9]/.test(val)) {
+                          target.value = val.slice(0, 10);
+                        } else {
                           target.value = "";
-                          return;
+                          toast.error("Mobile number must start with 6, 7, 8, or 9");
                         }
                       }
-                      target.value = val.slice(0, 10);
                     }}
                     className="h-11 pl-11 rounded-xl border border-white/20 bg-white/10 text-white placeholder-white/40 focus-visible:bg-black/40 focus-visible:border-white focus-visible:ring-4 focus-visible:ring-white/10 md:border-rose-900/10 md:bg-rose-900/[0.01] md:text-slate-900 md:placeholder-slate-400 md:focus-visible:bg-white md:focus-visible:border-rose-900 md:focus-visible:ring-rose-900/10 transition-all shadow-sm"
-                    {...form.register("mobile", {
-                      required: "Mobile number is required",
-                      pattern: {
-                        value: /^[6-9][0-9]{9}$/,
-                        message: "Mobile number must start with 6-9 and be exactly 10 digits"
+                    {...form.register("username", {
+                      required: "Email or Mobile Number is required",
+                      validate: (value) => {
+                        const trimmed = value.trim();
+                        const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed);
+                        const isMobile = /^[6-9][0-9]{9}$/.test(trimmed);
+                        if (isEmail) return true;
+                        if (/^\d+$/.test(trimmed)) {
+                          if (!/^[6-9]/.test(trimmed)) {
+                            return "Mobile number must start with 6, 7, 8, or 9";
+                          }
+                          if (trimmed.length < 10) {
+                            return "Mobile number must be at least 10 digits";
+                          }
+                          return true;
+                        }
+                        return "Please enter a valid email address or 10-digit mobile number";
                       }
                     })}
                   />

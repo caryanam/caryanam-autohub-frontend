@@ -42,6 +42,7 @@ import DealerSubscription from "@/pages/dealer/subscription/Subscription";
 
 import AdminDashboard from "@/pages/admin/Dashboard";
 import AdminDealers from "@/pages/admin/Dealers";
+import AdminDealerDetails from "@/pages/admin/DealerDetails";
 import AdminVehicles from "@/pages/admin/Vehicles";
 import AdminLeads from "@/pages/admin/Leads";
 import AdminSubscriptions from "@/pages/admin/Subscriptions";
@@ -108,6 +109,7 @@ export default function App() {
                 />
                 <Route path="dashboard" element={<AdminDashboard />} />
                 <Route path="dealers" element={<AdminDealers />} />
+                <Route path="dealers/:id" element={<AdminDealerDetails />} />
                 <Route path="vehicles" element={<AdminVehicles />} />
                 <Route path="leads" element={<AdminLeads />} />
                 <Route path="subscriptions" element={<AdminSubscriptions />} />

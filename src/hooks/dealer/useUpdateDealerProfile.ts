@@ -4,7 +4,8 @@ import apiClient from "@/lib/apiClient";
 export interface UpdateProfilePayload {
   businessName: string;
   ownerName: string;
-  mobile: string;
+  dealerMobile: string;
+  executiveMobile?: string | null;
   whatsapp: string;
   address: string;
   city: string;

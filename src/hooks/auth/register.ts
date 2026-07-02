@@ -7,7 +7,8 @@ type DealerRegistrationPayload = {
   ownerName: string;
   gstNumber: string;
   yearsInBusiness: number;
-  mobile: string;
+  dealerMobile: string;
+  executiveMobile?: string;
   whatsapp: string;
   email?: string;
   password: string;

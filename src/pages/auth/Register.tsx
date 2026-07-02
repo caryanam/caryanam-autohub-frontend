@@ -45,7 +45,8 @@ type FormData = {
   gstNumber: string;
   yearsInBusiness: string;
   email: string;
-  mobile: string;
+  dealerMobile: string;
+  executiveMobile?: string;
   whatsapp: string;
   password: string;
   address: string;
@@ -70,7 +71,8 @@ export default function Register() {
       gstNumber: "",
       yearsInBusiness: "",
       email: "",
-      mobile: "",
+      dealerMobile: "",
+      executiveMobile: "",
       whatsapp: "",
       password: "",
       address: "",
@@ -95,7 +97,7 @@ export default function Register() {
         businessName: data.businessName,
         ownerName: data.ownerName,
         yearsInBusiness: Number(data.yearsInBusiness),
-        mobile: data.mobile,
+        dealerMobile: data.dealerMobile,
         whatsapp: data.whatsapp,
         password: data.password,
         address: data.address,
@@ -103,6 +105,10 @@ export default function Register() {
         state: data.state,
         pinCode: data.pinCode,
       };
+
+      if (data.executiveMobile && data.executiveMobile.trim() !== "") {
+        payload.executiveMobile = data.executiveMobile;
+      }
 
       if (data.email && data.email.trim() !== "") {
         payload.email = data.email;
@@ -358,14 +364,14 @@ export default function Register() {
                       <div className="grid gap-4 sm:grid-cols-2">
                         <div className="space-y-1.5">
                           <Label className="text-xs font-semibold text-slate-200 md:text-slate-500">
-                            Mobile Number <span className="text-red-500">*</span>
+                            Dealer Mobile <span className="text-red-500">*</span>
                           </Label>
                           <Input
                             required
                             type="tel"
                             maxLength={10}
                             pattern="[6-9][0-9]{9}"
-                            title="Mobile number must start with 6-9 and be exactly 10 digits"
+                            title="Dealer mobile number must start with 6-9 and be exactly 10 digits"
                             placeholder="9579******"
                             onInput={(e: React.FormEvent<HTMLInputElement>) => {
                               const target = e.currentTarget;
@@ -380,11 +386,43 @@ export default function Register() {
                               target.value = val.slice(0, 10);
                             }}
                             className="h-11 px-4 rounded-xl border border-white/20 bg-white/10 text-white placeholder-white/40 focus-visible:bg-black/40 focus-visible:border-white focus-visible:ring-4 focus-visible:ring-white/10 md:border-slate-200 md:bg-slate-50/50 md:text-slate-900 md:placeholder-slate-400 md:focus-visible:bg-white md:focus-visible:border-rose-900 md:focus-visible:ring-rose-900/10 transition-all shadow-sm"
-                            {...form.register("mobile", {
-                              required: "Mobile number is required",
+                            {...form.register("dealerMobile", {
+                              required: "Dealer mobile number is required",
                               pattern: {
                                 value: /^[6-9][0-9]{9}$/,
-                                message: "Mobile number must start with 6-9 and be exactly 10 digits"
+                                message: "Dealer mobile number must start with 6-9 and be exactly 10 digits"
+                              }
+                            })}
+                          />
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <Label className="text-xs font-semibold text-slate-200 md:text-slate-500">
+                            Executive Mobile <span className="text-slate-400 font-normal">(optional)</span>
+                          </Label>
+                          <Input
+                            type="tel"
+                            maxLength={10}
+                            pattern="[6-9][0-9]{9}"
+                            title="Executive mobile number must start with 6-9 and be exactly 10 digits"
+                            placeholder="9823******"
+                            onInput={(e: React.FormEvent<HTMLInputElement>) => {
+                              const target = e.currentTarget;
+                              const val = target.value.replace(/\D/g, "");
+                              if (val.length > 0) {
+                                const firstDigit = val[0];
+                                if (!["6", "7", "8", "9"].includes(firstDigit)) {
+                                  target.value = "";
+                                  return;
+                                }
+                              }
+                              target.value = val.slice(0, 10);
+                            }}
+                            className="h-11 px-4 rounded-xl border border-white/20 bg-white/10 text-white placeholder-white/40 focus-visible:bg-black/40 focus-visible:border-white focus-visible:ring-4 focus-visible:ring-white/10 md:border-slate-200 md:bg-slate-50/50 md:text-slate-900 md:placeholder-slate-400 md:focus-visible:bg-white md:focus-visible:border-rose-900 md:focus-visible:ring-rose-900/10 transition-all shadow-sm"
+                            {...form.register("executiveMobile", {
+                              pattern: {
+                                value: /^[6-9][0-9]{9}$/,
+                                message: "Executive mobile number must start with 6-9 and be exactly 10 digits"
                               }
                             })}
                           />

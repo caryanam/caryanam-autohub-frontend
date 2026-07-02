@@ -36,6 +36,7 @@ export interface Vehicle {
   videos?: string[];
   rtoInformation?: string;
   financeAvailability?: boolean;
+  executiveMobile?: string | null;
 }
 
 export interface Dealer {
