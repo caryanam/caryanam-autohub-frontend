@@ -2,7 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import type { Vehicle } from "@/types";
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:8081";
+  // import.meta.env.VITE_API_BASE_URL || "http://localhost:8081";
+  import.meta.env.VITE_API_BASE_URL || " https://c1.caryanam.com";
 
 type ApiResponse = Vehicle[] | {
   status?: number;

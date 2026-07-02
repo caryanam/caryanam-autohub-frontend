@@ -76,11 +76,11 @@ export function useChat({ currentUserId, currentUserRole, token, users }: UseCha
         const key = `${u.role}_${u.id}`;
         if (existing.has(key)) {
           const t = existing.get(key)!;
-          return { 
-            ...t, 
-            originalIndex: index, 
+          return {
+            ...t,
+            originalIndex: index,
             unreadCount: u.unreadCount ?? t.unreadCount,
-            unread: (u.unreadCount ?? 0) > 0 || t.unread 
+            unread: (u.unreadCount ?? 0) > 0 || t.unread
           };
         }
         return {
@@ -309,7 +309,9 @@ export function useChat({ currentUserId, currentUserRole, token, users }: UseCha
       return originalSend.apply(this, [body]);
     };
 
-    const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8081";
+    // const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8081";
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || " https://c1.caryanam.com";
+
     const socketUrl = `${baseUrl}/chat`;
 
     const client = new Client({
