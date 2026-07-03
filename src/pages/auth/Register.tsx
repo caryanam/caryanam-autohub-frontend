@@ -84,15 +84,6 @@ export default function Register() {
 
   const onSubmit = async (data: FormData) => {
     try {
-      if (!showroomImage) {
-        toast.error("Please upload a showroom image.");
-        return;
-      }
-      if (!dealerLogo) {
-        toast.error("Please upload a dealer logo.");
-        return;
-      }
-
       const payload: any = {
         businessName: data.businessName,
         ownerName: data.ownerName,
@@ -562,7 +553,7 @@ export default function Register() {
                         {/* Dealer Logo Upload */}
                         <div className="space-y-1.5">
                           <Label className="text-xs font-semibold text-slate-200 md:text-slate-500">
-                            Dealer Logo <span className="text-red-500">*</span>
+                            Dealer Logo <span className="text-slate-400 font-normal">(optional)</span>
                           </Label>
 
                           {!dealerLogo ? (
@@ -615,7 +606,7 @@ export default function Register() {
                         {/* Showroom Image Upload */}
                         <div className="space-y-1.5">
                           <Label className="text-xs font-semibold text-slate-200 md:text-slate-500">
-                            Showroom Image <span className="text-red-500">*</span>
+                            Showroom Image <span className="text-slate-400 font-normal">(optional)</span>
                           </Label>
 
                           {!showroomImage ? (
