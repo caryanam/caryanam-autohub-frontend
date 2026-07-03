@@ -1085,7 +1085,7 @@ export default function Home() {
       </Section>
 
       {/* Browse by Brand */}
-      <section className="bg-background py-16 border-y border-border">
+      <section className="bg-gray-100 py-16 border-y border-border">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionHeader
             title="Browse by Brand"
@@ -1172,7 +1172,7 @@ export default function Home() {
       </Section>
 
       {/* Browse by Budget */}
-      <section className="bg-background py-16 border-y border-border">
+      <section className="bg-gray-100 py-16 border-y border-border">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionHeader
             title="Browse by Budget"
@@ -1338,7 +1338,7 @@ export default function Home() {
       </section>
 
       {/* Mobile App Promo Section */}
-      <section className="relative bg-[#fbf7f4] py-24 overflow-hidden border-t border-slate-100/50">
+      <section className="relative bg-white py-24 overflow-hidden border-t border-slate-100/50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
 

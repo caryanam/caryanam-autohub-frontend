@@ -44,7 +44,7 @@ const fadeUp = {
 
 export default function About() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-rose-50/30 via-white to-rose-50/30 ">
+    <div className="min-h-screen bg-white ">
       <SEO
         title="About Us — India's Trusted Marketplace | Caryanam"
         description="Learn about Caryanam's mission to make buying and selling used cars in India simple, safe, and transparent. Connecting buyers with verified dealers."
@@ -79,9 +79,9 @@ export default function About() {
       {/* ═══════════════════════════════════════════ */}
       {/* SECTION 3 — Mission (Two Columns)           */}
       {/* ═══════════════════════════════════════════ */}
-      <section className="mx-auto max-w-6xl px-6 sm:px-8 pb-20 lg:pb-28">
+      {/* <section className="mx-auto max-w-6xl px-6 sm:px-8 pb-20 lg:pb-28">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          {/* Left — Text */}
+          
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -107,7 +107,7 @@ export default function About() {
             </p>
           </motion.div>
 
-          {/* Right — 2x2 stat cards grid */}
+        
           <div className="grid grid-cols-2 gap-4">
             {stats.map(({ label, value, icon: Icon, color }, i) => (
               <motion.div
@@ -133,7 +133,7 @@ export default function About() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* ═══════════════════════════════════════════ */}
       {/* SECTION 4 — Core Values                     */}

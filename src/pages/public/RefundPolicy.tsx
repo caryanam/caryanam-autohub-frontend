@@ -33,7 +33,7 @@ const fadeUp = {
 
 export default function RefundPolicy() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-rose-50/30 via-white to-rose-50/30">
+    <div className="min-h-screen bg-white">
       <SEO
         title="Refund Policy — Caryanam"
         description="All payments made to Caryanam are final and non-refundable. Learn more about our Refund Policy."

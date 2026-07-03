@@ -22,7 +22,7 @@ const fadeUp = {
 
 export default function TermsAndConditions() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-rose-50/30 via-white to-rose-50/30">
+    <div className="min-h-screen bg-white">
       <SEO
         title="Terms & Conditions — Caryanam"
         description="Welcome to Caryanam. Read our Terms & Conditions for accessing or using our website."

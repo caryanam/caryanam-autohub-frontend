@@ -524,7 +524,7 @@ export default function Cars() {
   );
 
   return (
-    <div className="bg-gradient-to-b from-white via-rose-50/20 to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 min-h-screen pb-16">
+    <div className="bg-white dark:bg-slate-950 min-h-screen pb-16">
       <SEO
         title="Browse Used Cars — Caryanam"
         description="Search verified used cars by brand, city, fuel, transmission and budget. Direct dealer contact."

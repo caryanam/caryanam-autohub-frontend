@@ -231,7 +231,7 @@ export default function CarDetails() {
   const title = `${vehicle.registrationYear} ${vehicle.brand} ${vehicle.model} ${vehicle.variant}`;
 
   return (
-    <div className="bg-gradient-to-b from-white via-rose-50/20 to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 pb-20 pt-10">
+    <div className="bg-white dark:bg-slate-950 pb-20 pt-10">
       <SEO
         title={`${title} — ${formatINR(vehicle.askingPrice)} | Caryanam`}
         description={

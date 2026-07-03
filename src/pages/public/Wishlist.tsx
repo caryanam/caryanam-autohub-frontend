@@ -29,7 +29,7 @@ export default function Wishlist() {
   };
 
   return (
-    <div className="pb-20 pt-10 bg-gradient-to-b from-rose-50/30 via-white to-rose-50/30">
+    <div className="pb-20 pt-10 bg-white">
       <SEO title="My Wishlist — Caryanam" description="Your saved cars on Caryanam." />
 
 

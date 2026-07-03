@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { AuthModal } from "@/components/shared/AuthModal";
 import { motion } from "framer-motion";
@@ -39,7 +39,7 @@ export default function PremiumCars() {
   const paged = vehicles.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
-    <div className="bg-gradient-to-b from-white via-rose-50/20 to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 min-h-screen pb-16">
+    <div className="bg-white min-h-screen pb-16">
       <SEO
         title="Premium Cars Collection — Caryanam"
         description="Explore our exclusive, hand-picked collection of premium luxury cars. Certified and verified with direct dealer contact."

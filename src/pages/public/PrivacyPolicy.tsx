@@ -132,7 +132,7 @@ const fadeUp = {
 
 export default function PrivacyPolicy() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-rose-50/30 via-white to-rose-50/30">
+    <div className="min-h-screen bg-white">
       <SEO
         title="Privacy Policy — Caryanam"
         description="At Caryanam, we respect your privacy and are committed to protecting your personal information. Read our Privacy Policy."
