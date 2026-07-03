@@ -8,7 +8,6 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Menu,
-  Car,
   X,
   Phone,
   Mail,
@@ -34,8 +33,7 @@ import {
 } from "@/hooks/public/useCustomerAuth";
 import apiClient from "@/lib/customerApiClient";
 import { toast } from "sonner";
-import footerBg from "@/assets/footer-bg.png";
-
+import logo from "@/assets/logo.png";
 // Vite dynamic frame loader for all website preloading
 const frameModules = import.meta.glob<string>(
   "../assets/Hero-Section/car-video_*.png",
@@ -191,11 +189,14 @@ export default function PublicLayout() {
 
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
-            <div className="grid h-10 w-10 place-items-center rounded-xl gradient-primary border border-rose-900 text-white shadow-lg shadow-rose-500/20 group-hover:shadow-rose-500/40 transition-shadow">
-              <Car className="h-6 w-6" />
+            <div className="grid h-10 w-10 place-items-center rounded-sm overflow-hidden">
+              <img src={logo} className="h-10 w-10 object-cover" />
             </div>
-            <div className="font-display font-black text-2xl leading-none text-white tracking-tight">
-              Caryanam
+            <div
+              className="font-logo text-lg tracking-[0.2em] text-white"
+              style={{ transform: "scaleY(1.6)" }}
+            >
+              CARY<span className="text-yellow-400">A</span>NAM
             </div>
           </Link>
 
@@ -281,12 +282,7 @@ export default function PublicLayout() {
                     >
                       <Heart className="h-4 w-4 text-rose-400" /> My Wishlist
                     </button>
-                    <button
-                      onClick={() => { navigate("/chat"); setUserMenuOpen(false); }}
-                      className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-white/70 hover:text-white hover:bg-white/5 transition-colors text-left"
-                    >
-                      <MessageSquare className="h-4 w-4 text-rose-400" /> My Chats
-                    </button>
+
                     <button
                       onClick={handleLogout}
                       className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-rose-400 hover:text-rose-300 hover:bg-rose-500/8 transition-colors text-left"
@@ -319,10 +315,15 @@ export default function PublicLayout() {
                 <div className="flex flex-col h-full">
                   {/* Mobile sheet header */}
                   <div className="flex items-center gap-2.5 px-6 py-5 border-b border-white/8">
-                    <div className="grid h-8 w-8 place-items-center rounded-xl gradient-primary text-white">
-                      <Car className="h-4 w-4" />
+                    <div className="grid h-10 w-10 place-items-center rounded-sm overflow-hidden">
+                      <img src={logo} className="h-10 w-10 object-cover" />
                     </div>
-                    <span className="font-display font-black text-base text-white">Caryanam</span>
+                    <div
+                      className="font-logo text-sm tracking-[0.2em] text-white"
+                      style={{ transform: "scaleY(1.6)" }}
+                    >
+                      CARY<span className="text-yellow-400">A</span>NAM
+                    </div>
                   </div>
 
                   {/* Mobile nav links */}
@@ -392,14 +393,19 @@ export default function PublicLayout() {
           </div>
 
           {/* 4-Column Grid */}
-          <div className="grid gap-10 md:grid-cols-4">
+          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
             {/* Col 1: Logo & Description */}
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <div className="grid h-9 w-9 place-items-center rounded-xl gradient-primary text-white">
-                  <Car className="h-5 w-5" />
+                <div className="grid h-10 w-10 place-items-center rounded-sm overflow-hidden">
+                  <img src={logo} className="h-10 w-10 object-cover" />
                 </div>
-                <div className="font-display font-black text-lg">Caryanam</div>
+                <div
+                  className="font-logo lg:text-sm xl:text-lg  text-lg tracking-[0.2em] text-white"
+                  style={{ transform: "scaleY(1.6)" }}
+                >
+                  CARY<span className="text-yellow-400">A</span>NAM
+                </div>
               </div>
               <p className="text-sm text-white/70 leading-relaxed">
                 India's most trusted used-car dealer marketplace. Verified

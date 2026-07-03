@@ -11,7 +11,7 @@ import { useDealerAuth } from "@/contexts/DealerAuthContext";
 import { toast } from "sonner";
 import { useState } from "react";
 import carImg from "@/assets/download.jpg";
-
+import logo from "@/assets/logo.png";
 type FormData = {
   username: string;
   password: string;
@@ -95,11 +95,14 @@ export default function Login() {
           <div className="absolute inset-0 bg-gradient-to-tr from-black/85 via-black/60 to-black/40 z-0" />
 
           {/* Brand Logo & Header */}
-          <Link to="/" className="relative z-10 flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-rose-600/30 backdrop-blur-md flex items-center justify-center border border-white/20">
-              <div className="w-5 h-5 rounded-full bg-rose-600 flex items-center justify-center font-black text-white text-[10px]">C</div>
+          <Link to="/" className="relative z-10 flex  items-center gap-3">
+            <img src={logo} className="h-10 w-10 object-cover rounded-sm" />
+            <div
+              className="font-logo lg:text-sm xl:text-lg  text-lg tracking-[0.2em] text-white"
+              style={{ transform: "scaleY(1.6)" }}
+            >
+              CARY<span className="text-yellow-400">A</span>NAM
             </div>
-            <span className="font-display font-black text-lg tracking-tight text-white drop-shadow-md">Caryanam</span>
           </Link>
 
           {/* Slogan Text block */}

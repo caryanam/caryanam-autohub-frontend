@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useAdminAuth } from "@/contexts/AdminAuthContext";
 import { useDealerAuth } from "@/contexts/DealerAuthContext";
-
+import logo from "@/assets/logo.png";
 export interface NavItem {
   to: string;
   label: string;
@@ -54,9 +54,15 @@ export default function DashboardLayout({ title, nav, accentLabel }: Props) {
       <div className="h-16 flex items-center gap-2 px-6 border-b border-white/5">
         <div className="flex items-center gap-2">
           {/* Logo Circle Badge */}
+          <img src={logo} alt="Logo" className="h-8 w-8 rounded-sm" />
 
           <div className="font-display font-black text-base text-white tracking-tight ml-1 flex items-center">
-            Caryanam
+
+            <span className="font-logo   text-sm tracking-[0.2em] text-white"
+              style={{ transform: "scaleY(1.6)" }}
+            >
+              CARY<span className="text-yellow-400">A</span>NAM
+            </span>
 
           </div>
         </div>

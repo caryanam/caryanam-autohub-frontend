@@ -38,6 +38,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import img from '@/assets/download.jpg';
+import logo from "@/assets/logo.png"
 interface AuthModalProps {
   open: boolean;
   onOpenChange: (v: boolean) => void;
@@ -107,15 +108,19 @@ export function AuthModal({ open, onOpenChange, onSuccess }: AuthModalProps) {
 
             {/* Brand Logo Header */}
             <div className="relative z-10 flex items-center gap-2.5">
-              <motion.div
+              <motion.img
                 whileHover={{ rotate: 8, scale: 1.05 }}
-                className="grid h-9 w-9 place-items-center rounded-xl bg-accent text-accent-foreground font-black text-base shadow-lg shadow-accent/25"
+                className="grid h-9 w-9 place-items-center rounded-sm font-black "
+                src={logo}
               >
-                A
-              </motion.div>
-              <span className="font-display font-black text-base tracking-wide text-white">
-                Caryanam
-              </span>
+
+              </motion.img>
+              <div
+                className="font-logo lg:text-sm xl:text-lg  text-lg tracking-[0.2em] text-white"
+                style={{ transform: "scaleY(1.6)" }}
+              >
+                CARY<span className="text-yellow-400">A</span>NAM
+              </div>
             </div>
 
             {/* Trust Content List */}
@@ -312,7 +317,7 @@ function LoginForm({
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErr("");
-    
+
     // Quick validation
     const trimmed = username.trim();
     const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed);

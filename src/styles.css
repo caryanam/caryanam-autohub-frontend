@@ -72,6 +72,7 @@
   --color-ink-800: var(--ink-800);
   --font-display: "Lato", system-ui, -apple-system, sans-serif;
   --font-sans: "Roboto", system-ui, -apple-system, sans-serif;
+  --font-logo: "Ethnocentric Rg", sans-serif;
 }
 
 :root {
