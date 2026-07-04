@@ -54,7 +54,6 @@ export function useChat({ currentUserId, currentUserRole, token, users }: UseCha
   const [activeUserId, setActiveUserId] = useState<number | null>(null);
   const [activeUserRole, setActiveUserRole] = useState<"ADMIN" | "DEALER" | "CUSTOMER" | null>(null);
   const [isTyping, setIsTyping] = useState(false);
-  const [isOnline, setIsOnline] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [totalUnreadCount, setTotalUnreadCount] = useState(0);
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
@@ -231,27 +230,6 @@ export function useChat({ currentUserId, currentUserRole, token, users }: UseCha
     }
   }, [token, fetchTotalUnreadCount, handleAuthError]);
 
-  // REST: Check online status
-  const checkOnlineStatus = useCallback(async (userId: number, role: string, isBackground = false) => {
-    if (!token) return;
-    try {
-      const { data } = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/api/chat/online`,
-        {
-          params: { userId, role },
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      setIsOnline(!!data);
-    } catch (err) {
-      console.error("Error checking online status:", err);
-      setIsOnline(false);
-      if (!isBackground) {
-        handleAuthError(err);
-      }
-    }
-  }, [token, handleAuthError]);
-
   // Set active thread and run initial load processes
   const selectThread = useCallback((userId: number, userRole: "ADMIN" | "DEALER" | "CUSTOMER") => {
     setActiveUserId(userId);
@@ -264,27 +242,8 @@ export function useChat({ currentUserId, currentUserRole, token, users }: UseCha
     } else {
       markAsSeen(userId, userRole);
       fetchHistory(userId, userRole, false, false);
-      checkOnlineStatus(userId, userRole);
     }
-  }, [markAsSeen, fetchHistory, checkOnlineStatus, threads]);
-
-  // Poll online status for the active user every 10 seconds
-  useEffect(() => {
-    if (activeUserId === null || activeUserRole === null) return;
-
-    const thread = threads.find((t) => t.userId === activeUserId && t.userRole === activeUserRole);
-    if (thread?.group) {
-      setIsOnline(false);
-      return;
-    }
-
-    checkOnlineStatus(activeUserId, activeUserRole, true);
-    const interval = setInterval(() => {
-      checkOnlineStatus(activeUserId, activeUserRole, true);
-    }, 10000);
-
-    return () => clearInterval(interval);
-  }, [activeUserId, activeUserRole, checkOnlineStatus, threads]);
+  }, [markAsSeen, fetchHistory, threads]);
 
   // Poll message history for the active user every 5 seconds to get updated seen ticks (isRead)
   useEffect(() => {
@@ -625,7 +584,6 @@ export function useChat({ currentUserId, currentUserRole, token, users }: UseCha
     activeUserRole,
     selectThread,
     isTyping,
-    isOnline,
     sendMessage,
     sendTypingStatus,
     isConnected,

@@ -795,6 +795,7 @@ export default function CarDetails() {
                 placeholder="+91 98xxx xxxxx"
                 className="mt-1"
                 required
+                disabled={true}
               />
             </div>
             <div>

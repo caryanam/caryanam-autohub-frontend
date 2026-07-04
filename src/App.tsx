@@ -51,7 +51,6 @@ import AdminSubscriptions from "@/pages/admin/Subscriptions";
 import AdminReports from "@/pages/admin/Reports";
 import AdminChat from "@/pages/admin/Chat";
 
-
 export default function App() {
   return (
     <AdminAuthProvider>
@@ -69,7 +68,7 @@ export default function App() {
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/terms" element={<TermsAndConditions />} />
               <Route path="/refund-policy" element={<RefundPolicy />} />
-              
+
               {/* Customer Protected */}
               <Route element={<ProtectedRoute allow={["customer"]} />}>
                 <Route path="/chat" element={<CustomerChat />} />

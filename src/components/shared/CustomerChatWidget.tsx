@@ -45,7 +45,6 @@ function ChatWidgetContent({ customerId, token }: { customerId: string | null; t
     activeUserRole,
     selectThread,
     isTyping,
-    isOnline,
     sendMessage,
     sendTypingStatus,
     isConnected,
@@ -183,9 +182,6 @@ function ChatWidgetContent({ customerId, token }: { customerId: string | null; t
                     <span className="text-rose-500 font-bold ml-1 font-sans">({totalUnreadCount})</span>
                   )}
                 </span>
-                {activeThread && !activeThread.group && (
-                  <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${isOnline ? "bg-emerald-400" : "bg-slate-500"}`} />
-                )}
                 {activeThread && activeThread.group && (
                   <span className="text-[9px] font-medium px-1.5 py-0.5 rounded border shrink-0 bg-purple-50 text-purple-700 border-purple-200 ml-1.5">
                     Group

@@ -36,7 +36,6 @@ export default function CustomerChat() {
     activeUserRole,
     selectThread,
     isTyping,
-    isOnline,
     sendMessage,
     sendTypingStatus,
     isConnected,
@@ -294,14 +293,6 @@ export default function CustomerChat() {
                             </span>
                           )}
                         </div>
-                        {!activeThread.group && (
-                          <div className="flex items-center gap-1.5 mt-0.5">
-                            <span className={`h-1.5 w-1.5 rounded-full ${isOnline ? "bg-emerald-500 animate-pulse" : "bg-slate-400"}`} />
-                            <span className="text-[9px] text-slate-400 font-bold tracking-wider uppercase">
-                              {isOnline ? "Online" : "Offline"}
-                            </span>
-                          </div>
-                        )}
                       </div>
                     </div>
                   </div>
