@@ -183,8 +183,13 @@ function ChatWidgetContent({ customerId, token }: { customerId: string | null; t
                     <span className="text-rose-500 font-bold ml-1 font-sans">({totalUnreadCount})</span>
                   )}
                 </span>
-                {activeThread && (
+                {activeThread && !activeThread.group && (
                   <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${isOnline ? "bg-emerald-400" : "bg-slate-500"}`} />
+                )}
+                {activeThread && activeThread.group && (
+                  <span className="text-[9px] font-medium px-1.5 py-0.5 rounded border shrink-0 bg-purple-50 text-purple-700 border-purple-200 ml-1.5">
+                    Group
+                  </span>
                 )}
               </div>
 
@@ -259,9 +264,15 @@ function ChatWidgetContent({ customerId, token }: { customerId: string | null; t
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-1.5 min-w-0">
                                   <h4 className="font-bold text-xs text-slate-800 truncate capitalize">{t.userName}</h4>
-                                  <span className={`text-[8px] font-semibold px-1 py-0.5 rounded border shrink-0 ${ROLE_CONFIG[t.userRole]?.style}`}>
-                                    {ROLE_CONFIG[t.userRole]?.label}
-                                  </span>
+                                  {t.group ? (
+                                    <span className="text-[8px] font-semibold px-1 py-0.5 rounded border shrink-0 bg-purple-50 text-purple-700 border-purple-200">
+                                      Group
+                                    </span>
+                                  ) : (
+                                    <span className={`text-[8px] font-semibold px-1 py-0.5 rounded border shrink-0 ${ROLE_CONFIG[t.userRole]?.style}`}>
+                                      {ROLE_CONFIG[t.userRole]?.label}
+                                    </span>
+                                  )}
                                 </div>
                                 <div className="flex flex-col items-end gap-0.5 shrink-0">
                                   <span className="text-[9px] text-slate-400 font-medium">{t.lastTime}</span>
@@ -322,6 +333,11 @@ function ChatWidgetContent({ customerId, token }: { customerId: string | null; t
                               return (
                                 <div key={m.id} className={`flex ${isMe ? "justify-end" : "justify-start"}`}>
                                   <div className="max-w-[75%] space-y-1">
+                                    {activeThread.group && !isMe && m.senderName && (
+                                      <div className="text-[10px] font-bold text-slate-500 mb-0.5 ml-1">
+                                        {m.senderName}
+                                      </div>
+                                    )}
                                     <div
                                       className={`px-3.5 py-2.5 text-xs leading-relaxed shadow-sm ${isMe
                                         ? "bg-gradient-to-r from-rose-600 to-pink-600 text-white rounded-2xl rounded-tr-none"

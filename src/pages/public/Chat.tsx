@@ -233,9 +233,15 @@ export default function CustomerChat() {
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-1.5 min-w-0">
                             <h4 className="font-bold text-sm text-slate-900 truncate capitalize">{t.userName}</h4>
-                            <span className={`text-[9px] font-medium px-1.5 py-0.5 rounded border shrink-0 ${ROLE_CONFIG[t.userRole]?.style}`}>
-                              {ROLE_CONFIG[t.userRole]?.label}
-                            </span>
+                            {t.group ? (
+                              <span className="text-[9px] font-medium px-1.5 py-0.5 rounded border shrink-0 bg-purple-50 text-purple-700 border-purple-200">
+                                Group
+                              </span>
+                            ) : (
+                              <span className={`text-[9px] font-medium px-1.5 py-0.5 rounded border shrink-0 ${ROLE_CONFIG[t.userRole]?.style}`}>
+                                {ROLE_CONFIG[t.userRole]?.label}
+                              </span>
+                            )}
                           </div>
                           <div className="flex flex-col items-end gap-1 shrink-0">
                             <span className="text-[10px] text-slate-400 font-medium">{t.lastTime}</span>
@@ -278,16 +284,24 @@ export default function CustomerChat() {
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5 flex-wrap">
                           <h3 className="font-bold text-sm text-slate-900 truncate capitalize">{activeThread.userName}</h3>
-                          <span className={`text-[9px] font-medium px-1.5 py-0.5 rounded border shrink-0 ${ROLE_CONFIG[activeThread.userRole]?.style}`}>
-                            {ROLE_CONFIG[activeThread.userRole]?.label}
-                          </span>
+                          {activeThread.group ? (
+                            <span className="text-[9px] font-medium px-1.5 py-0.5 rounded border shrink-0 bg-purple-50 text-purple-700 border-purple-200">
+                              Group
+                            </span>
+                          ) : (
+                            <span className={`text-[9px] font-medium px-1.5 py-0.5 rounded border shrink-0 ${ROLE_CONFIG[activeThread.userRole]?.style}`}>
+                              {ROLE_CONFIG[activeThread.userRole]?.label}
+                            </span>
+                          )}
                         </div>
-                        <div className="flex items-center gap-1.5 mt-0.5">
-                          <span className={`h-1.5 w-1.5 rounded-full ${isOnline ? "bg-emerald-500 animate-pulse" : "bg-slate-400"}`} />
-                          <span className="text-[9px] text-slate-400 font-bold tracking-wider uppercase">
-                            {isOnline ? "Online" : "Offline"}
-                          </span>
-                        </div>
+                        {!activeThread.group && (
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <span className={`h-1.5 w-1.5 rounded-full ${isOnline ? "bg-emerald-500 animate-pulse" : "bg-slate-400"}`} />
+                            <span className="text-[9px] text-slate-400 font-bold tracking-wider uppercase">
+                              {isOnline ? "Online" : "Offline"}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -332,6 +346,11 @@ export default function CustomerChat() {
                                 className={`flex ${isMe ? "justify-end" : "justify-start"}`}
                               >
                                 <div className="max-w-[70%] space-y-1.5">
+                                  {activeThread.group && !isMe && m.senderName && (
+                                    <div className="text-[10px] font-bold text-slate-500 mb-0.5 ml-1">
+                                      {m.senderName}
+                                    </div>
+                                  )}
                                   <div
                                     className={`px-4.5 py-3 text-xs leading-relaxed shadow-sm ${isMe
                                       ? "bg-gradient-to-r from-rose-600 to-pink-600 text-white rounded-2xl rounded-tr-none shadow-rose-200/10"

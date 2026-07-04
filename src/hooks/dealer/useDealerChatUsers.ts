@@ -8,6 +8,8 @@ export interface ChatUser {
   lastMessageAt?: string;
   lastMessage?: string;
   unreadCount?: number;
+  group?: boolean;
+  chatKey?: string;
 }
 
 function getCleanToken(key: string): string {

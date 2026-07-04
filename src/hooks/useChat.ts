@@ -7,6 +7,7 @@ import type { ChatUser } from "@/hooks/dealer/useDealerChatUsers";
 export interface Message {
   id: string;
   sender: "me" | "other";
+  senderName?: string;
   text: string;
   timestamp: string;
   isRead: boolean;
@@ -23,6 +24,8 @@ export interface Thread {
   lastMsgAt?: string;
   originalIndex?: number;
   unreadCount?: number;
+  group?: boolean;
+  chatKey?: string;
 }
 
 export interface UseChatParams {
@@ -59,6 +62,7 @@ export function useChat({ currentUserId, currentUserRole, token, users }: UseCha
   const stompClientRef = useRef<Client | null>(null);
   const activeUserIdRef = useRef<number | null>(null);
   const activeUserRoleRef = useRef<"ADMIN" | "DEALER" | "CUSTOMER" | null>(null);
+  const activeSubscriptionsRef = useRef<Map<string, any>>(new Map());
 
   // Sync refs to avoid stale closures in stomp subscriptions
   useEffect(() => {
@@ -80,7 +84,9 @@ export function useChat({ currentUserId, currentUserRole, token, users }: UseCha
             ...t,
             originalIndex: index,
             unreadCount: u.unreadCount ?? t.unreadCount,
-            unread: (u.unreadCount ?? 0) > 0 || t.unread
+            unread: (u.unreadCount ?? 0) > 0 || t.unread,
+            group: u.group,
+            chatKey: u.chatKey,
           };
         }
         return {
@@ -94,6 +100,8 @@ export function useChat({ currentUserId, currentUserRole, token, users }: UseCha
           lastMsgAt: u.lastMessageAt || "",
           originalIndex: index,
           unreadCount: u.unreadCount ?? 0,
+          group: u.group,
+          chatKey: u.chatKey,
         };
       });
     });
@@ -138,19 +146,26 @@ export function useChat({ currentUserId, currentUserRole, token, users }: UseCha
   }, [fetchTotalUnreadCount]);
 
   // REST: Fetch history
-  const fetchHistory = useCallback(async (user2Id: number, user2Role: string, isBackground = false) => {
+  const fetchHistory = useCallback(async (user2Id: number, user2Role: string, isBackground = false, isGroup = false) => {
     if (!token) return;
     if (!isBackground) {
       setIsHistoryLoading(true);
     }
     try {
-      const { data } = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/api/chat/history`,
-        {
-          params: { user2Id, user2Role },
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const url = isGroup
+        ? `${import.meta.env.VITE_API_BASE_URL}/api/chat/group/history`
+        : `${import.meta.env.VITE_API_BASE_URL}/api/chat/history`;
+
+      const config: any = {
+        headers: { Authorization: `Bearer ${token}` },
+      };
+
+      if (!isGroup) {
+        config.params = { user2Id, user2Role };
+      }
+
+      const { data } = await axios.get(url, config);
+
       if (Array.isArray(data)) {
         const formattedMessages: Message[] = data.map((msg: any) => ({
           id: String(msg.id),
@@ -158,6 +173,7 @@ export function useChat({ currentUserId, currentUserRole, token, users }: UseCha
             msg.senderId === currentUserId && msg.senderRole === currentUserRole
               ? "me"
               : "other",
+          senderName: msg.senderName,
           text: msg.content,
           timestamp: formatTime(msg.sentAt),
           isRead: msg.isRead,
@@ -240,14 +256,27 @@ export function useChat({ currentUserId, currentUserRole, token, users }: UseCha
   const selectThread = useCallback((userId: number, userRole: "ADMIN" | "DEALER" | "CUSTOMER") => {
     setActiveUserId(userId);
     setActiveUserRole(userRole);
-    markAsSeen(userId, userRole);
-    fetchHistory(userId, userRole);
-    checkOnlineStatus(userId, userRole);
-  }, [markAsSeen, fetchHistory, checkOnlineStatus]);
+    const thread = threads.find((t) => t.userId === userId && t.userRole === userRole);
+    const isGroup = thread?.group ?? false;
+
+    if (isGroup) {
+      fetchHistory(userId, userRole, false, true);
+    } else {
+      markAsSeen(userId, userRole);
+      fetchHistory(userId, userRole, false, false);
+      checkOnlineStatus(userId, userRole);
+    }
+  }, [markAsSeen, fetchHistory, checkOnlineStatus, threads]);
 
   // Poll online status for the active user every 10 seconds
   useEffect(() => {
     if (activeUserId === null || activeUserRole === null) return;
+
+    const thread = threads.find((t) => t.userId === activeUserId && t.userRole === activeUserRole);
+    if (thread?.group) {
+      setIsOnline(false);
+      return;
+    }
 
     checkOnlineStatus(activeUserId, activeUserRole, true);
     const interval = setInterval(() => {
@@ -255,18 +284,21 @@ export function useChat({ currentUserId, currentUserRole, token, users }: UseCha
     }, 10000);
 
     return () => clearInterval(interval);
-  }, [activeUserId, activeUserRole, checkOnlineStatus]);
+  }, [activeUserId, activeUserRole, checkOnlineStatus, threads]);
 
   // Poll message history for the active user every 5 seconds to get updated seen ticks (isRead)
   useEffect(() => {
     if (activeUserId === null || activeUserRole === null) return;
 
+    const thread = threads.find((t) => t.userId === activeUserId && t.userRole === activeUserRole);
+    const isGroup = thread?.group ?? false;
+
     const interval = setInterval(() => {
-      fetchHistory(activeUserId, activeUserRole, true);
+      fetchHistory(activeUserId, activeUserRole, true, isGroup);
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [activeUserId, activeUserRole, fetchHistory]);
+  }, [activeUserId, activeUserRole, fetchHistory, threads]);
 
   // Poll total unread count every 10 seconds
   useEffect(() => {
@@ -405,15 +437,18 @@ export function useChat({ currentUserId, currentUserRole, token, users }: UseCha
 
     client.onDisconnect = () => {
       setIsConnected(false);
+      activeSubscriptionsRef.current.clear();
     };
 
     client.onWebSocketClose = () => {
       setIsConnected(false);
+      activeSubscriptionsRef.current.clear();
     };
 
     client.onStompError = (frame) => {
       console.error("STOMP error:", frame);
       setIsConnected(false);
+      activeSubscriptionsRef.current.clear();
     };
 
     client.activate();
@@ -421,11 +456,84 @@ export function useChat({ currentUserId, currentUserRole, token, users }: UseCha
 
     return () => {
       client.deactivate();
+      activeSubscriptionsRef.current.clear();
       // Restore original XMLHttpRequest methods on unmount
       XMLHttpRequest.prototype.open = originalOpen;
       XMLHttpRequest.prototype.send = originalSend;
     };
   }, [currentUserId, currentUserRole, token, markAsSeen, fetchTotalUnreadCount]);
+
+  // STOMP: Manage dynamic group subscriptions
+  useEffect(() => {
+    const client = stompClientRef.current;
+    if (!client || !isConnected) return;
+
+    // Find all groups in the users list
+    const groups = users.filter((u) => u.group && u.chatKey);
+
+    // Unsubscribe from any group that is no longer in the list
+    activeSubscriptionsRef.current.forEach((sub, chatKey) => {
+      if (!groups.some((g) => g.chatKey === chatKey)) {
+        sub.unsubscribe();
+        activeSubscriptionsRef.current.delete(chatKey);
+        console.log(`Unsubscribed from group topic: /topic/${chatKey}`);
+      }
+    });
+
+    // Subscribe to new groups
+    groups.forEach((group) => {
+      if (!activeSubscriptionsRef.current.has(group.chatKey!)) {
+        const groupTopic = `/topic/${group.chatKey}`;
+        console.log(`Subscribing to group topic: ${groupTopic}`);
+
+        const sub = client.subscribe(groupTopic, (message) => {
+          try {
+            const msg = JSON.parse(message.body);
+            const formatted: Message = {
+              id: msg.id ? String(msg.id) : `msg-${Date.now()}`,
+              sender:
+                msg.senderId === currentUserId && msg.senderRole === currentUserRole
+                  ? "me"
+                  : "other",
+              senderName: msg.senderName,
+              text: msg.content,
+              timestamp: formatTime(msg.sentAt || new Date().toISOString()),
+              isRead: msg.isRead || false,
+            };
+
+            const lastMsgTime = msg.sentAt || new Date().toISOString();
+
+            setThreads((prev) =>
+              prev.map((t) => {
+                if (t.group && t.chatKey === group.chatKey) {
+                  const isCurrentActive =
+                    activeUserIdRef.current === t.userId &&
+                    activeUserRoleRef.current === t.userRole;
+
+                  return {
+                    ...t,
+                    messages: [...t.messages, formatted],
+                    lastMessage: formatted.text,
+                    lastTime: formatted.timestamp,
+                    unread: !isCurrentActive,
+                    lastMsgAt: lastMsgTime,
+                    unreadCount: isCurrentActive ? 0 : (t.unreadCount ?? 0) + 1,
+                  };
+                }
+                return t;
+              })
+            );
+
+            fetchTotalUnreadCount();
+          } catch (err) {
+            console.error("Error processing incoming group message:", err);
+          }
+        });
+
+        activeSubscriptionsRef.current.set(group.chatKey!, sub);
+      }
+    });
+  }, [users, isConnected, currentUserId, currentUserRole, fetchTotalUnreadCount]);
 
   // STOMP: Send Message
   const sendMessage = useCallback((content: string) => {
@@ -434,10 +542,15 @@ export function useChat({ currentUserId, currentUserRole, token, users }: UseCha
       return;
     }
 
+    const thread = threads.find((t) => t.userId === activeUserId && t.userRole === activeUserRole);
+    const isGroup = thread?.group ?? false;
+
     const payload = {
       receiverId: activeUserId,
       receiverRole: activeUserRole,
       content,
+      groupMessage: isGroup,
+      groupId: isGroup ? thread?.chatKey : undefined,
     };
 
     stompClientRef.current.publish({
@@ -449,6 +562,7 @@ export function useChat({ currentUserId, currentUserRole, token, users }: UseCha
     const formatted: Message = {
       id: `msg-sent-${Date.now()}`,
       sender: "me",
+      senderName: "Me",
       text: content,
       timestamp: nowTime(),
       isRead: false,
@@ -469,13 +583,16 @@ export function useChat({ currentUserId, currentUserRole, token, users }: UseCha
           : t
       )
     );
-  }, [activeUserId, activeUserRole, isConnected]);
+  }, [activeUserId, activeUserRole, isConnected, threads]);
 
   // STOMP: Send Typing Status
   const sendTypingStatus = useCallback((typing: boolean) => {
     if (!stompClientRef.current || !isConnected || activeUserId === null || activeUserRole === null) {
       return;
     }
+
+    const thread = threads.find((t) => t.userId === activeUserId && t.userRole === activeUserRole);
+    if (thread?.group) return;
 
     const payload = {
       senderId: currentUserId,
@@ -489,7 +606,7 @@ export function useChat({ currentUserId, currentUserRole, token, users }: UseCha
       destination: "/app/chat.typing",
       body: JSON.stringify(payload),
     });
-  }, [currentUserId, currentUserRole, activeUserId, activeUserRole, isConnected]);
+  }, [currentUserId, currentUserRole, activeUserId, activeUserRole, isConnected, threads]);
 
   const sortedThreads = useMemo(() => {
     return [...threads].sort((a, b) => {
