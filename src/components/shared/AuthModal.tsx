@@ -408,9 +408,9 @@ function LoginForm({
             className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-accent transition-colors"
           >
             {showPassword ? (
-              <EyeOff className="h-4 w-4" />
-            ) : (
               <Eye className="h-4 w-4" />
+            ) : (
+              <EyeOff className="h-4 w-4" />
             )}
           </button>
         </div>
@@ -604,9 +604,9 @@ function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
             className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-accent transition-colors"
           >
             {showPassword ? (
-              <EyeOff className="h-4 w-4" />
-            ) : (
               <Eye className="h-4 w-4" />
+            ) : (
+              <EyeOff className="h-4 w-4" />
             )}
           </button>
         </div>
@@ -917,9 +917,9 @@ function ForgotPasswordForm({ onBackToLogin }: { onBackToLogin: () => void }) {
                 className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-accent transition-colors"
               >
                 {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
                   <Eye className="h-4 w-4" />
+                ) : (
+                  <EyeOff className="h-4 w-4" />
                 )}
               </button>
             </div>
