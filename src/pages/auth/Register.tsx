@@ -119,28 +119,21 @@ export default function Register() {
 
       if (error instanceof ApiError) {
         if (error.fieldErrors && Object.keys(error.fieldErrors).length > 0) {
-          Object.entries(error.fieldErrors).forEach(([field, message]) => {
-            const label = field
-              .replace(/([A-Z])/g, " $1")
-              .replace(/^./, (s) => s.toUpperCase());
-            toast.error(`${label}: ${message}`, { duration: 6005 });
+          Object.entries(error.fieldErrors).forEach(([, message], i) => {
+            setTimeout(() => toast.error(message, { duration: 5000 }), i * 300);
           });
         } else {
-          toast.error(error.message, {
-            duration: 6000,
-          });
+          toast.error(error.message, { duration: 6000 });
         }
       } else {
-        toast.error(
-          "Registration failed. Please check your connection and try again.",
-        );
+        toast.error("Registration failed. Please check your connection and try again.");
       }
     }
   };
 
   const steps = [
     {
-      label: "Business Identity",
+      label: "Business Details ",
       icon: Building2,
       description: "Enter your company details",
     },
@@ -543,8 +536,18 @@ export default function Register() {
                           required
                           maxLength={6}
                           placeholder="400001"
+                          inputMode="numeric"
+                          onInput={(e: React.FormEvent<HTMLInputElement>) => {
+                            e.currentTarget.value = e.currentTarget.value.replace(/\D/g, "").slice(0, 6);
+                          }}
                           className="h-11 px-4 rounded-xl border border-white/20 bg-white/10 text-white placeholder-white/40 focus-visible:bg-black/40 focus-visible:border-white focus-visible:ring-4 focus-visible:ring-white/10 md:border-slate-200 md:bg-slate-50/50 md:text-slate-900 md:placeholder-slate-400 md:focus-visible:bg-white md:focus-visible:border-rose-900 md:focus-visible:ring-rose-900/10 transition-all shadow-sm"
-                          {...form.register("pinCode")}
+                          {...form.register("pinCode", {
+                            required: "Pin code is required",
+                            pattern: {
+                              value: /^[0-9]{6}$/,
+                              message: "Pin code must be exactly 6 digits"
+                            }
+                          })}
                         />
                       </div>
                     </div>
@@ -573,11 +576,17 @@ export default function Register() {
                               <input
                                 id="dealer-logo-input"
                                 type="file"
-                                accept=".png,.jpg,.jpeg"
+                                accept="image/*"
                                 className="sr-only"
-                                onChange={(e) =>
-                                  setDealerLogo(e.target.files?.[0] ?? null)
-                                }
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file && !file.type.startsWith("image/")) {
+                                    toast.error("Only image files are allowed.");
+                                    e.target.value = "";
+                                    return;
+                                  }
+                                  setDealerLogo(file ?? null);
+                                }}
                               />
                             </label>
                           ) : (
@@ -626,11 +635,17 @@ export default function Register() {
                               <input
                                 id="showroom-image-input"
                                 type="file"
-                                accept=".png,.jpg,.jpeg"
+                                accept="image/*"
                                 className="sr-only"
-                                onChange={(e) =>
-                                  setShowroomImage(e.target.files?.[0] ?? null)
-                                }
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file && !file.type.startsWith("image/")) {
+                                    toast.error("Only image files are allowed.");
+                                    e.target.value = "";
+                                    return;
+                                  }
+                                  setShowroomImage(file ?? null);
+                                }}
                               />
                             </label>
                           ) : (

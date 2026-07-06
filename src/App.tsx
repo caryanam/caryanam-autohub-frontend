@@ -126,7 +126,7 @@ export default function App() {
             </Route>
           </Routes>
         </BrowserRouter>
-        <Toaster position="bottom-right" richColors />
+        <Toaster position="bottom-right" richColors expand />
         <SessionExpiredModal />
       </DealerAuthProvider>
     </AdminAuthProvider>

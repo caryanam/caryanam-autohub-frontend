@@ -4,10 +4,12 @@ import apiClient from "@/lib/apiClient";
 
 export class VehicleError extends Error {
   status: number;
-  constructor(message: string, status: number) {
+  fieldErrors?: Record<string, string>;
+  constructor(message: string, status: number, fieldErrors?: Record<string, string>) {
     super(message);
     this.name = "VehicleError";
     this.status = status;
+    this.fieldErrors = fieldErrors;
   }
 }
 
@@ -40,6 +42,7 @@ export function useAddVehicle(dealerId: string) {
           throw new VehicleError(
             body?.message ?? "Failed to add vehicle",
             body?.status ?? err.response?.status ?? 500,
+            body?.errors ?? undefined,
           );
         }
         throw err;

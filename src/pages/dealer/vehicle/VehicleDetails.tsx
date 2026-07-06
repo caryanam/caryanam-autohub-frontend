@@ -6,18 +6,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   ArrowLeft,
   ChevronRight,
-  Car,
   Fuel,
-  Settings,
   Users,
   MapPin,
   Calendar,
   Gauge,
-  Shield,
-  Phone,
-  Mail,
   DollarSign,
-  FileText,
 } from "lucide-react";
 import { useState } from "react";
 import { useGetVehicleDetails } from "@/hooks/dealer/useGetVehicleDetails";
@@ -160,16 +154,9 @@ export default function DealerVehicleDetails() {
               value={vehicle.fuelType}
             />
             <SpecBox
-              icon={<Settings className="h-4 w-4" />}
-              label="Transmission"
-              value={vehicle.transmission}
-            />
-            <SpecBox
               icon={<Gauge className="h-4 w-4" />}
               label="KM Driven"
-              value={
-                (vehicle.kilometerDriven ?? 0).toLocaleString("en-IN") + " km"
-              }
+              value={(vehicle.kilometerDriven ?? 0).toLocaleString("en-IN") + " km"}
             />
             <SpecBox
               icon={<Calendar className="h-4 w-4" />}
@@ -179,32 +166,13 @@ export default function DealerVehicleDetails() {
             <SpecBox
               icon={<Users className="h-4 w-4" />}
               label="Ownership"
-              value={vehicle.ownershipDetails}
+              value={`${vehicle.ownershipDetails}${vehicle.ownershipDetails === 1 ? "st" : vehicle.ownershipDetails === 2 ? "nd" : vehicle.ownershipDetails === 3 ? "rd" : "th"} Owner`}
             />
             <SpecBox
               icon={<MapPin className="h-4 w-4" />}
               label="City"
               value={vehicle.city}
             />
-            {vehicle.vehicleType && (
-              <SpecBox
-                icon={<Car className="h-4 w-4" />}
-                label="Vehicle Type"
-                value={vehicle.vehicleType}
-              />
-            )}
-            <SpecBox
-              icon={<Shield className="h-4 w-4" />}
-              label="Insurance Status"
-              value={vehicle.insuranceStatus}
-            />
-            {vehicle.rtoInformation && (
-              <SpecBox
-                icon={<FileText className="h-4 w-4" />}
-                label="RTO Info"
-                value={vehicle.rtoInformation}
-              />
-            )}
             <SpecBox
               icon={<DollarSign className="h-4 w-4" />}
               label="Finance"

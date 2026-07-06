@@ -118,13 +118,10 @@ export default function DealerVehicles() {
       "KM Driven",
       "Asking Price",
       "Fuel Type",
-      "Transmission",
       "Ownership",
       "City",
       "Vehicle Type",
-      "Insurance Status",
       "Status",
-      "RTO Info",
       "Finance Availability"
     ];
 
@@ -137,13 +134,10 @@ export default function DealerVehicles() {
       kilometerDriven: v.kilometerDriven || 0,
       askingPrice: v.askingPrice || 0,
       fuelType: v.fuelType || "",
-      transmission: v.transmission || "",
-      ownershipDetails: v.ownershipDetails || "",
+      ownershipDetails: v.ownershipDetails ? `${v.ownershipDetails}${v.ownershipDetails === 1 ? "st" : v.ownershipDetails === 2 ? "nd" : v.ownershipDetails === 3 ? "rd" : "th"} Owner` : "",
       city: v.city || "",
       vehicleType: v.vehicleType || "NON_PREMIUM",
-      insuranceStatus: v.insuranceStatus || "",
       vehicleStatus: v.vehicleStatus || "",
-      rtoInformation: v.rtoInformation || "",
       financeAvailability: v.financeAvailability !== undefined ? (v.financeAvailability ? "Available" : "Not Available") : "Available",
     }));
 
@@ -158,13 +152,10 @@ export default function DealerVehicles() {
         row.kilometerDriven,
         row.askingPrice,
         `"${row.fuelType.replace(/"/g, '""')}"`,
-        `"${row.transmission.replace(/"/g, '""')}"`,
-        `"${row.ownershipDetails.replace(/"/g, '""')}"`,
+        `"${row.ownershipDetails}"`,
         `"${row.city.replace(/"/g, '""')}"`,
         `"${row.vehicleType.replace(/"/g, '""')}"`,
-        `"${row.insuranceStatus.replace(/"/g, '""')}"`,
         `"${row.vehicleStatus.replace(/"/g, '""')}"`,
-        `"${row.rtoInformation.replace(/"/g, '""')}"`,
         `"${row.financeAvailability.replace(/"/g, '""')}"`
       ].join(","))
     ].join("\n");
@@ -354,7 +345,7 @@ export default function DealerVehicles() {
                               )}
                             </div>
                             <div className="text-xs text-slate-400 text-left mt-0.5">
-                              {v.variant} • {v.fuelType} • {v.transmission} •{" "}
+                              {v.variant} • {v.fuelType} •{" "}
                               {v.city}
                             </div>
                           </div>

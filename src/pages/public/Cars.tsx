@@ -199,9 +199,9 @@ export default function Cars() {
     return ["Pune", "PCMC", ...uniqueAreas];
   }, [all]);
 
-  const FUELS = ["Petrol", "Diesel", "CNG", "Electric", "Hybrid"];
-  const TRANSMISSIONS = ["Manual", "Automatic"];
-  const OWNERSHIPS = ["First Owner", "Second Owner", "Third Owner", "Others"];
+  const FUELS = ["PETROL", "DIESEL", "CNG", "LPG", "ELECTRIC", "HYBRID"];
+  const OWNERSHIPS = ["1", "2", "3", "4"];
+  const OWNERSHIP_LABELS: Record<string, string> = { "1": "1st Owner", "2": "2nd Owner", "3": "3rd Owner", "4": "4th Owner" };
 
   const filtered = useMemo(() => {
     let list: Vehicle[] = all;
@@ -230,26 +230,8 @@ export default function Cars() {
     if (fuel) {
       list = list.filter((v) => v.fuelType?.toLowerCase() === fuel.toLowerCase());
     }
-    if (transmission) {
-      list = list.filter((v) => v.transmission?.toLowerCase() === transmission.toLowerCase());
-    }
     if (ownership) {
-      list = list.filter((v) => {
-        const value = String(v.ownershipDetails);
-        if (ownership === "First Owner") {
-          return value === "First Owner" || value === "1";
-        }
-        if (ownership === "Second Owner") {
-          return value === "Second Owner" || value === "2";
-        }
-        if (ownership === "Third Owner") {
-          return value === "Third Owner" || value === "3";
-        }
-        if (ownership === "Others") {
-          return !["First Owner", "Second Owner", "Third Owner", "1", "2", "3"].includes(value);
-        }
-        return false;
-      });
+      list = list.filter((v) => Number(v.ownershipDetails) === Number(ownership));
     }
     if (minYear) list = list.filter((v) => v.registrationYear >= minYear);
     if (maxKm) list = list.filter((v) => v.kilometerDriven <= maxKm);
@@ -325,7 +307,6 @@ export default function Cars() {
       variant,
       city,
       fuel,
-      transmission,
       ownership,
       budgetLabel,
       minYear,
@@ -430,16 +411,11 @@ export default function Cars() {
           options={FUELS}
         />
         <FilterGroup
-          label="Transmission"
-          value={transmission}
-          setValue={(v) => set("transmission", v)}
-          options={TRANSMISSIONS}
-        />
-        <FilterGroup
           label="Ownership"
           value={ownership}
           setValue={(v) => set("ownership", v)}
           options={OWNERSHIPS}
+          optionLabels={OWNERSHIP_LABELS}
         />
       </div>
 
@@ -774,11 +750,13 @@ function FilterGroup({
   value,
   setValue,
   options,
+  optionLabels,
 }: {
   label: string;
   value: string;
   setValue: (v: string) => void;
   options: string[];
+  optionLabels?: Record<string, string>;
 }) {
   return (
     <div className="space-y-1.5">
@@ -796,7 +774,7 @@ function FilterGroup({
           <SelectItem value="all">All {label}s</SelectItem>
           {options.map((o) => (
             <SelectItem key={o} value={o}>
-              {o}
+              {optionLabels?.[o] ?? o}
             </SelectItem>
           ))}
         </SelectContent>

@@ -1,6 +1,6 @@
 
 
-import type { FuelType, Transmission, Ownership } from "@/types";
+import type { FuelType, Ownership } from "@/types";
 
 export const BUDGET_BANDS = [
   { label: "Under ₹3 Lakh", min: 0, max: 300000 },
@@ -22,19 +22,12 @@ export const QUICK_BRANDS = [
 
 export const CITIES = ["Pune", "PCMC"];
 export const FUELS: FuelType[] = [
-  "Petrol",
-  "Diesel",
+  "PETROL",
+  "DIESEL",
   "CNG",
-  "Electric",
-  "Hybrid",
+  "LPG",
+  "ELECTRIC",
+  "HYBRID",
 ];
-export const TRANSMISSIONS: Transmission[] = ["Manual", "Automatic"];
-export const OWNERSHIPS: Ownership[] = ["1st Owner", "2nd Owner", "3rd Owner"];
-
-export const INSURANCE_STATUSES = [
-  { value: "ACTIVE", label: "Active" },
-  { value: "EXPIRED", label: "Expired" },
-  { value: "RENEWAL_DUE", label: "Renewal Due" },
-  { value: "CANCELLED", label: "Cancelled" },
-];
+export const OWNERSHIPS: Ownership[] = [1, 2, 3, 4];
 

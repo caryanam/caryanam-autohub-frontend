@@ -1,6 +1,6 @@
-export type FuelType = "Petrol" | "Diesel" | "CNG" | "Electric" | "Hybrid";
+export type FuelType = "PETROL" | "DIESEL" | "CNG" | "LPG" | "ELECTRIC" | "HYBRID";
 export type Transmission = "Manual" | "Automatic";
-export type Ownership = "1st Owner" | "2nd Owner" | "3rd Owner";
+export type Ownership = 1 | 2 | 3 | 4;
 export type LeadStatus = "New" | "Contacted" | "Converted";
 export type DealerStatus = "Pending" | "Approved" | "Suspended" | "Rejected";
 export type SubscriptionTier = "Basic" | "Standard" | "Premium";
@@ -17,8 +17,7 @@ export interface Vehicle {
   kilometerDriven: number;
   fuelType: string;
   transmission: Transmission;
-  ownershipDetails: string;
-  insuranceStatus: string;
+  ownershipDetails: number;
   city: string;
   vehicleDescription: string;
   vehicleStatus: string;
@@ -34,7 +33,6 @@ export interface Vehicle {
   vehicleType?: string;
   images?: string[];
   videos?: string[];
-  rtoInformation?: string;
   financeAvailability?: boolean;
   executiveMobile?: string | null;
 }

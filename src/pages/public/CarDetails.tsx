@@ -5,10 +5,8 @@ import {
   ArrowLeft,
   MapPin,
   Fuel,
-  Settings2,
   Gauge,
   Calendar,
-  Shield,
   Phone,
   MessageCircle,
   BadgeCheck,
@@ -20,10 +18,10 @@ import {
   Star,
   Heart,
   Car,
-  FileText,
   DollarSign,
   Camera,
   X,
+  Shield,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -421,32 +419,15 @@ export default function CarDetails() {
                     value={vehicle.fuelType}
                   />
                   <Spec
-                    icon={<Settings2 className="h-4 w-4" />}
-                    label="Transmission"
-                    value={vehicle.transmission}
-                  />
-                  <Spec
                     icon={<BadgeCheck className="h-4 w-4" />}
                     label="Ownership"
-                    value={vehicle.ownershipDetails}
-                  />
-                  <Spec
-                    icon={<Shield className="h-4 w-4" />}
-                    label="Insurance"
-                    value={vehicle.insuranceStatus}
+                    value={`${vehicle.ownershipDetails}${vehicle.ownershipDetails === 1 ? "st" : vehicle.ownershipDetails === 2 ? "nd" : vehicle.ownershipDetails === 3 ? "rd" : "th"} Owner`}
                   />
                   {vehicle.vehicleType && (
                     <Spec
                       icon={<Car className="h-4 w-4" />}
                       label="Vehicle Type"
                       value={vehicle.vehicleType}
-                    />
-                  )}
-                  {vehicle.rtoInformation && (
-                    <Spec
-                      icon={<FileText className="h-4 w-4" />}
-                      label="RTO Info"
-                      value={vehicle.rtoInformation}
                     />
                   )}
                   <Spec
@@ -576,9 +557,9 @@ export default function CarDetails() {
                   </span>
                 </div>
                 <div className="flex-1 flex flex-col items-center gap-1 px-3">
-                  <Settings2 className="h-4 w-4 text-muted-foreground" />
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
                   <span className="text-xs text-muted-foreground">
-                    {vehicle.transmission}
+                    {vehicle.registrationYear}
                   </span>
                 </div>
                 <div className="flex-1 flex flex-col items-center gap-1 pl-3">

@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import {
   useCustomerLogin,
   useCustomerRegister,
+  CustomerRegisterError,
   type CustomerUser,
 } from "@/hooks/public/useCustomerAuth";
 import {
@@ -494,9 +495,14 @@ function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
       await register(form);
       onSuccess();
     } catch (e: any) {
-      setErr(e.message);
-      // Auto-disappear error message after 2 seconds
-      setTimeout(() => setErr(""), 2000);
+      if (e instanceof CustomerRegisterError && e.fieldErrors && Object.keys(e.fieldErrors).length > 0) {
+        Object.entries(e.fieldErrors).forEach(([, message], i) => {
+          setTimeout(() => toast.error(message, { duration: 5000 }), i * 300);
+        });
+      } else {
+        setErr(e.message);
+        setTimeout(() => setErr(""), 3000);
+      }
     }
   };
 

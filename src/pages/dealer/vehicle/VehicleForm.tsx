@@ -11,12 +11,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CITIES, FUELS, TRANSMISSIONS, INSURANCE_STATUSES } from "@/utils/constants";
+import { CITIES, FUELS } from "@/utils/constants";
 import { CAR_BRANDS, getModels, getVariants } from "@/data/carDatabase";
 import { SearchableSelect } from "@/components/shared/SearchableSelect";
 import { useDealerAuth } from "@/contexts/DealerAuthContext";
 import { toast } from "sonner";
-import { useAddVehicle } from "@/hooks/dealer/useAddVehicle";
+import { useAddVehicle, VehicleError } from "@/hooks/dealer/useAddVehicle";
 import { useGetVehicleDetails } from "@/hooks/dealer/useGetVehicleDetails";
 import { useUpdateVehicle } from "@/hooks/dealer/useUpdateVehicle";
 import { Switch } from "@/components/ui/switch";
@@ -56,9 +56,8 @@ export default function VehicleForm({
 
   const [brand, setBrand] = useState("");
   const [city, setCity] = useState("");
-  const [fuelType, setFuelType] = useState("Petrol");
-  const [transmission, setTransmission] = useState("Manual");
-  const [ownershipDetails, setOwnershipDetails] = useState("First Owner");
+  const [fuelType, setFuelType] = useState("PETROL");
+  const [ownershipDetails, setOwnershipDetails] = useState(1);
   const [vehicleType, setVehicleType] = useState("NON_PREMIUM");
 
   const [model, setModel] = useState("");
@@ -93,9 +92,7 @@ export default function VehicleForm({
     new Date().getFullYear().toString(),
   );
   const [kilometerDriven, setKilometerDriven] = useState("");
-  const [insuranceStatus, setInsuranceStatus] = useState("");
   const [vehicleDescription, setVehicleDescription] = useState("");
-  const [rtoInformation, setRtoInformation] = useState("");
   const [financeAvailability, setFinanceAvailability] = useState(true);
 
   useEffect(() => {
@@ -103,8 +100,7 @@ export default function VehicleForm({
       setBrand(vehicleDetails.brand || "");
       setCity(vehicleDetails.city || "");
       setFuelType(vehicleDetails.fuelType || "Petrol");
-      setTransmission(vehicleDetails.transmission || "Manual");
-      setOwnershipDetails(vehicleDetails.ownershipDetails || "First Owner");
+      setOwnershipDetails(vehicleDetails.ownershipDetails || 1);
       setModel(vehicleDetails.model || "");
       setVariant(vehicleDetails.variant || "");
       setAskingPrice(
@@ -120,10 +116,8 @@ export default function VehicleForm({
           ? vehicleDetails.kilometerDriven.toString()
           : "",
       );
-      setInsuranceStatus(vehicleDetails.insuranceStatus || "");
       setVehicleType(vehicleDetails.vehicleType || "NON_PREMIUM");
       setVehicleDescription(vehicleDetails.vehicleDescription || "");
-      setRtoInformation(vehicleDetails.rtoInformation || "");
       setFinanceAvailability(
         vehicleDetails.financeAvailability !== undefined
           ? vehicleDetails.financeAvailability
@@ -135,6 +129,11 @@ export default function VehicleForm({
   const handleSlotImageChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
+      if (!file.type.startsWith("image/")) {
+        toast.error("Only image files are allowed.");
+        e.target.value = "";
+        return;
+      }
       setSlotImages((prev) => {
         const next = [...prev];
         next[index] = file;
@@ -162,8 +161,17 @@ export default function VehicleForm({
   };
 
   const handleVideosChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files)
-      setVideos((prev) => [...prev, ...Array.from(e.target.files!)]);
+    if (e.target.files) {
+      const validFiles = Array.from(e.target.files).filter((file) => {
+        if (!file.type.startsWith("video/")) {
+          toast.error(`"${file.name}" is not a valid video file.`);
+          return false;
+        }
+        return true;
+      });
+      if (validFiles.length) setVideos((prev) => [...prev, ...validFiles]);
+      e.target.value = "";
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -175,7 +183,11 @@ export default function VehicleForm({
     if (!model) newErrors.model = "Model is required";
     if (!variant) newErrors.variant = "Variant is required";
     if (!city) newErrors.city = "City is required";
-    if (!insuranceStatus) newErrors.insuranceStatus = "Insurance status is required";
+    const yearNum = Number(registrationYear);
+    if (!registrationYear || yearNum < 1 || yearNum > new Date().getFullYear()) {
+      toast.error(`Registration year must be a positive number not greater than ${new Date().getFullYear()}.`);
+      return;
+    }
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -211,13 +223,10 @@ export default function VehicleForm({
       askingPrice: Number(askingPrice),
       kilometerDriven: Number(kilometerDriven),
       fuelType,
-      transmission,
-      ownershipDetails,
+      ownershipDetails: Number(ownershipDetails),
       vehicleType,
-      insuranceStatus,
       city,
       vehicleDescription,
-      rtoInformation,
       financeAvailability,
     };
 
@@ -238,9 +247,13 @@ export default function VehicleForm({
       }
       onSuccess();
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Failed to save vehicle",
-      );
+      if (error instanceof VehicleError && error.fieldErrors && Object.keys(error.fieldErrors).length > 0) {
+        Object.entries(error.fieldErrors).forEach(([, message], i) => {
+          setTimeout(() => toast.error(message, { duration: 5000 }), i * 300);
+        });
+      } else {
+        toast.error(error instanceof Error ? error.message : "Failed to save vehicle");
+      }
     }
   };
 
@@ -334,6 +347,11 @@ export default function VehicleForm({
           type="number"
           placeholder="e.g. 1200000"
           value={askingPrice}
+          min={1}
+          onInput={(e) => {
+            const v = (e.target as HTMLInputElement).value;
+            if (Number(v) < 0) (e.target as HTMLInputElement).value = "";
+          }}
           onChange={(e) => setAskingPrice(e.target.value)}
           required
         />
@@ -343,6 +361,11 @@ export default function VehicleForm({
           placeholder="e.g. 2023"
           value={registrationYear}
           onChange={(e) => setRegistrationYear(e.target.value)}
+          error={
+            registrationYear && (Number(registrationYear) < 1 || Number(registrationYear) > new Date().getFullYear())
+              ? `Enter a valid year (max ${new Date().getFullYear()})`
+              : undefined
+          }
           required
         />
         <Field
@@ -350,6 +373,11 @@ export default function VehicleForm({
           type="number"
           placeholder="e.g. 15000"
           value={kilometerDriven}
+          min={0}
+          onInput={(e) => {
+            const v = (e.target as HTMLInputElement).value;
+            if (Number(v) < 0) (e.target as HTMLInputElement).value = "";
+          }}
           onChange={(e) => setKilometerDriven(e.target.value)}
           required
         />
@@ -374,42 +402,22 @@ export default function VehicleForm({
 
         <div className="text-left">
           <Label>
-            Transmission <span className="text-red-500">*</span>
-          </Label>
-          <Select value={transmission} onValueChange={setTransmission} required>
-            <SelectTrigger className="mt-1">
-              <SelectValue placeholder="Select Transmission" />
-            </SelectTrigger>
-            <SelectContent>
-              {TRANSMISSIONS.map((o) => (
-                <SelectItem key={o} value={o}>
-                  {o}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="text-left">
-          <Label>
             Ownership Details <span className="text-red-500">*</span>
           </Label>
           <Select
-            value={ownershipDetails}
-            onValueChange={setOwnershipDetails}
+            value={String(ownershipDetails)}
+            onValueChange={(v) => setOwnershipDetails(Number(v))}
             required
           >
             <SelectTrigger className="mt-1">
               <SelectValue placeholder="Select Ownership" />
             </SelectTrigger>
             <SelectContent>
-              {["First Owner", "Second Owner", "Third Owner", "Others"].map(
-                (o) => (
-                  <SelectItem key={o} value={o}>
-                    {o}
-                  </SelectItem>
-                ),
-              )}
+              {([1, 2, 3, 4] as const).map((n) => (
+                <SelectItem key={n} value={String(n)}>
+                  {n === 1 ? "1st Owner" : n === 2 ? "2nd Owner" : n === 3 ? "3rd Owner" : "4th Owner"}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -428,34 +436,6 @@ export default function VehicleForm({
             </SelectContent>
           </Select>
         </div>
-
-        <div id="field-insuranceStatus" className="text-left">
-          <Label>
-            Insurance Status <span className="text-red-500">*</span>
-          </Label>
-          <Select value={insuranceStatus} onValueChange={(v) => { setInsuranceStatus(v); clearError("insuranceStatus"); }}>
-            <SelectTrigger className={`mt-1 ${errors.insuranceStatus ? "border-red-500" : ""}`}>
-              <SelectValue placeholder="Select Insurance Status" />
-            </SelectTrigger>
-            <SelectContent>
-              {INSURANCE_STATUSES.map((o) => (
-                <SelectItem key={o.value} value={o.value}>
-                  {o.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {errors.insuranceStatus && <p className="text-xs text-red-500 mt-1">{errors.insuranceStatus}</p>}
-        </div>
-
-        <Field
-          label="RTO Information"
-          type="text"
-          placeholder="e.g. MH12"
-          value={rtoInformation}
-          onChange={(e) => setRtoInformation(e.target.value)}
-          required
-        />
 
         <div className="text-left flex flex-col justify-end pb-1">
           <Label className="mb-2">Finance Availability</Label>

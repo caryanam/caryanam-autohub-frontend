@@ -82,6 +82,15 @@ type RegisterPayload = {
   password: string;
 };
 
+export class CustomerRegisterError extends Error {
+  fieldErrors?: Record<string, string>;
+  constructor(message: string, fieldErrors?: Record<string, string>) {
+    super(message);
+    this.name = "CustomerRegisterError";
+    this.fieldErrors = fieldErrors;
+  }
+}
+
 export function useCustomerRegister() {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
@@ -94,13 +103,10 @@ export function useCustomerRegister() {
       } catch (err) {
         if (axios.isAxiosError(err)) {
           const body = err.response?.data;
-          if (body?.errors && typeof body.errors === "object") {
-            const errMsgs = Object.values(body.errors).filter(Boolean);
-            if (errMsgs.length > 0) {
-              throw new Error(errMsgs.join(", "));
-            }
-          }
-          throw new Error(body?.message ?? "Registration failed");
+          throw new CustomerRegisterError(
+            body?.message ?? "Registration failed",
+            body?.errors ?? undefined,
+          );
         }
         throw err;
       } finally {
