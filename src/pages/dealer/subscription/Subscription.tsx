@@ -2,14 +2,29 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Check, Star, Loader2, CalendarDays, Car, Clock } from "lucide-react";
+import { Check, Star, Loader2, Clock, Copy, CheckCheck } from "lucide-react";
 import { useDealerAuth } from "@/contexts/DealerAuthContext";
 import { toast } from "sonner";
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   useGetSubscriptionPlans,
   useGetCurrentPlan,
   usePurchaseSubscription,
 } from "@/hooks/dealer/useSubscription";
+import logo from "@/assets/logo.png";
+
+const UPI_ID = "9579078460-2@ybl";
+
+function getQrUrl(amount: number) {
+  const upiString = `upi://pay?pa=${UPI_ID}&pn=Caryanam&am=${amount}&cu=INR`;
+  return `https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=10&data=${encodeURIComponent(upiString)}`;
+}
 
 const PLAN_ORDER = ["BASIC", "STANDARD", "PREMIUM"];
 
@@ -28,14 +43,28 @@ export default function DealerSubscription() {
   const activePlan = currentPlan?.plan;
   const currentMessage = currentPlan?.message ?? "";
 
-  const handlePurchase = async (planName: string) => {
-    try {
-      const res = await purchaseMutation.mutateAsync(planName);
+  const [copied, setCopied] = useState(false);
 
+  const handleCopy = () => {
+    navigator.clipboard.writeText(UPI_ID);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const [qrDialog, setQrDialog] = useState<{ planName: string; amount: number } | null>(null);
+
+  const handleOpenQr = (planName: string, amount: number) => {
+    setQrDialog({ planName, amount });
+  };
+
+  const handlePurchase = async () => {
+    if (!qrDialog) return;
+    try {
+      const res = await purchaseMutation.mutateAsync(qrDialog.planName);
       toast.success(
-        `${res.data?.subscriptionPlan ?? planName
-        } plan purchased! Transaction ID: ${res.data?.transactionId ?? ""}`,
+        `${res.data?.subscriptionPlan ?? qrDialog.planName} plan purchased! Transaction ID: ${res.data?.transactionId ?? ""}`,
       );
+      setQrDialog(null);
     } catch (err: any) {
       toast.error(
         err?.response?.data?.message ??
@@ -282,7 +311,7 @@ export default function DealerSubscription() {
                 </ul>
 
                 <Button
-                  onClick={() => handlePurchase(plan.planName)}
+                  onClick={() => handleOpenQr(plan.planName, plan.amount)}
                   disabled={isCurrent || purchaseMutation.isPending}
                   variant="default"
                   className={`w-full mt-6 ${isCurrent
@@ -310,6 +339,66 @@ export default function DealerSubscription() {
           );
         })}
       </div>
+
+      {/* QR Payment Dialog */}
+      <Dialog open={!!qrDialog} onOpenChange={(open) => { if (!open) setQrDialog(null); }}>
+        <DialogContent className="max-w-[340px] rounded-3xl p-0 border-none shadow-2xl bg-white text-slate-900 overflow-hidden">
+          {qrDialog && (
+            <>
+              {/* Header */}
+              <div className="gradient-primary px-5 pt-5 pb-5">
+                <DialogHeader>
+                  <DialogTitle className="text-white text-base font-black tracking-tight leading-none">
+                    Complete Payment
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="flex items-center justify-between mt-2">
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-white/60">{qrDialog.planName} Plan</span>
+                  <span className="text-xl font-black text-white">₹{qrDialog.amount.toLocaleString("en-IN")}</span>
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center gap-3 px-5 py-4">
+                {/* QR with logo overlay */}
+                <div className="relative w-[180px] h-[180px] rounded-xl overflow-hidden border-2 border-slate-100 shadow-md bg-white">
+                  <img src={getQrUrl(qrDialog.amount)} alt="UPI QR" className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div className="w-9 h-9 rounded-lg bg-white shadow border border-slate-100 flex items-center justify-center p-1">
+                      <img src={logo} alt="Caryanam" className="w-full h-full object-contain rounded-md" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* UPI ID copy row */}
+                <div className="w-full flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">UPI ID</p>
+                    <p className="text-sm font-bold text-slate-800 font-mono truncate">{UPI_ID}</p>
+                  </div>
+                  <button type="button" onClick={handleCopy} className="shrink-0 p-1.5 rounded-lg bg-white border border-slate-200 hover:border-rose-900 hover:text-rose-900 text-slate-500 transition-colors cursor-pointer">
+                    {copied ? <CheckCheck size={14} className="text-green-600" /> : <Copy size={14} />}
+                  </button>
+                </div>
+
+                <p className="text-[10px] text-slate-400 text-center">
+                  Scan QR or copy UPI ID, then click <span className="font-bold text-slate-600">Confirm Purchase</span>.
+                </p>
+
+                <Button
+                  onClick={handlePurchase}
+                  disabled={purchaseMutation.isPending}
+                  className="w-full h-10 gradient-primary text-white border-0 font-bold rounded-xl shadow-md cursor-pointer text-sm"
+                >
+                  {purchaseMutation.isPending
+                    ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Processing…</>
+                    : "Confirm Purchase"
+                  }
+                </Button>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
