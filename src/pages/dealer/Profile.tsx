@@ -27,7 +27,7 @@ import {
   EyeOff,
 } from "lucide-react";
 import { useGetDealerProfile } from "@/hooks/dealer/useGetDealerProfile";
-import { useUpdateDealerProfile } from "@/hooks/dealer/useUpdateDealerProfile";
+import { useUpdateDealerProfile, UpdateProfileError } from "@/hooks/dealer/useUpdateDealerProfile";
 import {
   useCustomerSendOtp,
   useCustomerVerifyOtp,
@@ -87,8 +87,6 @@ export default function DealerProfile() {
     try {
       await updateMutation.mutateAsync({
         businessName,
-        ownerName,
-        dealerMobile,
         executiveMobile: executiveMobile || null,
         whatsapp,
         address,
@@ -96,13 +94,16 @@ export default function DealerProfile() {
         state,
         pinCode,
       });
-      updateUserFields({ businessName, ownerName });
+      updateUserFields({ businessName });
       toast.success("Profile updated successfully");
-    } catch (err: any) {
-      toast.error(
-        err?.response?.data?.message ||
-        (err instanceof Error ? err.message : String(err))
-      );
+    } catch (err) {
+      if (err instanceof UpdateProfileError && err.fieldErrors && Object.keys(err.fieldErrors).length > 0) {
+        Object.values(err.fieldErrors).forEach((message, i) => {
+          setTimeout(() => toast.error(message, { duration: 5000 }), i * 300);
+        });
+      } else {
+        toast.error(err instanceof Error ? err.message : "Failed to update profile");
+      }
     }
   };
 
@@ -365,9 +366,8 @@ export default function DealerProfile() {
                     <Label className="text-xs font-semibold text-slate-600">Owner Name</Label>
                     <Input
                       value={ownerName}
-                      onChange={(e) => setOwnerName(e.target.value)}
-                      className="mt-1.5 rounded-xl h-11 border-slate-200 focus-visible:ring-blue-600 bg-white"
-                      required
+                      readOnly
+                      className="mt-1.5 rounded-xl h-11 border-slate-200 bg-slate-50 text-slate-400 cursor-not-allowed select-none"
                     />
                   </div>
                 </div>
@@ -384,17 +384,25 @@ export default function DealerProfile() {
                     <Label className="text-xs font-semibold text-slate-600">Dealer Mobile</Label>
                     <Input
                       value={dealerMobile}
-                      onChange={(e) => setDealerMobile(e.target.value)}
-                      className="mt-1.5 rounded-xl h-11 border-slate-200 focus-visible:ring-blue-600 bg-white"
-                      required
+                      readOnly
+                      className="mt-1.5 rounded-xl h-11 border-slate-200 bg-slate-50 text-slate-400 cursor-not-allowed select-none"
                     />
                   </div>
                   <div>
                     <Label className="text-xs font-semibold text-slate-600">Executive Mobile (optional)</Label>
                     <Input
                       value={executiveMobile}
-                      onChange={(e) => setExecutiveMobile(e.target.value)}
+                      type="tel"
+                      maxLength={10}
                       placeholder="Executive contact"
+                      onInput={(e: React.FormEvent<HTMLInputElement>) => {
+                        const t = e.currentTarget;
+                        const val = t.value.replace(/\D/g, "");
+                        if (val.length > 0 && !["6","7","8","9"].includes(val[0])) { t.value = ""; setExecutiveMobile(""); return; }
+                        t.value = val.slice(0, 10);
+                        setExecutiveMobile(t.value);
+                      }}
+                      onChange={(e) => setExecutiveMobile(e.target.value)}
                       className="mt-1.5 rounded-xl h-11 border-slate-200 focus-visible:ring-blue-600 bg-white"
                     />
                   </div>
@@ -402,8 +410,17 @@ export default function DealerProfile() {
                     <Label className="text-xs font-semibold text-slate-600">WhatsApp Number</Label>
                     <Input
                       value={whatsapp}
-                      onChange={(e) => setWhatsapp(e.target.value)}
+                      type="tel"
+                      maxLength={10}
                       placeholder="WhatsApp contact"
+                      onInput={(e: React.FormEvent<HTMLInputElement>) => {
+                        const t = e.currentTarget;
+                        const val = t.value.replace(/\D/g, "");
+                        if (val.length > 0 && !["6","7","8","9"].includes(val[0])) { t.value = ""; setWhatsapp(""); return; }
+                        t.value = val.slice(0, 10);
+                        setWhatsapp(t.value);
+                      }}
+                      onChange={(e) => setWhatsapp(e.target.value)}
                       className="mt-1.5 rounded-xl h-11 border-slate-200 focus-visible:ring-blue-600 bg-white"
                     />
                   </div>
@@ -447,8 +464,14 @@ export default function DealerProfile() {
                       <Label className="text-xs font-semibold text-slate-600">PIN Code</Label>
                       <Input
                         value={pinCode}
-                        onChange={(e) => setPinCode(e.target.value)}
+                        inputMode="numeric"
+                        maxLength={6}
                         placeholder="e.g. 411045"
+                        onInput={(e: React.FormEvent<HTMLInputElement>) => {
+                          e.currentTarget.value = e.currentTarget.value.replace(/\D/g, "").slice(0, 6);
+                          setPinCode(e.currentTarget.value);
+                        }}
+                        onChange={(e) => setPinCode(e.target.value)}
                         className="mt-1.5 rounded-xl h-11 border-slate-200 focus-visible:ring-blue-600 bg-white"
                       />
                     </div>
