@@ -481,16 +481,22 @@ export default function PublicLayout() {
           </div>
         </div>
 
-        <div className="relative z-10 border-t border-white/10 py-8">
-          <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex items-center justify-center text-center text-xs text-white/50">
+     <div className="relative z-10 border-t border-white/10 py-8">
+  <div className="relative z-10 mx-auto flex max-w-7xl flex-col items-center gap-2 px-4 text-md text-white/50 sm:px-6 md:flex-row md:justify-between lg:px-8">
+    
+    <span className="text-center md:text-left">
+      Developed by{" "}
+      <span className="font-extrabold text-rose-900">
+        Caryanamindia Pvt Ltd
+      </span>
+    </span>
 
-          Developed by Caryanamindia Pvt Ltd
+    <span className="text-center md:text-right">
+      © 2026 Caryanam. All rights reserved by Caryanamindia Pvt Ltd.
+    </span>
 
-            <span>
-              © 2026 Caryanam. All rights reserved by Caryanamindia Pvt Ltd
-            </span>
-          </div>
-        </div>
+  </div>
+</div>
       </footer>
 
       <AuthModal
