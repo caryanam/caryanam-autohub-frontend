@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CITIES, FUELS } from "@/utils/constants";
+import { FUELS } from "@/utils/constants";
 import { CAR_BRANDS, getModels, getVariants } from "@/data/carDatabase";
 import { SearchableSelect } from "@/components/shared/SearchableSelect";
 import { useDealerAuth } from "@/contexts/DealerAuthContext";
@@ -20,6 +20,7 @@ import { useAddVehicle, VehicleError } from "@/hooks/dealer/useAddVehicle";
 import { useGetVehicleDetails } from "@/hooks/dealer/useGetVehicleDetails";
 import { useUpdateVehicle, VehicleError as UpdateVehicleError } from "@/hooks/dealer/useUpdateVehicle";
 import { Switch } from "@/components/ui/switch";
+import { useAreas } from "@/hooks/public/useAreas";
 
 export interface VehicleFormProps {
   vehicleId?: number;
@@ -37,6 +38,7 @@ export default function VehicleForm({
   const updateVehicleMutation = useUpdateVehicle(user?.id || "");
   const { data: vehicleDetails, isLoading: loadingDetails } =
     useGetVehicleDetails(vehicleId);
+  const { data: areas = [] } = useAreas();
 
   const PHOTO_SLOTS = [
     "Front View",
@@ -328,18 +330,14 @@ export default function VehicleForm({
           <Label>
             City <span className="text-red-500">*</span>
           </Label>
-          <Select value={city} onValueChange={(v) => { setCity(v); clearError("city"); }}>
-            <SelectTrigger className={`mt-1 ${errors.city ? "border-red-500" : ""}`}>
-              <SelectValue placeholder="Select City" />
-            </SelectTrigger>
-            <SelectContent>
-              {CITIES.map((o) => (
-                <SelectItem key={o} value={o}>
-                  {o}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <SearchableSelect
+            value={city}
+            onValueChange={(v) => { setCity(v); clearError("city"); }}
+            options={areas}
+            placeholder="Select or Type City"
+            allowCustom={true}
+            triggerClassName={`mt-1 ${errors.city ? "border-red-500" : ""}`}
+          />
           {errors.city && <p className="text-xs text-red-500 mt-1">{errors.city}</p>}
         </div>
 

@@ -19,7 +19,7 @@ import {
 } from "@/hooks/dealer/useSubscription";
 import logo from "@/assets/logo.png";
 
-const UPI_ID = "9579078460-2@ybl";
+const UPI_ID = "pratikshashitole29-3@okaxis";
 
 function getQrUrl(amount: number) {
   const upiString = `upi://pay?pa=${UPI_ID}&pn=Caryanam&am=${amount}&cu=INR`;

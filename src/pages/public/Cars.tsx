@@ -49,6 +49,7 @@ import { BUDGET_BANDS } from "@/utils/constants";
 import { formatINR } from "@/utils/helpers";
 import type { Vehicle } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAreas } from "@/hooks/public/useAreas";
 
 const isPCMC = (area: string) => {
   const pcmcAreas = [
@@ -190,14 +191,17 @@ export default function Cars() {
     setPage(1);
   };
 
+  const { data: areas = [] } = useAreas();
+
   // Dynamic location list including broad and specific choices
   const CITIES = useMemo(() => {
-    const uniqueAreas = Array.from(new Set(all.map((v) => v.city).filter(Boolean)))
+    const apiSet = new Set(areas.map((a) => a.toLowerCase()));
+    const uniqueFromVehicles = Array.from(new Set(all.map((v) => v.city).filter(Boolean)))
       .map((c) => c.trim())
-      .filter((c) => c.length > 0 && c.toLowerCase() !== "pune" && c.toLowerCase() !== "pcmc")
+      .filter((c) => c.length > 0 && !apiSet.has(c.toLowerCase()))
       .sort();
-    return ["Pune", "PCMC", ...uniqueAreas];
-  }, [all]);
+    return [...areas, ...uniqueFromVehicles];
+  }, [areas, all]);
 
   const FUELS = ["PETROL", "DIESEL", "CNG", "LPG", "ELECTRIC", "HYBRID"];
   const OWNERSHIPS = ["1", "2", "3", "4"];
@@ -398,12 +402,27 @@ export default function Cars() {
       </AnimatePresence>
 
       <div className="border-t border-border/50 my-2 pt-4 space-y-5">
-        <FilterGroup
-          label="City"
-          value={city}
-          setValue={(v) => set("city", v)}
-          options={CITIES}
-        />
+        <div className="space-y-1.5">
+          <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+            City
+          </Label>
+          <SearchableSelect
+            value={city || ""}
+            onValueChange={(v) => set("city", v)}
+            options={CITIES}
+            placeholder="All Cities"
+            triggerClassName="h-11 rounded-xl hover:bg-muted/10 transition-colors focus:border-rose-900 focus:ring-rose-900/15"
+          />
+          {city && (
+            <button
+              type="button"
+              onClick={() => set("city", "")}
+              className="text-[10px] font-bold text-rose-900 hover:underline cursor-pointer"
+            >
+              Clear city
+            </button>
+          )}
+        </div>
         <FilterGroup
           label="Fuel"
           value={fuel}
