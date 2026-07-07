@@ -12,6 +12,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { FUELS } from "@/utils/constants";
+
+const FUEL_LABELS: Record<string, string> = {
+  PETROL: "Petrol", DIESEL: "Diesel", CNG: "CNG",
+  LPG: "LPG", ELECTRIC: "Electric", HYBRID: "Hybrid",
+};
 import { CAR_BRANDS, getModels, getVariants } from "@/data/carDatabase";
 import { SearchableSelect } from "@/components/shared/SearchableSelect";
 import { useDealerAuth } from "@/contexts/DealerAuthContext";
@@ -101,7 +106,7 @@ export default function VehicleForm({
     if (vehicleDetails) {
       setBrand(vehicleDetails.brand || "");
       setCity(vehicleDetails.city || "");
-      setFuelType(vehicleDetails.fuelType || "Petrol");
+      setFuelType((vehicleDetails.fuelType || "PETROL").toUpperCase());
       setOwnershipDetails(vehicleDetails.ownershipDetails || 1);
       setModel(vehicleDetails.model || "");
       setVariant(vehicleDetails.variant || "");
@@ -274,7 +279,7 @@ export default function VehicleForm({
 
   return (
     <form
-      key={vehicleId ? `edit-${brand}-${city}` : "add"}
+      key={vehicleId ?? "add"}
       onSubmit={handleSubmit}
       className="space-y-4 py-4 max-h-[70vh] overflow-y-auto px-1"
     >
@@ -392,7 +397,7 @@ export default function VehicleForm({
             <SelectContent>
               {FUELS.map((o) => (
                 <SelectItem key={o} value={o}>
-                  {o}
+                  {FUEL_LABELS[o] ?? o}
                 </SelectItem>
               ))}
             </SelectContent>

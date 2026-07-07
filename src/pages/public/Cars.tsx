@@ -204,6 +204,7 @@ export default function Cars() {
   }, [areas, all]);
 
   const FUELS = ["PETROL", "DIESEL", "CNG", "LPG", "ELECTRIC", "HYBRID"];
+  const FUEL_LABELS: Record<string, string> = { PETROL: "Petrol", DIESEL: "Diesel", CNG: "CNG", LPG: "LPG", ELECTRIC: "Electric", HYBRID: "Hybrid" };
   const OWNERSHIPS = ["1", "2", "3", "4"];
   const OWNERSHIP_LABELS: Record<string, string> = { "1": "1st Owner", "2": "2nd Owner", "3": "3rd Owner", "4": "4th Owner" };
 
@@ -232,7 +233,7 @@ export default function Cars() {
       }
     }
     if (fuel) {
-      list = list.filter((v) => v.fuelType?.toLowerCase() === fuel.toLowerCase());
+      list = list.filter((v) => v.fuelType?.toUpperCase() === fuel.toUpperCase());
     }
     if (ownership) {
       list = list.filter((v) => Number(v.ownershipDetails) === Number(ownership));
@@ -428,6 +429,7 @@ export default function Cars() {
           value={fuel}
           setValue={(v) => set("fuel", v)}
           options={FUELS}
+          optionLabels={FUEL_LABELS}
         />
         <FilterGroup
           label="Ownership"
