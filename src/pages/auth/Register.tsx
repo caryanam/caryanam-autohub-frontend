@@ -535,18 +535,19 @@ export default function Register() {
                         <Input
                           required
                           maxLength={6}
+                          minLength={6}
                           placeholder="400001"
                           inputMode="numeric"
                           onInput={(e: React.FormEvent<HTMLInputElement>) => {
-                            e.currentTarget.value = e.currentTarget.value.replace(/\D/g, "").slice(0, 6);
+                            const val = e.currentTarget.value.replace(/\D/g, "").slice(0, 6);
+                            e.currentTarget.value = val;
                           }}
                           className="h-11 px-4 rounded-xl border border-white/20 bg-white/10 text-white placeholder-white/40 focus-visible:bg-black/40 focus-visible:border-white focus-visible:ring-4 focus-visible:ring-white/10 md:border-slate-200 md:bg-slate-50/50 md:text-slate-900 md:placeholder-slate-400 md:focus-visible:bg-white md:focus-visible:border-rose-900 md:focus-visible:ring-rose-900/10 transition-all shadow-sm"
                           {...form.register("pinCode", {
                             required: "Pin code is required",
-                            pattern: {
-                              value: /^[0-9]{6}$/,
-                              message: "Pin code must be exactly 6 digits"
-                            }
+                            minLength: { value: 6, message: "Pin code must be exactly 6 digits" },
+                            maxLength: { value: 6, message: "Pin code must be exactly 6 digits" },
+                            pattern: { value: /^[0-9]{6}$/, message: "Pin code must be exactly 6 digits" }
                           })}
                         />
                       </div>
