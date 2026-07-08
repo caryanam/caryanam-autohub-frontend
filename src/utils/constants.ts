@@ -12,13 +12,13 @@ export const BUDGET_BANDS = [
 ];
 export const QUICK_BRANDS = [
   "Hyundai",
-  "Maruti Suzuki",
   "Tata",
   "Mahindra",
   "Toyota",
   "Honda",
   "Kia",
   "MG",
+  "Ford",
 ];
 
 export const CITIES = ["Pune", "PCMC"];

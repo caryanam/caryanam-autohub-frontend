@@ -57,6 +57,7 @@ import marutisuzuki from "@/assets/BrandLogo/maruti-suzuki.png";
 import tata from "@/assets/BrandLogo/Tata.png";
 import Toyota from "@/assets/BrandLogo/Toyota.avif";
 import mg from "@/assets/BrandLogo/mg.png";
+import ford from "@/assets/BrandLogo/ford.png";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -69,6 +70,7 @@ const BRAND_LOGOS: Record<string, string> = {
   Honda: honda,
   Kia: kia,
   MG: mg,
+  Ford: ford,
 };
 
 const stats = [
@@ -938,6 +940,7 @@ export default function Home() {
                   Experience
                 </h2>
               </div>
+
             </div>
 
             {/* Top-Right: Premium Trust badge / HUD Widget */}
@@ -1026,6 +1029,29 @@ export default function Home() {
               </p>
             </div>
 
+            {/* Added Auth Action Buttons - Hidden on tablet/desktop, bottom center on mobile */}
+            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 pointer-events-auto flex flex-col gap-3 w-[90%] max-w-[320px] sm:hidden">
+              <button
+                onClick={() => setAuthOpen(true)}
+                className="w-full bg-white/10 backdrop-blur-md border border-white/40 text-white font-bold uppercase tracking-wide text-sm py-3.5 px-6 rounded-xl hover:bg-white/20 hover:-translate-y-0.5 transition-all duration-300"
+              >
+                Customer Login
+              </button>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => navigate('/auth/login')}
+                  className="flex-1 bg-rose-600 text-white font-bold uppercase tracking-wide text-[11px] py-3 px-4 rounded-xl shadow-[0_4px_12px_rgba(225,29,72,0.4)] hover:bg-rose-500 transition-all duration-300 whitespace-nowrap"
+                >
+                  Dealer Login
+                </button>
+                <button
+                  onClick={() => navigate('/auth/register')}
+                  className="flex-1 bg-white/10 backdrop-blur-md border border-white/40 text-white font-bold uppercase tracking-wide text-[11px] py-3 px-4 rounded-xl hover:bg-white/20 transition-all duration-300 whitespace-nowrap"
+                >
+                  Join as Dealer
+                </button>
+              </div>
+            </div>
           </div>
 
         </div>
