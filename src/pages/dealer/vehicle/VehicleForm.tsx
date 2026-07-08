@@ -237,6 +237,14 @@ export default function VehicleForm({
       financeAvailability,
     };
 
+    if (vehicleId) {
+      console.group("[VehicleForm] Update clicked - vehicleId: " + vehicleId);
+      console.log("API response (vehicleDetails):", vehicleDetails);
+      console.log("Current form state:", { brand, model, variant, city, fuelType, ownershipDetails, vehicleType, registrationYear, kilometerDriven, askingPrice, financeAvailability });
+      console.log("Payload being sent:", payload);
+      console.groupEnd();
+    }
+
     try {
       if (vehicleId) {
         await updateVehicleMutation.mutateAsync({
@@ -390,7 +398,7 @@ export default function VehicleForm({
           <Label>
             Fuel Type <span className="text-red-500">*</span>
           </Label>
-          <Select value={fuelType} onValueChange={setFuelType} required>
+          <Select key={fuelType} value={fuelType} onValueChange={setFuelType} required>
             <SelectTrigger className="mt-1">
               <SelectValue placeholder="Select Fuel Type" />
             </SelectTrigger>
@@ -409,6 +417,7 @@ export default function VehicleForm({
             Ownership Details <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={String(ownershipDetails)}
             value={String(ownershipDetails)}
             onValueChange={(v) => setOwnershipDetails(Number(v))}
             required
@@ -430,7 +439,7 @@ export default function VehicleForm({
           <Label>
             Vehicle Type <span className="text-red-500">*</span>
           </Label>
-          <Select value={vehicleType} onValueChange={setVehicleType} required>
+          <Select key={vehicleType} value={vehicleType} onValueChange={setVehicleType} required>
             <SelectTrigger className="mt-1">
               <SelectValue placeholder="Select Vehicle Type" />
             </SelectTrigger>
