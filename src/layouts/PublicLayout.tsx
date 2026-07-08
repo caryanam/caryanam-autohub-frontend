@@ -378,9 +378,12 @@ export default function PublicLayout() {
       <footer className="relative text-white  overflow-hidden bg-black">
         {/* Giant watermark background spanning the bottom */}
         <div className="absolute inset-x-0 bottom-0 flex items-end justify-center pointer-events-none select-none z-0">
-          <span className="text-[12vw] font-black uppercase tracking-[0.2em] text-neutral-900 leading-none translate-y-[15%]">
-            Caryanam
-          </span>
+          <div
+            className="font-logo text-[9vw] uppercase tracking-[0.2em] text-neutral-900 leading-none translate-y-[15%]"
+            style={{ transform: "scaleY(1.6)" }}
+          >
+            CARY<span className="text-yellow-500/10">A</span>NAM
+          </div>
         </div>
 
         <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
@@ -481,22 +484,22 @@ export default function PublicLayout() {
           </div>
         </div>
 
-     <div className="relative z-10 border-t border-white/10 py-8">
-  <div className="relative z-10 mx-auto flex max-w-7xl flex-col items-center gap-2 px-4 text-md text-white/50 sm:px-6 md:flex-row md:justify-between lg:px-8">
-    
-    <span className="text-center md:text-left">
-      Developed by{" "}
-      <span className="font-extrabold text-rose-900">
-        Caryanamindia Pvt Ltd
-      </span>
-    </span>
+        <div className="relative z-10 border-t border-white/10 py-8">
+          <div className="relative z-10 mx-auto flex max-w-7xl flex-col items-center gap-2 px-4 text-md text-white/50 sm:px-6 md:flex-row md:justify-between lg:px-8">
 
-    <span className="text-center md:text-right">
-      © 2026 Caryanam. All rights reserved by Caryanamindia Pvt Ltd.
-    </span>
+            <span className="text-center md:text-left">
+              Developed by{" "}
+              <span className="font-extrabold text-rose-900">
+                Caryanamindia Pvt Ltd
+              </span>
+            </span>
 
-  </div>
-</div>
+            <span className="text-center md:text-right">
+              © 2026 Caryanam. All rights reserved by Caryanamindia Pvt Ltd.
+            </span>
+
+          </div>
+        </div>
       </footer>
 
       <AuthModal

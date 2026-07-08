@@ -213,7 +213,7 @@ export default function About() {
                 Browse Cars <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
-                to="/premium-cars"
+                to="/premium"
                 className="inline-flex items-center justify-center gap-2 h-13 px-8 rounded-2xl bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-base font-bold border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-200 cursor-pointer"
               >
                 Premium Collection <Star className="h-4 w-4 text-amber-500" />

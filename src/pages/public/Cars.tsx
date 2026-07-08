@@ -16,6 +16,8 @@ import {
   Sparkles,
   Car,
   SlidersHorizontal,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -501,7 +503,7 @@ export default function Cars() {
         <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block mb-2">
           Budget Band
         </Label>
-        <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1 scrollbar-thin">
+        <div className="space-y-2 pr-1">
           {BUDGET_BANDS.map((b) => (
             <label
               key={b.label}
@@ -730,28 +732,24 @@ export default function Cars() {
 
             {/* Pagination Controls */}
             {!error && !loading && paged.length > 0 && totalPages > 1 && (
-              <div className="mt-10 flex items-center justify-center gap-2.5 pt-5 border-t border-border/50">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-10 rounded-xl px-4 font-bold border-border"
+              <div className="mt-12 flex items-center justify-center gap-3">
+                <button
                   disabled={page === 1}
                   onClick={() => setPage(page - 1)}
+                  className="h-10 w-10 rounded-full border border-border flex items-center justify-center disabled:opacity-30 hover:border-rose-500 hover:text-rose-500 transition-colors cursor-pointer"
                 >
-                  Previous
-                </Button>
-                <span className="text-sm font-semibold text-muted-foreground px-4 bg-muted/40 py-2 rounded-xl border border-border/30">
-                  Page {page} of {totalPages}
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <span className="text-sm text-muted-foreground px-2 font-medium">
+                  Page <span className="font-black text-foreground">{page}</span> of {totalPages}
                 </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-10 rounded-xl px-4 font-bold border-border"
+                <button
                   disabled={page === totalPages}
                   onClick={() => setPage(page + 1)}
+                  className="h-10 w-10 rounded-full border border-border flex items-center justify-center disabled:opacity-30 hover:border-rose-500 hover:text-rose-500 transition-colors cursor-pointer"
                 >
-                  Next
-                </Button>
+                  <ChevronRight className="h-4 w-4" />
+                </button>
               </div>
             )}
           </div>
