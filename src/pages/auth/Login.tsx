@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { User, Lock, Eye, EyeOff, ArrowRight, Shield, Zap, LineChart } from "lucide-react";
+import { User, Lock, Eye, EyeOff, ArrowRight, Shield, Zap, LineChart, ArrowLeft, CheckCircle2, Loader2, KeyRound, Mail } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,17 @@ import { toast } from "sonner";
 import { useState } from "react";
 import carImg from "@/assets/download.jpg";
 import logo from "@/assets/logo.png";
+import {
+  useCustomerSendOtp,
+  useCustomerVerifyOtp,
+  useCustomerResetPassword,
+} from "@/hooks/auth/resetPassword";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
+import { REGEXP_ONLY_DIGITS } from "input-otp";
 type FormData = {
   username: string;
   password: string;
@@ -23,6 +34,17 @@ export default function Login() {
   const { setUserFromToken: setDealer } = useDealerAuth();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  
+  // Forgot Password State
+  const [forgotPasswordStep, setForgotPasswordStep] = useState<"none" | "send" | "verify" | "reset">("none");
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotOtp, setForgotOtp] = useState("");
+  const [forgotNewPassword, setForgotNewPassword] = useState("");
+  const [forgotConfirmPassword, setForgotConfirmPassword] = useState("");
+  
+  const { isPending: sendingOtp, sendOtp } = useCustomerSendOtp();
+  const { isPending: verifyingOtp, verifyOtp } = useCustomerVerifyOtp();
+  const { isPending: resettingPassword, resetPassword } = useCustomerResetPassword();
   const form = useForm<FormData>({
     defaultValues: { username: "", password: "" },
   });
@@ -67,6 +89,60 @@ export default function Login() {
       } else {
         toast.error("Login failed. Please check your connection.");
       }
+    }
+  };
+
+  const handleForgotSendOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!forgotEmail) return toast.error("Please enter email/mobile");
+    try {
+      const res = await sendOtp(forgotEmail);
+      toast.success(
+        typeof res === "string"
+          ? res
+          : (res?.message || res?.data?.message || "OTP sent successfully")
+      );
+      setForgotPasswordStep("verify");
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to send OTP");
+    }
+  };
+
+  const handleForgotVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!forgotOtp) return toast.error("Please enter OTP");
+    try {
+      const res = await verifyOtp({ email: forgotEmail, otp: forgotOtp });
+      toast.success(
+        typeof res === "string"
+          ? res
+          : (res?.message || res?.data?.message || "OTP verified")
+      );
+      setForgotPasswordStep("reset");
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to verify OTP");
+    }
+  };
+
+  const handleForgotResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (forgotNewPassword !== forgotConfirmPassword) {
+      return toast.error("Passwords do not match");
+    }
+    try {
+      const res = await resetPassword({ email: forgotEmail, otp: forgotOtp, newPassword: forgotNewPassword });
+      toast.success(
+        typeof res === "string"
+          ? res
+          : (res?.message || res?.data?.message || "Password reset successfully")
+      );
+      setForgotPasswordStep("none");
+      setForgotEmail("");
+      setForgotOtp("");
+      setForgotNewPassword("");
+      setForgotConfirmPassword("");
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to reset password");
     }
   };
 
@@ -166,6 +242,8 @@ export default function Login() {
             </p>
             <div className="w-10 h-1 bg-rose-900 mt-3 rounded-full" />
 
+            {forgotPasswordStep === "none" ? (
+            <>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
               className="mt-8 space-y-4"
@@ -223,7 +301,13 @@ export default function Login() {
                   <Label className="block text-xs font-semibold text-slate-200 md:text-slate-600">
                     Password
                   </Label>
-
+                  <button
+                    type="button"
+                    onClick={() => setForgotPasswordStep("send")}
+                    className="text-[10px] text-white/50 hover:text-white md:text-slate-400 md:hover:text-slate-600 transition-colors underline-offset-4 hover:underline"
+                  >
+                    Forgot Password?
+                  </button>
                 </div>
                 <div className="relative group">
                   <Lock className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50 group-focus-within:text-white md:text-rose-900/60 md:group-focus-within:text-rose-900 transition-colors" />
@@ -275,6 +359,144 @@ export default function Login() {
                 Create an account
               </Link>
             </div>
+            </>
+            ) : forgotPasswordStep === "send" ? (
+              <form onSubmit={handleForgotSendOtp} className="mt-8 space-y-4">
+                <div className="space-y-1.5">
+                  <Label className="block text-xs font-semibold text-slate-200 md:text-slate-600">
+                    Email Address
+                  </Label>
+                  <div className="relative group">
+                    <Mail className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50 group-focus-within:text-white md:text-rose-900/60 md:group-focus-within:text-rose-900 transition-colors" />
+                    <Input
+                      type="email"
+                      required
+                      value={forgotEmail}
+                      onChange={(e) => setForgotEmail(e.target.value)}
+                      placeholder="Enter registered email"
+                      className="h-11 pl-11 rounded-xl border border-white/20 bg-white/10 text-white placeholder-white/40 focus-visible:bg-black/40 focus-visible:border-white md:border-rose-900/10 md:bg-rose-900/[0.01] md:text-slate-900 md:focus-visible:bg-white md:focus-visible:border-rose-900"
+                    />
+                  </div>
+                </div>
+                <div className="flex flex-col gap-3 mt-6">
+                  <Button
+                    type="submit"
+                    disabled={sendingOtp || !forgotEmail}
+                    className="w-full h-11 gradient-primary text-white rounded-xl font-bold"
+                  >
+                    {sendingOtp ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send OTP"}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => setForgotPasswordStep("none")}
+                    className="w-full text-white/60 hover:text-white md:text-slate-500 md:hover:text-slate-900 text-xs"
+                  >
+                    <ArrowLeft className="h-4 w-4 mr-2" /> Back to Login
+                  </Button>
+                </div>
+              </form>
+            ) : forgotPasswordStep === "verify" ? (
+              <form onSubmit={handleForgotVerifyOtp} className="mt-8 space-y-4">
+                <div className="space-y-4">
+                  <div className="text-center">
+                    <Label className="block text-xs font-semibold text-slate-200 md:text-slate-600 mb-2">
+                      Enter OTP sent to {forgotEmail}
+                    </Label>
+                    <div className="flex justify-center mt-4">
+                      <InputOTP
+                        maxLength={6}
+                        pattern={REGEXP_ONLY_DIGITS}
+                        value={forgotOtp}
+                        onChange={setForgotOtp}
+                      >
+                        <InputOTPGroup className="gap-2">
+                          {[0, 1, 2, 3, 4, 5].map((index) => (
+                            <InputOTPSlot 
+                              key={index} 
+                              index={index} 
+                              className="w-12 h-14 rounded-xl border-white/20 bg-white/10 text-white text-xl md:border-rose-900/20 md:bg-white md:text-slate-900"
+                            />
+                          ))}
+                        </InputOTPGroup>
+                      </InputOTP>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-3 mt-8">
+                  <Button
+                    type="submit"
+                    disabled={verifyingOtp || forgotOtp.length < 6}
+                    className="w-full h-11 gradient-primary text-white rounded-xl font-bold"
+                  >
+                    {verifyingOtp ? <Loader2 className="h-4 w-4 animate-spin" /> : "Verify OTP"}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => setForgotPasswordStep("send")}
+                    className="w-full text-white/60 hover:text-white md:text-slate-500 md:hover:text-slate-900 text-xs"
+                  >
+                    <ArrowLeft className="h-4 w-4 mr-2" /> Back
+                  </Button>
+                </div>
+              </form>
+            ) : (
+              <form onSubmit={handleForgotResetPassword} className="mt-8 space-y-4">
+                <div className="space-y-1.5">
+                  <Label className="block text-xs font-semibold text-slate-200 md:text-slate-600">New Password</Label>
+                  <div className="relative group">
+                    <KeyRound className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50 group-focus-within:text-white md:text-rose-900/60 md:group-focus-within:text-rose-900" />
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      required
+                      value={forgotNewPassword}
+                      onChange={(e) => setForgotNewPassword(e.target.value)}
+                      placeholder="Enter new password"
+                      className="h-11 pl-11 pr-11 rounded-xl border border-white/20 bg-white/10 text-white placeholder-white/40 focus-visible:bg-black/40 focus-visible:border-white md:border-rose-900/10 md:bg-rose-900/[0.01] md:text-slate-900 md:focus-visible:bg-white md:focus-visible:border-rose-900"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white md:text-rose-900/60 md:hover:text-rose-900"
+                    >
+                      {showPassword ? <Eye size={16} /> : <EyeOff size={16} />}
+                    </button>
+                  </div>
+                </div>
+                <div className="space-y-1.5 mt-4">
+                  <Label className="block text-xs font-semibold text-slate-200 md:text-slate-600">Confirm Password</Label>
+                  <div className="relative group">
+                    <KeyRound className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50 group-focus-within:text-white md:text-rose-900/60 md:group-focus-within:text-rose-900" />
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      required
+                      value={forgotConfirmPassword}
+                      onChange={(e) => setForgotConfirmPassword(e.target.value)}
+                      placeholder="Confirm new password"
+                      className="h-11 pl-11 rounded-xl border border-white/20 bg-white/10 text-white placeholder-white/40 focus-visible:bg-black/40 focus-visible:border-white md:border-rose-900/10 md:bg-rose-900/[0.01] md:text-slate-900 md:focus-visible:bg-white md:focus-visible:border-rose-900"
+                    />
+                  </div>
+                </div>
+                <div className="flex flex-col gap-3 mt-6">
+                  <Button
+                    type="submit"
+                    disabled={resettingPassword || !forgotNewPassword || !forgotConfirmPassword}
+                    className="w-full h-11 gradient-primary text-white rounded-xl font-bold"
+                  >
+                    {resettingPassword ? <Loader2 className="h-4 w-4 animate-spin" /> : "Reset Password"}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => setForgotPasswordStep("none")}
+                    className="w-full text-white/60 hover:text-white md:text-slate-500 md:hover:text-slate-900 text-xs"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            )}
 
           </div>
         </div>
