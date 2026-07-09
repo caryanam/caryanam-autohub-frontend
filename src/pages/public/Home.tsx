@@ -34,7 +34,7 @@ import {
   FeaturedVehicleCardSkeleton,
 } from "@/components/cards/FeaturedVehicleCard";
 import { SEO } from "@/components/shared/SEO";
-import { CAR_BRANDS, getModels, getVariants } from "@/data/carDatabase";
+import { getCustomerBrands, getCustomerModels, getCustomerVariants } from "@/data/customerCarDatabase";
 import { SearchableSelect } from "@/components/shared/SearchableSelect";
 import { BUDGET_BANDS, QUICK_BRANDS, CITIES } from "@/utils/constants";
 import { useState, useEffect, useRef } from "react";
@@ -124,10 +124,10 @@ type LayoutContextType = {
 
 const SLIDES = [
   {
-    subtitle: "Finance • Auto Loans",
+    subtitle: "Finance • Car Loans",
     title: "VahanFinserv",
-    description: "Get the best auto loan rates for your next car purchase. Fast approval and zero hidden fees.",
-    buttonText: "Visit VahanFinserv",
+    description: "Car Loan made easy. Fast approval and zero hidden fees.",
+    buttonText: "Use Car Loan Visit VahanFinserv ",
   },
   {
     subtitle: "KYC Verified Sellers • Direct Chat",
@@ -242,8 +242,8 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [year, setYear] = useState("");
 
-  const models = brand ? getModels(brand) : [];
-  const variants = brand && model ? getVariants(brand, model) : [];
+  const models = brand ? getCustomerModels(brand) : [];
+  const variants = brand && model ? getCustomerVariants(brand, model) : [];
 
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -787,50 +787,15 @@ export default function Home() {
       });
     };
 
-    const onSecMove = (e: MouseEvent) => {
-      if (!secBtn) return;
-      const rect = secBtn.getBoundingClientRect();
-      const x = e.clientX - rect.left - rect.width / 2;
-      const y = e.clientY - rect.top - rect.height / 2;
-
-      gsap.to(secBtn, {
-        x: x * 0.25,
-        y: y * 0.25,
-        scale: 1.02,
-        duration: 0.3,
-        ease: "power2.out",
-      });
-    };
-
-    const onSecLeave = () => {
-      if (!secBtn) return;
-      gsap.to(secBtn, {
-        x: 0,
-        y: 0,
-        scale: 1,
-        duration: 0.5,
-        ease: "elastic.out(1, 0.5)",
-      });
-    };
-
     if (ctaBtn) {
       ctaBtn.addEventListener("mousemove", onCtaMove);
       ctaBtn.addEventListener("mouseleave", onCtaLeave);
-    }
-
-    if (secBtn) {
-      secBtn.addEventListener("mousemove", onSecMove);
-      secBtn.addEventListener("mouseleave", onSecLeave);
     }
 
     return () => {
       if (ctaBtn) {
         ctaBtn.removeEventListener("mousemove", onCtaMove);
         ctaBtn.removeEventListener("mouseleave", onCtaLeave);
-      }
-      if (secBtn) {
-        secBtn.removeEventListener("mousemove", onSecMove);
-        secBtn.removeEventListener("mouseleave", onSecLeave);
       }
     };
   }, []);
@@ -941,11 +906,11 @@ export default function Home() {
                   Experience
                 </h2>
               </div>
-              <div className=" hidden lg:block overflow-hidden mt-2 pl-1 py-2">
+              <div className=" hidden lg:block overflow-hidden mt-6 ">
                 <button
                   ref={secBtnRef}
                   onClick={handleCtaClick}
-                  className="bg-rose-800 hover:bg-rose-600 text-white font-bold px-6 py-2 text-sm rounded-full shadow-[0_4px_12px_rgba(225,29,72,0.4)] transition-all cursor-pointer relative"
+                  className="bg-rose-800 hover:bg-rose-600 uppercase text-white  font-bold px-6 py-3 text-sm rounded-full shadow-[0_4px_12px_rgba(225,29,72,0.4)]  cursor-pointer relative"
                 >
                   <span className="relative z-10 pointer-events-none">Apply Now</span>
                 </button>
@@ -1006,7 +971,7 @@ export default function Home() {
                       <SelectValue placeholder="Brand" />
                     </SelectTrigger>
                     <SelectContent className="bg-slate-900 border-white/10 text-white">
-                      {CAR_BRANDS.map((b) => (
+                      {getCustomerBrands().map((b) => (
                         <SelectItem key={b} value={b} className="hover:bg-rose-900/40 focus:bg-rose-900/40">
                           {b}
                         </SelectItem>
@@ -1045,7 +1010,7 @@ export default function Home() {
                 onClick={() => window.open('https://vahanfinserv.com/', '_blank')}
                 className="w-full bg-white/10 backdrop-blur-md border border-white/40 text-white font-bold uppercase tracking-wide text-sm py-3.5 px-6 rounded-xl hover:bg-white/20 hover:-translate-y-0.5 transition-all duration-300"
               >
-                Visit VahanFinserv
+                Use Car Loan Visit VahanFinserv
               </button>
               <div className="flex gap-3">
                 <button

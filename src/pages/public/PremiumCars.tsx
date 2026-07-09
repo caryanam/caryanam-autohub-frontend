@@ -43,7 +43,7 @@ import {
 } from "@/components/cards/VehicleCard";
 import { SEO } from "@/components/shared/SEO";
 import { usePremiumVehicles } from "@/hooks/public/usePremiumVehicles";
-import { CAR_BRANDS } from "@/data/carDatabase";
+import { getCustomerBrands, getCustomerModels, getCustomerVariants } from "@/data/customerCarDatabase";
 import { SearchableSelect } from "@/components/shared/SearchableSelect";
 import { BUDGET_BANDS } from "@/utils/constants";
 import { formatINR } from "@/utils/helpers";
@@ -133,45 +133,18 @@ export default function PremiumCars() {
 
   const budget = PREMIUM_BUDGET_BANDS.find((b) => b.label === budgetLabel);
 
+  const CAR_BRANDS = getCustomerBrands("premium");
+
   // Cascading options dynamically generated from the fetched data
   const models = useMemo(() => {
     if (!brand) return [];
-    return Array.from(
-      new Set(
-        all
-          .filter((v) => v.brand?.toLowerCase() === brand.toLowerCase())
-          .map((v) => {
-            let m = v.model?.toLowerCase() || "";
-            const b = brand.toLowerCase();
-            if (m.startsWith(`${b}-`)) {
-              m = m.substring(b.length + 1);
-            } else if (m.startsWith(b)) {
-              m = m.substring(b.length);
-            }
-            return m.trim();
-          })
-          .filter(Boolean)
-      )
-    )
-      .map((m) => m.charAt(0).toUpperCase() + m.slice(1))
-      .sort();
-  }, [all, brand]);
+    return getCustomerModels(brand, "premium");
+  }, [brand]);
 
   const variants = useMemo(() => {
     if (!brand || !model) return [];
-    return Array.from(
-      new Set(
-        all
-          .filter((v) => {
-            const matchBrand = v.brand?.toLowerCase() === brand.toLowerCase();
-            const matchModel = v.model?.toLowerCase().includes(model.toLowerCase());
-            return matchBrand && matchModel;
-          })
-          .map((v) => v.variant?.trim())
-          .filter(Boolean)
-      )
-    ).sort();
-  }, [all, brand, model]);
+    return getCustomerVariants(brand, model, "premium");
+  }, [brand, model]);
 
   const handleBrandChange = (v: string) => {
     const next = new URLSearchParams(params);
