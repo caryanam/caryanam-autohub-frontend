@@ -55,8 +55,8 @@ const nav = [
   { to: "/", label: "Home" },
   { to: "/cars", label: "Browse Cars" },
   { to: "/premium", label: "Premium Cars" },
+  { to: "/rto-form", label: "RTO Form" },
   { to: "/about", label: "About" },
-
 ];
 
 export default function PublicLayout() {

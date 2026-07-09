@@ -124,25 +124,22 @@ type LayoutContextType = {
 
 const SLIDES = [
   {
-    subtitle: "Caryanam Showcase • 2026",
-    title: "Experience",
-    description: "India's premiere used-car dealer marketplace. Connect directly with verified dealers across India.",
-    buttonText: "Search Cars",
-    secondaryText: "Search inventory",
+    subtitle: "Finance • Auto Loans",
+    title: "VahanFinserv",
+    description: "Get the best auto loan rates for your next car purchase. Fast approval and zero hidden fees.",
+    buttonText: "Visit VahanFinserv",
   },
   {
     subtitle: "KYC Verified Sellers • Direct Chat",
     title: "Connection",
     description: "Talk directly to verified dealers on WhatsApp or call them instantly with zero hidden commissions.",
-    buttonText: "Dealer Login",
-    secondaryText: "Contact dealers",
+    buttonText: "",
   },
   {
     subtitle: "Inspected Quality • History Checked",
     title: "Verification",
     description: "Every vehicle listed undergoes a registration papers check, history verification, and detailed inspection.",
-    buttonText: "Register Now",
-    secondaryText: "Start searching",
+    buttonText: "",
   }
 ];
 
@@ -301,7 +298,8 @@ export default function Home() {
 
     if (secBtnRef.current) {
       const btnSpan = secBtnRef.current.querySelector("span");
-      if (btnSpan) btnSpan.innerText = slideData.secondaryText;
+      if (btnSpan) btnSpan.innerText = slideData.buttonText || "";
+      secBtnRef.current.style.display = slideData.buttonText ? "inline-block" : "none";
     }
   };
 
@@ -513,7 +511,9 @@ export default function Home() {
 
   const handleCtaClick = () => {
     const idx = currentSlideRef.current;
-    if (idx === 0 || idx === 2) {
+    if (idx === 0) {
+      window.open("https://vahanfinserv.com/", "_blank");
+    } else if (idx === 2) {
       document.getElementById("search-section")?.scrollIntoView({ behavior: "smooth" });
     } else {
       navigate("/auth/login");
@@ -635,7 +635,8 @@ export default function Home() {
     }
     if (secBtnRef.current) {
       const span = secBtnRef.current.querySelector("span");
-      if (span) span.innerText = slideData.secondaryText;
+      if (span) span.innerText = slideData.buttonText || "";
+      secBtnRef.current.style.display = slideData.buttonText ? "inline-block" : "none";
     }
 
     const ctx = gsap.context(() => {
@@ -940,6 +941,15 @@ export default function Home() {
                   Experience
                 </h2>
               </div>
+              <div className=" hidden lg:block overflow-hidden mt-2 pl-1 py-2">
+                <button
+                  ref={secBtnRef}
+                  onClick={handleCtaClick}
+                  className="bg-rose-800 hover:bg-rose-600 text-white font-bold px-6 py-2 text-sm rounded-full shadow-[0_4px_12px_rgba(225,29,72,0.4)] transition-all cursor-pointer relative"
+                >
+                  <span className="relative z-10 pointer-events-none">Apply Now</span>
+                </button>
+              </div>
 
             </div>
 
@@ -1032,17 +1042,17 @@ export default function Home() {
             {/* Added Auth Action Buttons - Hidden on tablet/desktop, bottom center on mobile */}
             <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 pointer-events-auto flex flex-col gap-3 w-[90%] max-w-[320px] sm:hidden">
               <button
-                onClick={() => setAuthOpen(true)}
+                onClick={() => window.open('https://vahanfinserv.com/', '_blank')}
                 className="w-full bg-white/10 backdrop-blur-md border border-white/40 text-white font-bold uppercase tracking-wide text-sm py-3.5 px-6 rounded-xl hover:bg-white/20 hover:-translate-y-0.5 transition-all duration-300"
               >
-                Customer Login
+                Visit VahanFinserv
               </button>
               <div className="flex gap-3">
                 <button
-                  onClick={() => navigate('/auth/login')}
+                  onClick={() => setAuthOpen(true)}
                   className="flex-1 bg-rose-600 text-white font-bold uppercase tracking-wide text-[11px] py-3 px-4 rounded-xl shadow-[0_4px_12px_rgba(225,29,72,0.4)] hover:bg-rose-500 transition-all duration-300 whitespace-nowrap"
                 >
-                  Dealer Login
+                  Join as Buyer
                 </button>
                 <button
                   onClick={() => navigate('/auth/register')}
@@ -1405,7 +1415,7 @@ export default function Home() {
 
               {/* Download Buttons Row */}
               <div className="flex flex-wrap gap-4 pt-4">
-                <a 
+                <a
                   href="https://github.com/caryanam/caryanam-apk/releases/download/v1.0.0/Caryanam.apk"
                   className="bg-black text-white hover:bg-slate-900 rounded-2xl px-6 py-4 h-12 font-black text-xs uppercase tracking-wider shadow-lg shadow-black/10 flex items-center justify-center transition-all cursor-pointer hover:-translate-y-0.5 select-none no-underline"
                 >
