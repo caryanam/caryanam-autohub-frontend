@@ -379,10 +379,10 @@ export default function PublicLayout() {
         {/* Giant watermark background spanning the bottom */}
         <div className="absolute inset-x-0 bottom-0 flex items-end justify-center pointer-events-none select-none z-0">
           <div
-            className="font-logo text-[9vw] uppercase tracking-[0.2em] text-neutral-900 leading-none translate-y-[15%]"
+            className="font-logo text-[9vw] uppercase tracking-[0.2em] text-neutral-800 leading-none translate-y-[15%]"
             style={{ transform: "scaleY(1.6)" }}
           >
-            CARY<span className="text-yellow-500/10">A</span>NAM
+            CARY<span className="text-yellow-500/20">A</span>NAM
           </div>
         </div>
 

@@ -893,7 +893,7 @@ export default function Home() {
               <div className="overflow-hidden">
                 <p
                   ref={subtitleRef}
-                  className="text-xs uppercase tracking-[0.25em] font-black text-rose-500 font-sans"
+                  className="text-xs uppercase ml-4 tracking-[0.25em] font-black text-rose-500 font-sans"
                 >
                   Caryanam  • 2026
                 </p>
@@ -901,7 +901,7 @@ export default function Home() {
               <div className="overflow-hidden mt-1">
                 <h2
                   ref={titleRef}
-                  className="font-display text-4xl sm:text-5xl md:text-4xl font-black tracking-tight"
+                  className="font-display text-4xl ml-4 sm:text-5xl md:text-4xl font-black tracking-tight"
                 >
                   Experience
                 </h2>
