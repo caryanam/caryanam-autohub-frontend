@@ -1381,7 +1381,7 @@ export default function Home() {
               {/* Download Buttons Row */}
               <div className="flex flex-wrap gap-4 pt-4">
                 <a
-                  href="https://github.com/caryanam/caryanam-apk/releases/download/v1.0.0/Caryanam.apk"
+                  href="https://github.com/caryanam/caryanam-apk/releases/download/v1.0.1/Caryanam.apk"
                   className="bg-black text-white hover:bg-slate-900 rounded-2xl px-6 py-4 h-12 font-black text-xs uppercase tracking-wider shadow-lg shadow-black/10 flex items-center justify-center transition-all cursor-pointer hover:-translate-y-0.5 select-none no-underline"
                 >
                   Download for Android
