@@ -97,9 +97,9 @@ export default function DealerVehicles() {
   const filteredVehicles = vehicles.filter((v) => {
     const searchLower = searchQuery.toLowerCase();
     return (
-      v.brand?.toLowerCase().includes(searchLower) ||
-      v.model?.toLowerCase().includes(searchLower) ||
-      v.variant?.toLowerCase().includes(searchLower) ||
+      `${v.brand} ${v.model} ${v.variant}`
+        .toLowerCase()
+        .includes(searchLower) ||
       v.city?.toLowerCase().includes(searchLower) ||
       v.fuelType?.toLowerCase().includes(searchLower) ||
       v.transmission?.toLowerCase().includes(searchLower) ||
