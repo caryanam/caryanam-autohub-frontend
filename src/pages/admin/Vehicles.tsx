@@ -209,15 +209,17 @@ export default function AdminVehicles() {
                               FALLBACK_IMG;
                           }}
                         />
-                        <div className="min-w-0">
-                          <div className="font-semibold text-slate-900 text-sm truncate flex items-center gap-2 flex-wrap">
-                            {v.brand} {v.model} {v.variant}
+                        <div className="min-w-0 max-w-[280px]">
+                          <div className="font-semibold text-slate-900 text-sm flex items-center gap-2">
+                            <span className="truncate block" title={`${v.brand} ${v.model} ${v.variant}`}>
+                              {v.brand} {v.model} {v.variant}
+                            </span>
                             {v.vehicleType && (
                               <Badge
                                 className={`${v.vehicleType === "PREMIUM"
                                   ? "bg-amber-100 text-amber-700 hover:bg-amber-100"
                                   : "bg-slate-100 text-slate-700 hover:bg-slate-100"
-                                  } border-0 text-[10px] px-1.5 py-0.5 font-bold rounded`}
+                                  } border-0 text-[10px] px-1.5 py-0.5 font-bold rounded shrink-0`}
                               >
                                 {v.vehicleType}
                               </Badge>
