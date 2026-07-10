@@ -766,6 +766,7 @@ export default function CarDetails() {
                 placeholder="Aman Verma"
                 className="mt-1"
                 required
+                disabled={true}
               />
             </div>
             <div>

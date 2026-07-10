@@ -470,14 +470,20 @@ export default function PublicLayout() {
             <div>
               <h4 className="text-xs font-bold uppercase tracking-wider text-white mb-4">Reach us</h4>
               <ul className="space-y-2.5 text-sm text-white/70">
-                <li className="flex items-center gap-2.5">
-                  <Phone className="h-4 w-4 text-rose-400 shrink-0" /> +91 7755994123
+                <li className="flex items-start gap-2.5">
+                  <Phone className="h-4 w-4 mt-0.5 text-rose-400 shrink-0" /> +91 7755994123
                 </li>
-                <li className="flex items-center gap-2.5">
-                  <Mail className="h-4 w-4 text-rose-400 shrink-0" /> support@caryanam.com
+                <li className="flex items-start gap-2.5">
+                  <Mail className="h-4 w-4 mt-0.5 text-rose-400 shrink-0" /> support@caryanam.com
                 </li>
-                <li className="flex items-center gap-2.5">
-                  <MapPin className="h-4 w-4 text-rose-400 shrink-0" /> Kharadi, Pune, 411014
+                <li className="flex items-start gap-2.5">
+                  <MapPin className="h-4 w-4 mt-0.5 text-rose-400 shrink-0" /> Kharadi, Pune, 411014
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <Facebook className="h-4 w-4 mt-0.5 text-rose-400 shrink-0" />
+                  <a href="https://www.facebook.com/groups/27426492290342763" target="_blank" rel="noreferrer" className="transition-colors duration-200 hover:text-rose-400">
+                    Facebook
+                  </a>
                 </li>
               </ul>
             </div>
