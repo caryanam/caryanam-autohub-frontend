@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { ImageIcon, Video, Loader2, X, Upload, Camera, Plus } from "lucide-react";
+import { ImageIcon, Video, Loader2, X, Upload, Camera, Plus, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,6 +11,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { FUELS } from "@/utils/constants";
 
 const FUEL_LABELS: Record<string, string> = {
@@ -61,6 +67,15 @@ export default function VehicleForm({
   const [extraSlotsCount, setExtraSlotsCount] = useState(0);
   const [videos, setVideos] = useState<File[]>([]);
 
+  const [regNo, setRegNo] = useState("");
+  const [isFetchingRc, setIsFetchingRc] = useState(false);
+  const [rcData, setRcData] = useState<any>(null);
+  const [isRcModalOpen, setIsRcModalOpen] = useState(false);
+
+  const [isFetchingChallan, setIsFetchingChallan] = useState(false);
+  const [challanData, setChallanData] = useState<any>(null);
+  const [isChallanModalOpen, setIsChallanModalOpen] = useState(false);
+
   const [brand, setBrand] = useState("");
   const [city, setCity] = useState("");
   const [fuelType, setFuelType] = useState("PETROL");
@@ -101,6 +116,125 @@ export default function VehicleForm({
   const [kilometerDriven, setKilometerDriven] = useState("");
   const [vehicleDescription, setVehicleDescription] = useState("");
   const [financeAvailability, setFinanceAvailability] = useState(true);
+
+  const handleFetchRc = async () => {
+    if (!regNo) {
+      toast.error("Please enter a vehicle number.");
+      return;
+    }
+    setIsFetchingRc(true);
+    try {
+      const token = localStorage.getItem("dealerToken");
+      const res = await fetch("https://c1.caryanam.com/srv2/validation/rc", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          api_id: "APID2629",
+          api_key: "8cbaecfa-70cc-480d-9e21-0c9b11c81cb2",
+          token_id: "K2I4y1qrQVtUme7OKFpIKVYfQfvFZFHm",
+          reg_no: regNo,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch RC details.");
+      }
+
+      const data = await res.json();
+      const resultData = data.data || data;
+
+      if (resultData) {
+        setRcData(resultData);
+        if (resultData.vehicle_manufacturer_name) {
+          handleBrandChange(resultData.vehicle_manufacturer_name);
+        }
+        if (resultData.model) {
+          handleModelChange(resultData.model);
+        }
+        if (resultData.type) {
+          const typeUpper = resultData.type.toUpperCase();
+          if (FUELS.includes(typeUpper)) {
+            setFuelType(typeUpper);
+          } else {
+             if (typeUpper.includes('PETROL')) setFuelType('PETROL');
+             else if (typeUpper.includes('DIESEL')) setFuelType('DIESEL');
+             else if (typeUpper.includes('CNG')) setFuelType('CNG');
+             else if (typeUpper.includes('LPG')) setFuelType('LPG');
+             else if (typeUpper.includes('ELECTRIC')) setFuelType('ELECTRIC');
+             else if (typeUpper.includes('HYBRID')) setFuelType('HYBRID');
+          }
+        }
+        if (resultData.reg_date) {
+           const parts = resultData.reg_date.split('-');
+           if (parts.length === 3) {
+             setRegistrationYear(parts[2].length === 4 ? parts[2] : parts[0]);
+           } else {
+             const parts2 = resultData.reg_date.split('/');
+             if (parts2.length === 3) {
+               setRegistrationYear(parts2[2].length === 4 ? parts2[2] : parts2[0]);
+             }
+           }
+        }
+        toast.success("RC details fetched successfully!");
+      } else {
+        toast.error("No data found for this vehicle number.");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Something went wrong while fetching RC details.");
+    } finally {
+      setIsFetchingRc(false);
+    }
+  };
+
+  const handleCheckChallan = async () => {
+    if (!regNo) {
+      toast.error("Please enter a vehicle number.");
+      return;
+    }
+    setIsFetchingChallan(true);
+    try {
+      const token = localStorage.getItem("dealerToken");
+      const res = await fetch("https://c1.caryanam.com/srv2/basic-e-challan", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          api_id: "APID2629",
+          api_key: "8cbaecfa-70cc-480d-9e21-0c9b11c81cb2",
+          token_id: "K2I4y1qrQVtUme7OKFpIKVYfQfvFZFHm",
+          vehicle_num: regNo,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch Challan details.");
+      }
+
+      const rawData = await res.json();
+      let dataObj = rawData;
+      if (Array.isArray(rawData)) {
+        dataObj = rawData[0];
+      }
+      const resultData = dataObj?.data || dataObj;
+
+      if (resultData && resultData.results) {
+        setChallanData(resultData);
+        setIsChallanModalOpen(true);
+        toast.success("Challan details fetched successfully!");
+      } else {
+        toast.error("No challan data found for this vehicle number.");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Something went wrong while fetching Challan details.");
+    } finally {
+      setIsFetchingChallan(false);
+    }
+  };
 
   useEffect(() => {
     if (vehicleDetails) {
@@ -286,11 +420,70 @@ export default function VehicleForm({
     : addVehicleMutation.isPending;
 
   return (
+    <>
     <form
       key={vehicleId ?? "add"}
       onSubmit={handleSubmit}
       className="space-y-4 py-4 max-h-[70vh] overflow-y-auto px-1"
     >
+      {!vehicleId && (
+        <div className="bg-white border border-slate-200 rounded-xl shadow-sm mb-6 overflow-hidden">
+          <div className="bg-slate-50 px-4 py-3 border-b border-slate-100">
+            <h3 className="font-semibold text-slate-800 flex items-center gap-2">
+              <Search className="h-4 w-4 text-primary" />
+              Quick Vehicle Verification
+            </h3>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Enter vehicle number to automatically fetch details and check pending challans.
+            </p>
+          </div>
+          <div className="p-4 sm:p-5 flex flex-col md:flex-row items-end gap-3">
+            <div className="flex-1 w-full text-left">
+              <Label htmlFor="regNo" className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5 block">
+                Registration Number
+              </Label>
+              <Input
+                id="regNo"
+                placeholder="e.g. MH15DC6628"
+                value={regNo}
+                onChange={(e) => setRegNo(e.target.value.toUpperCase())}
+                className="uppercase font-semibold tracking-widest text-lg h-12 bg-slate-50/50"
+              />
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto mt-2 md:mt-0">
+              <Button
+                type="button"
+                onClick={handleFetchRc}
+                disabled={isFetchingRc || !regNo}
+                className="h-12 px-6 shadow-sm hover:shadow-md transition-all font-semibold"
+              >
+                {isFetchingRc && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Check RC
+              </Button>
+              <Button
+                type="button"
+                onClick={handleCheckChallan}
+                disabled={isFetchingChallan || !regNo}
+                className="h-12 px-6 shadow-sm hover:shadow-md transition-all bg-orange-500 hover:bg-orange-600 text-white font-semibold"
+              >
+                {isFetchingChallan && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Check Challan
+              </Button>
+              {rcData && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsRcModalOpen(true)}
+                  className="h-12 px-4 border-slate-200"
+                >
+                  RC Details
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="grid sm:grid-cols-2 gap-4">
         <div id="field-brand" className="text-left">
           <Label>
@@ -635,6 +828,85 @@ export default function VehicleForm({
         </Button>
       </div>
     </form>
+
+    {/* RC Details Modal */}
+    <Dialog open={isRcModalOpen} onOpenChange={setIsRcModalOpen}>
+      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>RC Details</DialogTitle>
+        </DialogHeader>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          {rcData && Object.entries(rcData).map(([key, value]) => {
+            if (typeof value === 'object' && value !== null) {
+              return (
+                <div key={key} className="col-span-full">
+                  <h4 className="font-semibold text-sm text-slate-800 capitalize mb-2">{key.replace(/_/g, ' ')}</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-50 p-3 rounded-lg border">
+                    {Object.entries(value).map(([k, v]) => (
+                      <div key={k} className="flex flex-col">
+                        <span className="text-xs text-muted-foreground capitalize">{k.replace(/_/g, ' ')}</span>
+                        <span className="text-sm font-medium">{String(v || 'N/A')}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            }
+            return (
+              <div key={key} className="flex flex-col border-b pb-2">
+                <span className="text-xs text-muted-foreground capitalize">{key.replace(/_/g, ' ')}</span>
+                <span className="text-sm font-medium">{String(value || 'N/A')}</span>
+              </div>
+            );
+          })}
+        </div>
+      </DialogContent>
+    </Dialog>
+
+    {/* Challan Details Modal */}
+    <Dialog open={isChallanModalOpen} onOpenChange={setIsChallanModalOpen}>
+      <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>E-Challan Details ({challanData?.totalChallan || 0} found)</DialogTitle>
+        </DialogHeader>
+        <div className="flex flex-col gap-4 mt-4">
+          {challanData?.results?.map((challan: any, index: number) => (
+            <div key={index} className="border rounded-lg p-4 bg-slate-50">
+              <div className="flex justify-between items-center mb-2 border-b pb-2">
+                <span className="font-semibold text-slate-800">Challan No: {challan.challanNo}</span>
+                <span className={`px-2 py-1 text-xs font-semibold rounded-full ${String(challan.status).toLowerCase() === 'pending' ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700'}`}>
+                  {String(challan.status).toUpperCase()}
+                </span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
+                <div className="flex flex-col">
+                  <span className="text-xs text-muted-foreground">Amount</span>
+                  <span className="text-sm font-medium text-red-600">₹{challan.amount}</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs text-muted-foreground">Date & Time</span>
+                  <span className="text-sm font-medium">{challan.dateTime}</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs text-muted-foreground">Area</span>
+                  <span className="text-sm font-medium">{challan.areaName || 'N/A'}</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs text-muted-foreground">Offence</span>
+                  <span className="text-sm font-medium truncate" title={challan.offences?.[0]?.offenceName}>
+                    {challan.offences?.[0]?.offenceName || 'N/A'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+          {(!challanData?.results || challanData.results.length === 0) && (
+            <p className="text-center text-muted-foreground py-4">No challans found.</p>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }
 
