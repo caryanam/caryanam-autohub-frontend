@@ -7,6 +7,7 @@ import {
   Megaphone,
   FileBarChart,
   MessageSquare,
+  Gift,
 } from "lucide-react";
 import DashboardLayout from "./DashboardLayout";
 
@@ -27,6 +28,11 @@ const nav = [
     icon: <CarFront className="h-4 w-4" />,
   },
   { to: "/admin/leads", label: "Leads", icon: <Inbox className="h-4 w-4" /> },
+  {
+    to: "/admin/offers",
+    label: "Offers",
+    icon: <Gift className="h-4 w-4" />,
+  },
   {
     to: "/admin/subscriptions",
     label: "Subscriptions",

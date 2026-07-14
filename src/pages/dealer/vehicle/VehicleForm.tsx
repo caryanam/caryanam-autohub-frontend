@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import { ImageIcon, Video, Loader2, X, Upload, Camera, Plus, Search } from "lucide-react";
+import { ImageIcon, Video, Loader2, X, Upload, Camera, Plus, Search, Download } from "lucide-react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -234,6 +236,71 @@ export default function VehicleForm({
     } finally {
       setIsFetchingChallan(false);
     }
+  };
+
+  const downloadRcPDF = () => {
+    if (!rcData) return;
+    const doc = new jsPDF();
+    doc.setFontSize(16);
+    doc.text("RC Verification Report", 14, 20);
+    doc.setFontSize(10);
+    doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 28);
+    doc.text(`Vehicle Number: ${regNo}`, 14, 34);
+
+    const tableData: any[][] = [];
+    Object.entries(rcData).forEach(([key, value]) => {
+      if (typeof value === 'object' && value !== null) {
+        Object.entries(value).forEach(([k, v]) => {
+          tableData.push([`${key} - ${k}`.replace(/_/g, ' '), String(v || 'N/A')]);
+        });
+      } else {
+        tableData.push([key.replace(/_/g, ' '), String(value || 'N/A')]);
+      }
+    });
+
+    autoTable(doc, {
+      startY: 40,
+      head: [['Field', 'Value']],
+      body: tableData,
+      theme: 'striped',
+      styles: { fontSize: 9 },
+      headStyles: { fillColor: [76, 5, 25] },
+    });
+
+    doc.save(`RC_Report_${regNo}.pdf`);
+  };
+
+  const downloadChallanPDF = () => {
+    if (!challanData || !challanData.results) return;
+    const doc = new jsPDF();
+    doc.setFontSize(16);
+    doc.text("E-Challan Verification Report", 14, 20);
+    doc.setFontSize(10);
+    doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 28);
+    doc.text(`Vehicle Number: ${regNo}`, 14, 34);
+    doc.text(`Total Challans: ${challanData.totalChallan || 0}`, 14, 40);
+
+    const tableData: any[][] = [];
+    challanData.results.forEach((challan: any) => {
+      tableData.push([
+        challan.challanNo,
+        challan.amount ? `Rs ${challan.amount}` : 'N/A',
+        String(challan.status || 'N/A').toUpperCase(),
+        challan.dateTime || 'N/A',
+        challan.offences?.[0]?.offenceName || 'N/A'
+      ]);
+    });
+
+    autoTable(doc, {
+      startY: 46,
+      head: [['Challan No', 'Amount', 'Status', 'Date', 'Offence']],
+      body: tableData,
+      theme: 'striped',
+      styles: { fontSize: 8 },
+      headStyles: { fillColor: [76, 5, 25] },
+    });
+
+    doc.save(`Challan_Report_${regNo}.pdf`);
   };
 
   useEffect(() => {
@@ -832,8 +899,11 @@ export default function VehicleForm({
     {/* RC Details Modal */}
     <Dialog open={isRcModalOpen} onOpenChange={setIsRcModalOpen}>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-        <DialogHeader>
+        <DialogHeader className="flex flex-row items-center justify-between mt-2">
           <DialogTitle>RC Details</DialogTitle>
+          <Button onClick={downloadRcPDF} size="sm" variant="outline" className="h-8 gap-2 border-slate-200">
+            <Download className="h-4 w-4" /> Download PDF
+          </Button>
         </DialogHeader>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
           {rcData && Object.entries(rcData).map(([key, value]) => {
@@ -866,8 +936,11 @@ export default function VehicleForm({
     {/* Challan Details Modal */}
     <Dialog open={isChallanModalOpen} onOpenChange={setIsChallanModalOpen}>
       <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-        <DialogHeader>
+        <DialogHeader className="flex flex-row items-center justify-between mt-2">
           <DialogTitle>E-Challan Details ({challanData?.totalChallan || 0} found)</DialogTitle>
+          <Button onClick={downloadChallanPDF} size="sm" variant="outline" className="h-8 gap-2 border-slate-200">
+            <Download className="h-4 w-4" /> Download PDF
+          </Button>
         </DialogHeader>
         <div className="flex flex-col gap-4 mt-4">
           {challanData?.results?.map((challan: any, index: number) => (

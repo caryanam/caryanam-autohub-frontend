@@ -69,7 +69,7 @@ export default function DashboardLayout({ title, nav, accentLabel }: Props) {
       </div>
 
       {/* Nav links */}
-      <nav className="flex-1 p-4 space-y-3 overflow-y-auto">
+      <nav className="flex-1 p-4 space-y-3 overflow-y-auto hide-scrollbar">
         {nav.map((n) => (
           <NavLink
             key={n.to}
