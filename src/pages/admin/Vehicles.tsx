@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AlertCircle, RefreshCw, Search } from "lucide-react";
+import { AlertCircle, RefreshCw, Search, Facebook } from "lucide-react";
 import { useAdminAllVehicles } from "@/hooks/admin/useAdminAllVehicles";
 import { formatINR, formatKM } from "@/utils/helpers";
 
@@ -44,6 +44,12 @@ function StatusBadge({ status }: { status: string }) {
       {status}
     </Badge>
   );
+}
+
+function shareVehicleToFacebook(vehicleId: string | number) {
+  const vehicleUrl = `https://caryanam.com/vehicle/${vehicleId}`;
+  const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(vehicleUrl)}`;
+  window.open(shareUrl, "_blank", "width=720,height=650");
 }
 
 export default function AdminVehicles() {
@@ -136,6 +142,9 @@ export default function AdminVehicles() {
                 <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4 pr-6">
                   Year
                 </TableHead>
+                <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4 pr-6 text-right">
+                  Actions
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -172,12 +181,15 @@ export default function AdminVehicles() {
                     <TableCell className="py-4 pr-6">
                       <Skeleton className="h-4 w-12 rounded" />
                     </TableCell>
+                    <TableCell className="py-4 pr-6 text-right">
+                      <Skeleton className="h-8 w-24 rounded ml-auto" />
+                    </TableCell>
                   </TableRow>
                 ))
               ) : filtered.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={7}
+                    colSpan={8}
                     className="text-center py-12 text-muted-foreground font-medium"
                   >
                     {search
@@ -245,6 +257,17 @@ export default function AdminVehicles() {
                     </TableCell>
                     <TableCell className="text-sm text-slate-400 py-4 pr-6">
                       {v.registrationYear}
+                    </TableCell>
+                    <TableCell className="py-4 pr-6 text-right">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-2 text-[#1877F2] border-[#1877F2]/30 hover:bg-[#1877F2]/10"
+                        onClick={() => shareVehicleToFacebook(v.id)}
+                      >
+                        <Facebook className="h-4 w-4" />
+                        <span className="hidden lg:inline">Post to Facebook Group</span>
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))
