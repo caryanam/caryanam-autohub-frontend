@@ -28,6 +28,7 @@ import PrivacyPolicy from "@/pages/public/PrivacyPolicy";
 import TermsAndConditions from "@/pages/public/TermsAndConditions";
 import RefundPolicy from "@/pages/public/RefundPolicy";
 import RTOForm from "@/pages/public/RTOForm";
+import DeleteAccount from "@/pages/public/DeleteAccount";
 import Login from "@/pages/auth/Login";
 import Register from "@/pages/auth/Register";
 import NotFound from "@/pages/NotFound";
@@ -71,6 +72,7 @@ export default function App() {
               <Route path="/terms" element={<TermsAndConditions />} />
               <Route path="/refund-policy" element={<RefundPolicy />} />
               <Route path="/rto-form" element={<RTOForm />} />
+              <Route path="/delete-account" element={<DeleteAccount />} />
 
               {/* Customer Protected */}
               <Route element={<ProtectedRoute allow={["customer"]} />}>

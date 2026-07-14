@@ -463,6 +463,11 @@ export default function PublicLayout() {
                     Refund Policy
                   </Link>
                 </li>
+                <li>
+                  <Link to="/delete-account" className="transition-colors duration-200 hover:text-rose-400">
+                    Delete Account
+                  </Link>
+                </li>
               </ul>
             </div>
 
