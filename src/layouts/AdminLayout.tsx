@@ -8,6 +8,7 @@ import {
   FileBarChart,
   MessageSquare,
   Gift,
+  Facebook,
 } from "lucide-react";
 import DashboardLayout from "./DashboardLayout";
 
@@ -39,6 +40,11 @@ const nav = [
     icon: <CreditCard className="h-4 w-4" />,
   },
   {
+    to: "/admin/facebook-requests",
+    label: "Facebook Requests",
+    icon: <Facebook className="h-4 w-4" />,
+  },
+  {
     to: "/admin/chat",
     label: "Chat",
     icon: <MessageSquare className="h-4 w-4" />,
@@ -49,6 +55,7 @@ const nav = [
     icon: <FileBarChart className="h-4 w-4" />,
   },
 ];
+
 
 export default function AdminLayout() {
   return (

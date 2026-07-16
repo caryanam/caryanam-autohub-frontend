@@ -89,7 +89,7 @@ export function useWishlist() {
                 vehicleDescription: "",
                 vehicleStatus: "",
                 createdAt: item.addedAt || "",
-              } as Vehicle;
+              } as any as Vehicle;
             }
             return null;
           })

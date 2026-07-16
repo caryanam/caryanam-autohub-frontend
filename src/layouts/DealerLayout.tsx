@@ -7,6 +7,7 @@ import {
   CreditCard,
   Heart,
   MessageSquare,
+  Facebook,
 } from "lucide-react";
 import DashboardLayout from "./DashboardLayout";
 
@@ -38,11 +39,17 @@ const nav = [
     icon: <MessageSquare className="h-4 w-4" />,
   },
   {
+    to: "/dealer/facebook-requests",
+    label: "Facebook Posts",
+    icon: <Facebook className="h-4 w-4" />,
+  },
+  {
     to: "/dealer/subscription",
     label: "Subscription",
     icon: <CreditCard className="h-4 w-4" />,
   },
 ];
+
 
 export default function DealerLayout() {
   return (

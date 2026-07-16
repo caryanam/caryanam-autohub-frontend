@@ -54,6 +54,11 @@ import AdminSubscriptions from "@/pages/admin/Subscriptions";
 import AdminReports from "@/pages/admin/Reports";
 import AdminChat from "@/pages/admin/Chat";
 
+import DealerFacebookRequests from "@/pages/dealer/FacebookRequests";
+import AdminFacebookDealerSummary from "@/pages/admin/facebook/FacebookDealerSummary";
+import AdminFacebookDealerRequests from "@/pages/admin/facebook/FacebookDealerRequests";
+import AdminFacebookBatchProgress from "@/pages/admin/facebook/FacebookBatchProgress";
+
 export default function App() {
   return (
     <AdminAuthProvider>
@@ -101,8 +106,8 @@ export default function App() {
                 <Route path="wishlist" element={<DealerWishlist />} />
                 <Route path="profile" element={<DealerProfile />} />
                 <Route path="chat" element={<DealerChat />} />
-
                 <Route path="subscription" element={<DealerSubscription />} />
+                <Route path="facebook-requests" element={<DealerFacebookRequests />} />
               </Route>
             </Route>
 
@@ -121,8 +126,10 @@ export default function App() {
                 <Route path="leads" element={<AdminLeads />} />
                 <Route path="subscriptions" element={<AdminSubscriptions />} />
                 <Route path="chat" element={<AdminChat />} />
-
                 <Route path="reports" element={<AdminReports />} />
+                <Route path="facebook-requests" element={<AdminFacebookDealerSummary />} />
+                <Route path="facebook-requests/dealer/:dealerId" element={<AdminFacebookDealerRequests />} />
+                <Route path="facebook-requests/batch/:batchId" element={<AdminFacebookBatchProgress />} />
               </Route>
             </Route>
 
