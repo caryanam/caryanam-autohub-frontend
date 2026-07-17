@@ -587,6 +587,44 @@ export default function Home() {
           transitionToSlideRef.current(targetSlide);
           currentSlideRef.current = targetSlide;
         }
+
+        // Update custom scroll progress HUD
+        const progressBar = document.getElementById("scroll-hud-progress-bar");
+        if (progressBar) {
+          progressBar.style.height = `${self.progress * 100}%`;
+        }
+
+        const scrollHint = document.getElementById("scroll-hint-mouse");
+        if (scrollHint) {
+          if (self.progress > 0.95) {
+            scrollHint.style.opacity = "0";
+            scrollHint.style.pointerEvents = "none";
+          } else {
+            scrollHint.style.opacity = `${Math.max(0, 1 - self.progress * 2.5)}`;
+            scrollHint.style.pointerEvents = "auto";
+          }
+        }
+
+        for (let i = 0; i < 3; i++) {
+          const dot = document.getElementById(`scroll-indicator-dot-${i}`);
+          const text = document.getElementById(`scroll-indicator-text-${i}`);
+          if (dot && text) {
+            const isActive = (i === 0 && self.progress < 0.33) ||
+                             (i === 1 && self.progress >= 0.33 && self.progress < 0.68) ||
+                             (i === 2 && self.progress >= 0.68);
+            if (isActive) {
+              dot.classList.add("bg-rose-500", "scale-125", "border-rose-500");
+              dot.classList.remove("bg-white/20", "border-white/10");
+              text.classList.add("text-white", "font-bold");
+              text.classList.remove("text-white/40");
+            } else {
+              dot.classList.remove("bg-rose-500", "scale-125", "border-rose-500");
+              dot.classList.add("bg-white/20", "border-white/10");
+              text.classList.remove("text-white", "font-bold");
+              text.classList.add("text-white/40");
+            }
+          }
+        }
       },
     });
 
@@ -918,29 +956,7 @@ export default function Home() {
 
             </div>
 
-            {/* Top-Right: Premium Trust badge / HUD Widget */}
-            <div
-              ref={ctaBtnRef as any}
-              className="absolute top-28 right-8 sm:right-12 sm:top-32 z-10 pointer-events-auto hidden lg:flex flex-col items-end gap-2.5"
-            >
-              <div className="flex items-center gap-3 bg-black/40 backdrop-blur-md border border-white/10 px-5 py-3 rounded-2xl shadow-2xl hover:scale-105 hover:bg-black/60 transition-all duration-300">
-                <div className="h-2 w-2 rounded-full bg-rose-500 animate-pulse" />
-                <div className="text-left select-none">
-                  <div className="hud-label-1 text-[10px] font-black uppercase tracking-[0.2em] text-rose-500">Live Status</div>
-                  <div className="hud-value-1 text-xs font-bold text-white mt-0.5">50,000+ Cars Online</div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3 bg-black/40 backdrop-blur-md border border-white/10 px-5 py-3 rounded-2xl shadow-2xl hover:scale-105 hover:bg-black/60 transition-all duration-300">
-                <div className="h-5 w-5 rounded-lg bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30">
-                  <BadgeCheck className="h-3.5 w-3.5 text-emerald-400" />
-                </div>
-                <div className="text-left select-none">
-                  <div className="hud-label-2 text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400">100% Certified</div>
-                  <div className="hud-value-2 text-xs font-bold text-white mt-0.5">Verified Dealers</div>
-                </div>
-              </div>
-            </div>
+            {/* Top-Right cards removed to prevent collision with scroll HUD */}
 
             {/* Bottom-Left: Quick Search inputs container */}
             {/* <div className="absolute bottom-10 left-8 sm:left-12 z-10 pointer-events-auto w-full max-w-xs sm:max-w-xs md:max-w-sm bg-black/40 backdrop-blur-md border border-white/10 rounded-2xl p-4 sm:p-5 shadow-2xl">
@@ -1025,6 +1041,98 @@ export default function Home() {
                 >
                   Join as Dealer
                 </button>
+              </div>
+            </div>
+
+            {/* Vertical Scroll HUD Indicator */}
+            <div className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 z-20 flex flex-col items-end gap-6 pointer-events-none">
+              <div className="relative flex flex-col items-end gap-12 py-4">
+                {/* Vertical Progress Bar Line */}
+                <div className="absolute top-3 bottom-3 right-[5px] w-[2px] bg-white/10 rounded-full overflow-hidden">
+                  <div
+                    id="scroll-hud-progress-bar"
+                    className="absolute top-0 left-0 w-full bg-rose-500 transition-all duration-75"
+                    style={{ height: "0%" }}
+                  />
+                </div>
+
+                {/* Step 1 */}
+                <div
+                  className="relative flex items-center justify-end gap-4 cursor-pointer pointer-events-auto group"
+                  onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                >
+                  <span
+                    id="scroll-indicator-text-0"
+                    className="text-[10px] uppercase tracking-[0.2em] text-white font-bold transition-all duration-300 select-none opacity-80 group-hover:opacity-100 hidden lg:block"
+                  >
+                    Finance
+                  </span>
+                  <div
+                    id="scroll-indicator-dot-0"
+                    className="h-3 w-3 rounded-full border bg-rose-500 border-rose-500 scale-125 transition-all duration-300 z-10"
+                  />
+                </div>
+
+                {/* Step 2 */}
+                <div
+                  className="relative flex items-center justify-end gap-4 cursor-pointer pointer-events-auto group"
+                  onClick={() => {
+                    const el = containerRef.current;
+                    if (el) {
+                      const start = el.offsetTop;
+                      const height = el.offsetHeight;
+                      window.scrollTo({ top: start + height * 0.45, behavior: "smooth" });
+                    }
+                  }}
+                >
+                  <span
+                    id="scroll-indicator-text-1"
+                    className="text-[10px] uppercase tracking-[0.2em] text-white/40 transition-all duration-300 select-none group-hover:text-white/80 hidden lg:block"
+                  >
+                    Connection
+                  </span>
+                  <div
+                    id="scroll-indicator-dot-1"
+                    className="h-3 w-3 rounded-full border bg-white/20 border-white/10 transition-all duration-300 z-10"
+                  />
+                </div>
+
+                {/* Step 3 */}
+                <div
+                  className="relative flex items-center justify-end gap-4 cursor-pointer pointer-events-auto group"
+                  onClick={() => {
+                    const el = containerRef.current;
+                    if (el) {
+                      const start = el.offsetTop;
+                      const height = el.offsetHeight;
+                      window.scrollTo({ top: start + height * 0.85, behavior: "smooth" });
+                    }
+                  }}
+                >
+                  <span
+                    id="scroll-indicator-text-2"
+                    className="text-[10px] uppercase tracking-[0.2em] text-white/40 transition-all duration-300 select-none group-hover:text-white/80 hidden lg:block"
+                  >
+                    Verification
+                  </span>
+                  <div
+                    id="scroll-indicator-dot-2"
+                    className="h-3 w-3 rounded-full border bg-white/20 border-white/10 transition-all duration-300 z-10"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Mouse Scroll Hint Indicator (Centered at the bottom) */}
+            <div
+              id="scroll-hint-mouse"
+              className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 pointer-events-none transition-all duration-500 text-white"
+            >
+              <span className="text-[9px] font-black uppercase tracking-[0.25em] text-white/60">
+                Scroll to explore
+              </span>
+              <div className="h-8 w-5 rounded-full border border-white/30 flex justify-center p-1 relative">
+                <div className="h-1.5 w-1.5 rounded-full bg-rose-500 animate-[bounce_1.2s_infinite]" />
               </div>
             </div>
           </div>

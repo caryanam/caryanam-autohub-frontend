@@ -17,6 +17,7 @@ export type SocialPostBatchStatus =
   | "FAILED";
 
 export interface FacebookDealerVehicleStatusDTO {
+  rejectionReason: any;
   vehicleId: number;
   brand: string;
   model: string;

@@ -234,36 +234,32 @@ export default function AdminFacebookDealerSummary() {
                       </TableCell>
                       <TableCell className="text-center py-4">
                         <span
-                          className={`font-semibold text-sm ${
-                            s.pendingCount > 0 ? "text-amber-600 font-bold" : "text-slate-400"
-                          }`}
+                          className={`font-semibold text-sm ${s.pendingCount > 0 ? "text-amber-600 font-bold" : "text-slate-400"
+                            }`}
                         >
                           {s.pendingCount}
                         </span>
                       </TableCell>
                       <TableCell className="text-center py-4">
                         <span
-                          className={`font-semibold text-sm ${
-                            s.processingCount > 0 ? "text-blue-600 font-bold animate-pulse" : "text-slate-400"
-                          }`}
+                          className={`font-semibold text-sm ${s.processingCount > 0 ? "text-blue-600 font-bold animate-pulse" : "text-slate-400"
+                            }`}
                         >
                           {s.processingCount}
                         </span>
                       </TableCell>
                       <TableCell className="text-center py-4">
                         <span
-                          className={`font-semibold text-sm ${
-                            s.publishedCount > 0 ? "text-emerald-600" : "text-slate-400"
-                          }`}
+                          className={`font-semibold text-sm ${s.publishedCount > 0 ? "text-emerald-600" : "text-slate-400"
+                            }`}
                         >
                           {s.publishedCount}
                         </span>
                       </TableCell>
                       <TableCell className="text-center py-4">
                         <span
-                          className={`font-semibold text-sm ${
-                            s.failedCount > 0 ? "text-rose-600 font-bold" : "text-slate-400"
-                          }`}
+                          className={`font-semibold text-sm ${s.failedCount > 0 ? "text-rose-600 font-bold" : "text-slate-400"
+                            }`}
                         >
                           {s.failedCount}
                         </span>
@@ -272,7 +268,7 @@ export default function AdminFacebookDealerSummary() {
                         <Button
                           variant="ghost"
                           onClick={() => handleRowClick(s.dealerId)}
-                          className="text-[#1877F2] hover:bg-[#1877F2]/5 font-semibold text-xs gap-1.5 cursor-pointer rounded-xl h-8"
+                          className="text-[#1877F2] hover:bg-[#1877F2] font-semibold text-xs gap-1.5 cursor-pointer rounded-xl h-8"
                         >
                           Review <ArrowRight className="h-3 w-3" />
                         </Button>

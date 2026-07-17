@@ -116,7 +116,7 @@ export default function DealerFacebookRequests() {
     if (statusFilter === "published")
       return matchesSearch && v.publishStatus === "PUBLISHED";
     if (statusFilter === "failed")
-      return matchesSearch && v.publishStatus === "FAILED";
+      return matchesSearch && (v.publishStatus === "FAILED" || v.approvalStatus === "REJECTED");
     if (statusFilter === "rejected")
       return matchesSearch && v.approvalStatus === "REJECTED";
 
@@ -148,9 +148,16 @@ export default function DealerFacebookRequests() {
     }
     if (v.approvalStatus === "REJECTED") {
       return (
-        <Badge className="bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-50 font-semibold gap-1 py-1 rounded-full px-3">
-          <XCircle className="h-3 w-3" /> Rejected
-        </Badge>
+        <div className="flex flex-col gap-1 items-start">
+          <Badge className="bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-50 font-semibold gap-1 py-1 rounded-full px-3">
+            <XCircle className="h-3 w-3" /> Rejected
+          </Badge>
+          {v.rejectionReason && (
+            <span className="text-[11px] text-rose-600 font-medium max-w-[180px] leading-tight">
+              Reason: {v.rejectionReason}
+            </span>
+          )}
+        </div>
       );
     }
     return (
@@ -322,7 +329,7 @@ export default function DealerFacebookRequests() {
             />
           </div>
 
-          <div className="flex items-center gap-2 w-full md:w-auto">
+          <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
             <Button
               variant={statusFilter === "all" ? "default" : "outline"}
               onClick={() => setStatusFilter("all")}
@@ -347,14 +354,14 @@ export default function DealerFacebookRequests() {
             <Button
               variant={statusFilter === "published" ? "default" : "outline"}
               onClick={() => setStatusFilter("published")}
-              className="h-10 rounded-xl px-4 cursor-pointer text-xs font-semibold text-emerald-600 hover:text-emerald-700"
+              className="h-10 rounded-xl px-4 cursor-pointer text-xs font-semibold "
             >
               Published
             </Button>
             <Button
               variant={statusFilter === "failed" ? "default" : "outline"}
               onClick={() => setStatusFilter("failed")}
-              className="h-10 rounded-xl px-4 cursor-pointer text-xs font-semibold text-rose-600 hover:text-rose-700"
+              className="h-10 rounded-xl px-4 cursor-pointer text-xs font-semibold "
             >
               Failed/Rejected
             </Button>
@@ -412,9 +419,7 @@ export default function DealerFacebookRequests() {
                   <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4">
                     Publish Status
                   </TableHead>
-                  <TableHead className="text-right text-xs font-bold text-slate-100 uppercase tracking-wider py-4 pr-6">
-                    Facebook Post
-                  </TableHead>
+
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -462,9 +467,8 @@ export default function DealerFacebookRequests() {
                     return (
                       <TableRow
                         key={v.vehicleId}
-                        className={`hover:bg-slate-50 transition-colors border-b border-slate-200 last:border-none ${
-                          isSelected ? "bg-slate-50/70" : ""
-                        }`}
+                        className={`hover:bg-slate-50 transition-colors border-b border-slate-200 last:border-none ${isSelected ? "bg-slate-50/70" : ""
+                          }`}
                       >
                         <TableCell className="text-center py-4">
                           <Checkbox
@@ -505,20 +509,7 @@ export default function DealerFacebookRequests() {
                         <TableCell className="py-4">
                           {renderPublishStatus(v)}
                         </TableCell>
-                        <TableCell className="py-4 text-right pr-6">
-                          {v.facebookPostUrl ? (
-                            <a
-                              href={v.facebookPostUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1.5 text-[#1877F2] font-semibold text-xs hover:underline"
-                            >
-                              <ExternalLink className="h-3.5 w-3.5" /> View Post
-                            </a>
-                          ) : (
-                            <span className="text-xs text-slate-400">Not Published</span>
-                          )}
-                        </TableCell>
+
                       </TableRow>
                     );
                   })

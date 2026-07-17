@@ -203,7 +203,7 @@ export default function AdminFacebookDealerRequests() {
       );
     }
     return (
-      <Badge variant="secondary" className="bg-slate-50 text-slate-400 border border-slate-100 font-medium rounded-full px-2.5 py-0.5">
+      <Badge variant="secondary" className="bg-slate-50 text-slate-400 hover:bg-transparent border border-slate-100 font-medium rounded-full px-2.5 py-0.5">
         Not Started
       </Badge>
     );
@@ -238,7 +238,7 @@ export default function AdminFacebookDealerRequests() {
         <Button
           variant="ghost"
           onClick={() => navigate("/admin/facebook-requests")}
-          className="p-0 text-slate-500 hover:text-slate-900 cursor-pointer text-xs font-semibold gap-1"
+          className="p-0 text-slate-500 hover:text-slate-900 hover:bg-transparent cursor-pointer text-xs font-semibold gap-1"
         >
           <ChevronLeft className="h-4 w-4" /> Back to Summaries
         </Button>
@@ -377,9 +377,8 @@ export default function AdminFacebookDealerRequests() {
                   return (
                     <TableRow
                       key={r.requestId}
-                      className={`hover:bg-slate-50 transition-colors border-b border-slate-200 last:border-none ${
-                        isSelected ? "bg-slate-50/70" : ""
-                      }`}
+                      className={`hover:bg-slate-50 transition-colors border-b border-slate-200 last:border-none ${isSelected ? "bg-slate-50/70" : ""
+                        }`}
                     >
                       <TableCell className="text-center py-4">
                         <Checkbox

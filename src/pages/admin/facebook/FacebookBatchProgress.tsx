@@ -179,7 +179,7 @@ export default function AdminFacebookBatchProgress() {
           variant="ghost"
           onClick={() => navigate("/admin/facebook-requests")}
           disabled={isBatchActive}
-          className="p-0 text-slate-500 hover:text-slate-900 cursor-pointer text-xs font-semibold gap-1 disabled:opacity-50"
+          className="p-0 text-slate-500 hover:text-slate-900 hover:bg-transparent cursor-pointer text-xs font-semibold gap-1 disabled:opacity-50"
         >
           <ChevronLeft className="h-4 w-4" /> Back to Facebook Requests
         </Button>
@@ -312,9 +312,7 @@ export default function AdminFacebookBatchProgress() {
                   <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4">
                     Error Reason
                   </TableHead>
-                  <TableHead className="text-right text-xs font-bold text-slate-100 uppercase tracking-wider py-4 pr-6">
-                    Facebook Post
-                  </TableHead>
+
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -368,20 +366,7 @@ export default function AdminFacebookBatchProgress() {
                       <TableCell className="text-rose-600 text-xs py-4 max-w-[250px] truncate" title={item.errorMessage || undefined}>
                         {item.errorMessage || "—"}
                       </TableCell>
-                      <TableCell className="py-4 text-right pr-6">
-                        {item.facebookPostUrl ? (
-                          <a
-                            href={item.facebookPostUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-[#1877F2] font-semibold text-xs hover:underline"
-                          >
-                            <ExternalLink className="h-3.5 w-3.5" /> View Post
-                          </a>
-                        ) : (
-                          <span className="text-xs text-slate-400">Not Available</span>
-                        )}
-                      </TableCell>
+
                     </TableRow>
                   ))
                 )}
