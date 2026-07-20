@@ -47,7 +47,7 @@ export default function AdminFacebookDealerSummary() {
 
   const totalDealers = summaries.length;
   const totalPending = summaries.reduce((acc, curr) => acc + curr.pendingCount, 0);
-  const totalProcessing = summaries.reduce((acc, curr) => acc + curr.processingCount, 0);
+  const totalPublished = summaries.reduce((acc, curr) => acc + curr.publishedCount, 0);
   const totalFailed = summaries.reduce((acc, curr) => acc + curr.failedCount, 0);
 
   if (error) {
@@ -124,16 +124,14 @@ export default function AdminFacebookDealerSummary() {
         <Card className="border border-slate-100 shadow-sm rounded-2xl bg-white">
           <CardContent className="p-6 flex items-center justify-between">
             <div>
-              <p className="text-sm font-semibold text-slate-500">Processing</p>
-              <h3 className="text-3xl font-bold text-blue-600 mt-1">
-                {isLoading ? <Skeleton className="h-8 w-12" /> : totalProcessing}
+              <p className="text-sm font-semibold text-slate-500">Published</p>
+              <h3 className="text-3xl font-bold text-emerald-600 mt-1">
+                {isLoading ? <Skeleton className="h-8 w-12" /> : totalPublished}
               </h3>
             </div>
-            {totalProcessing > 0 && (
-              <div className="p-3 bg-blue-50 rounded-xl text-blue-500">
-                <Loader2 className="h-6 w-6 animate-spin" />
-              </div>
-            )}
+            <div className="p-3 bg-emerald-50 rounded-xl text-emerald-500">
+              <CheckCircle2 className="h-6 w-6" />
+            </div>
           </CardContent>
         </Card>
 
