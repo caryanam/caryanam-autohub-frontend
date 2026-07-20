@@ -129,9 +129,11 @@ export default function AdminFacebookDealerSummary() {
                 {isLoading ? <Skeleton className="h-8 w-12" /> : totalProcessing}
               </h3>
             </div>
-            <div className="p-3 bg-blue-50 rounded-xl text-blue-500">
-              <Loader2 className={`h-6 w-6 ${totalProcessing > 0 ? "animate-spin" : ""}`} />
-            </div>
+            {totalProcessing > 0 && (
+              <div className="p-3 bg-blue-50 rounded-xl text-blue-500">
+                <Loader2 className="h-6 w-6 animate-spin" />
+              </div>
+            )}
           </CardContent>
         </Card>
 
