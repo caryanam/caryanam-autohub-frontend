@@ -7,6 +7,7 @@ import {
   RefreshCw,
   Eye,
   Download,
+  MessageCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -19,6 +20,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -43,6 +45,7 @@ import VehicleForm from "./VehicleForm";
 import { useGetVehicles } from "@/hooks/dealer/useGetVehicles";
 import { useDeleteVehicle } from "@/hooks/dealer/useDeleteVehicle";
 import { useUpdateVehicleStatus } from "@/hooks/dealer/useUpdateVehicleStatus";
+import { useShareVehicleOnWhatsApp } from "@/hooks/dealer/useWhatsAppShare";
 
 export default function DealerVehicles() {
   const navigate = useNavigate();
@@ -55,6 +58,7 @@ export default function DealerVehicles() {
   const [selectedVehicleId, setSelectedVehicleId] = useState<number | null>(
     null,
   );
+  const [selectedVehicles, setSelectedVehicles] = useState<number[]>([]);
 
   const {
     data: vehicles = [],
@@ -64,6 +68,7 @@ export default function DealerVehicles() {
   } = useGetVehicles(dealerId);
   const deleteMutation = useDeleteVehicle(dealerId);
   const statusMutation = useUpdateVehicleStatus(dealerId);
+  const shareMutation = useShareVehicleOnWhatsApp();
 
   const handleRemove = async (id: number) => {
     setDeletingId(id);
@@ -86,6 +91,65 @@ export default function DealerVehicles() {
         onError: (err) => toast.error(err.message),
       },
     );
+  };
+
+  const handleShareWhatsApp = (vehicleId: number) => {
+    shareMutation.mutate(
+      { vehicleId, dealerId },
+      {
+        onSuccess: (data) => {
+          toast.success("Vehicle shared successfully!");
+          // Optional: You could open the WhatsApp link in a new tab if returned by API
+          if (data.whatsappLink || data.shareUrl) {
+            window.open(data.whatsappLink || data.shareUrl, "_blank");
+          }
+        },
+        onError: (err) => toast.error(err.message || "Failed to share on WhatsApp"),
+      }
+    );
+  };
+
+  const handleBulkShareWhatsApp = async () => {
+    if (selectedVehicles.length === 0) return;
+
+    if (selectedVehicles.length === 1) {
+      handleShareWhatsApp(selectedVehicles[0]);
+      return;
+    }
+
+    try {
+      let sharedLinks: string[] = [];
+      for (const vId of selectedVehicles) {
+        const res = await shareMutation.mutateAsync({ vehicleId: vId, dealerId });
+        if (res.shareUrl || res.whatsappLink) {
+          sharedLinks.push((res.shareUrl || res.whatsappLink) as string);
+        }
+      }
+      toast.success(`Successfully shared ${selectedVehicles.length} vehicles!`);
+      if (sharedLinks.length > 0) {
+        const text = encodeURIComponent(`Check out these vehicles:\n\n${sharedLinks.join('\n\n')}`);
+        window.open(`https://wa.me/?text=${text}`, "_blank");
+      }
+      setSelectedVehicles([]);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to share some vehicles on WhatsApp");
+    }
+  };
+
+  const handleToggleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedVehicles(filteredVehicles.map((v) => v.id));
+    } else {
+      setSelectedVehicles([]);
+    }
+  };
+
+  const handleToggleVehicle = (vehicleId: number, checked: boolean) => {
+    if (checked) {
+      setSelectedVehicles((prev) => [...prev, vehicleId]);
+    } else {
+      setSelectedVehicles((prev) => prev.filter((id) => id !== vehicleId));
+    }
   };
 
   const handleSuccess = () => {
@@ -194,6 +258,17 @@ export default function DealerVehicles() {
             />
           </div>
 
+          {/* {selectedVehicles.length > 0 && ( */}
+          <Button
+            onClick={handleBulkShareWhatsApp}
+            disabled={shareMutation.isPending || selectedVehicles.length === 0}
+            className="gap-2 h-10 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl shrink-0"
+          >
+            <MessageCircle className="h-4 w-4" />
+            <span className="hidden md:inline">Share on WhatsApp ({selectedVehicles.length})</span>
+          </Button>
+          {/* )} */}
+
           <Button
             variant="outline"
             onClick={handleExportCSV}
@@ -234,6 +309,13 @@ export default function DealerVehicles() {
           <Table className="min-w-[900px]">
             <TableHeader className="bg-black border-b border-black">
               <TableRow className="bg-black hover:bg-black border-none">
+                <TableHead className="w-12 text-center py-4 pl-4">
+                  <Checkbox
+                    checked={filteredVehicles.length > 0 && selectedVehicles.length === filteredVehicles.length}
+                    onCheckedChange={handleToggleSelectAll}
+                    className="border-slate-400 data-[state=checked]:bg-white data-[state=checked]:text-black"
+                  />
+                </TableHead>
                 <TableHead className="w-16 text-center text-xs font-bold text-slate-100 uppercase tracking-wider py-4">
                   Sr No
                 </TableHead>
@@ -261,6 +343,9 @@ export default function DealerVehicles() {
                     key={`skeleton-${idx}`}
                     className="border-b border-slate-100/80 last:border-none"
                   >
+                    <TableCell className="w-12 text-center py-4 pl-4">
+                      <Skeleton className="h-4 w-4" />
+                    </TableCell>
                     <TableCell className="w-16 text-center py-4">
                       <Skeleton className="h-4 w-4 mx-auto" />
                     </TableCell>
@@ -294,7 +379,7 @@ export default function DealerVehicles() {
               ) : filteredVehicles.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={6}
+                    colSpan={7}
                     className="text-center py-12 text-muted-foreground font-medium"
                   >
                     {searchQuery
@@ -311,6 +396,13 @@ export default function DealerVehicles() {
                       key={v.id}
                       className="hover:bg-slate-100 transition-colors border-b border-slate-200 last:border-none"
                     >
+                      <TableCell className="text-center py-4 pl-4">
+                        <Checkbox
+                          checked={selectedVehicles.includes(v.id)}
+                          onCheckedChange={(checked) => handleToggleVehicle(v.id, checked as boolean)}
+                          className="border-slate-300"
+                        />
+                      </TableCell>
                       <TableCell className="text-center text-slate-400 text-sm font-medium py-4">
                         {idx + 1}
                       </TableCell>
@@ -428,6 +520,8 @@ export default function DealerVehicles() {
                           >
                             <Pencil className="h-4 w-4" />
                           </Button>
+
+
 
                           <Button
                             size="icon"

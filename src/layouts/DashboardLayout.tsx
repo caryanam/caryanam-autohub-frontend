@@ -146,13 +146,13 @@ export default function DashboardLayout({ title, nav, accentLabel }: Props) {
           {!isAdmin && (
             <div className="ml-auto bg-slate-950 p-0.5 sm:p-1 rounded-lg sm:rounded-xl shadow-sm flex items-center shrink-0">
               <div className="bg-white rounded-md sm:rounded-lg flex items-center pl-2 sm:pl-3 pr-1 sm:pr-2 py-1 sm:py-1.5 gap-2 sm:gap-5">
-                
+
                 <div className="flex items-center gap-1.5 sm:gap-3">
                   <Wallet className="h-4 w-4 sm:h-6 sm:w-6 text-slate-800 stroke-[1.5]" />
                   <div className="flex flex-col">
                     <span className="hidden sm:block text-[11px] font-bold text-slate-900 leading-none mb-1">Business Wallet</span>
                     <div className="flex items-center gap-1 sm:gap-1.5">
-                      <span className="text-[13px] sm:text-[17px] font-bold text-slate-900 leading-none tracking-tight">953.60</span>
+                      <span className="text-[13px] sm:text-[17px] font-bold text-slate-900 leading-none tracking-tight">00.00</span>
                       <Info className="hidden sm:block h-[18px] w-[18px] text-slate-900 stroke-[1.5] cursor-pointer hover:text-slate-600 transition-colors ml-0.5" />
                       <RefreshCw className="h-3 w-3 sm:h-[18px] sm:w-[18px] text-slate-800 stroke-[1.5] cursor-pointer hover:text-slate-600 transition-colors" />
                     </div>
@@ -160,7 +160,7 @@ export default function DashboardLayout({ title, nav, accentLabel }: Props) {
                 </div>
 
                 <button className="bg-rose-950 hover:bg-rose-900 transition-colors text-white text-[11px] sm:text-[13px] font-medium rounded-full sm:rounded-[20px] px-2 sm:px-4 py-1 sm:py-1.5 flex items-center gap-1">
-                  <Plus className="h-3 w-3 sm:h-4 sm:w-4 stroke-[2]" /> 
+                  <Plus className="h-3 w-3 sm:h-4 sm:w-4 stroke-[2]" />
                   <span className="hidden sm:inline">Add Fund</span>
                   <span className="sm:hidden">Add</span>
                 </button>
