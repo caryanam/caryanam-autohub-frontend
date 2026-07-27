@@ -384,48 +384,21 @@ export default function DealerProfile() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Label className="text-xs font-semibold text-slate-600">Date of Birth</Label>
-                    <div className="relative">
-                      <Input
-                        value={dateOfBirth}
-                        placeholder="dd/mm/yyyy"
-                        maxLength={10}
-                        onChange={(e) => {
-                          let val = e.target.value.replace(/\D/g, '');
-                          if (val.length >= 3 && val.length <= 4) val = val.slice(0,2) + '/' + val.slice(2);
-                          else if (val.length >= 5) val = val.slice(0,2) + '/' + val.slice(2,4) + '/' + val.slice(4,8);
-                          setDateOfBirth(val);
-                        }}
-                        className="mt-1.5 rounded-xl h-11 border-slate-200 focus-visible:ring-blue-600 bg-white pr-10"
-                        required
-                      />
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
-                            <Calendar className="w-5 h-5" />
-                          </button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="end">
-                          <CalendarPicker
-                            mode="single"
-                            selected={
-                              dateOfBirth?.length === 10
-                                ? (()=>{
-                                    const parts = dateOfBirth.split('/');
-                                    if(parts.length===3) return new Date(Number(parts[2]), Number(parts[1])-1, Number(parts[0]))
-                                    return undefined;
-                                  })()
-                                : undefined
-                            }
-                            onSelect={(date) => {
-                              if (date) {
-                                setDateOfBirth(format(date, "dd/MM/yyyy"));
-                              }
-                            }}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    </div>
+                    <Input
+                      type="date"
+                      value={dateOfBirth.includes('/') ? dateOfBirth.split('/').reverse().join('-') : dateOfBirth}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (val) {
+                          const [yyyy, mm, dd] = val.split('-');
+                          setDateOfBirth(`${dd}/${mm}/${yyyy}`);
+                        } else {
+                          setDateOfBirth('');
+                        }
+                      }}
+                      className="relative w-full mt-1.5 rounded-xl h-11 border-slate-200 focus-visible:ring-blue-600 bg-white [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-4 [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                      required
+                    />
                   </div>
                 </div>
               </div>
