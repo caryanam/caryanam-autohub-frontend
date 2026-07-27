@@ -11,6 +11,7 @@ export class UpdateProfileError extends Error {
 
 export interface UpdateProfilePayload {
   businessName: string;
+  dateOfBirth?: string;
   executiveMobile?: string | null;
   whatsapp: string;
   address: string;

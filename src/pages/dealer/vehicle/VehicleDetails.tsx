@@ -170,7 +170,7 @@ export default function DealerVehicleDetails() {
             />
             <SpecBox
               icon={<MapPin className="h-4 w-4" />}
-              label="City"
+              label="Location"
               value={vehicle.city}
             />
             <SpecBox

@@ -781,7 +781,7 @@ export default function CarDetails() {
               />
             </div>
             <div>
-              <Label>City</Label>
+              <Label>Location</Label>
               <Input
                 value={leadCity}
                 onChange={(e) => setLeadCity(e.target.value)}

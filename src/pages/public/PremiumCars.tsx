@@ -306,7 +306,7 @@ export default function PremiumCars() {
           <Input
             value={q}
             onChange={(e) => set("q", e.target.value)}
-            placeholder="Search brand, model, city..."
+            placeholder="Search brand, model, location..."
             className="pl-10 h-11 text-rose-900 dark:text-rose-100 rounded-xl bg-muted/20 border-border/60 hover:bg-muted/30 focus-visible:ring-4 focus-visible:ring-rose-900/15 focus-visible:border-rose-900 dark:focus-visible:border-rose-500 dark:focus-visible:ring-rose-500/20 transition-all placeholder:text-muted-foreground/50 text-sm"
           />
         </div>
@@ -379,13 +379,13 @@ export default function PremiumCars() {
       <div className="border-t border-border/50 my-2 pt-4 space-y-5">
         <div className="space-y-1.5">
           <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-            City
+            Location
           </Label>
           <SearchableSelect
             value={city || ""}
             onValueChange={(v) => set("city", v)}
             options={CITIES}
-            placeholder="All Cities"
+            placeholder="All Locations"
             triggerClassName="h-11 rounded-xl hover:bg-muted/10 transition-colors focus:border-rose-900 focus:ring-rose-900/15"
           />
           {city && (
@@ -394,7 +394,7 @@ export default function PremiumCars() {
               onClick={() => set("city", "")}
               className="text-[10px] font-bold text-rose-900 hover:underline cursor-pointer"
             >
-              Clear city
+              Clear location
             </button>
           )}
         </div>
@@ -498,7 +498,7 @@ export default function PremiumCars() {
     <div className="bg-white dark:bg-slate-950 min-h-screen pb-16">
       <SEO
         title="Premium Cars Collection — Caryanam"
-        description="Explore our exclusive, hand-picked collection of premium luxury cars. Certified and verified with direct dealer contact."
+        description="Search premium verified used cars by brand, location, fuel, transmission and budget."
       />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">

@@ -80,7 +80,7 @@ export default function VehicleForm({
 
   const [brand, setBrand] = useState("");
   const [city, setCity] = useState("");
-  const [fuelType, setFuelType] = useState("PETROL");
+  const [fuelType, setFuelType] = useState("");
   const [ownershipDetails, setOwnershipDetails] = useState(1);
   const [vehicleType, setVehicleType] = useState("NON_PREMIUM");
 
@@ -307,7 +307,7 @@ export default function VehicleForm({
     if (vehicleDetails) {
       setBrand(vehicleDetails.brand || "");
       setCity(vehicleDetails.city || "");
-      setFuelType((vehicleDetails.fuelType || "PETROL").toUpperCase());
+      setFuelType(vehicleDetails.fuelType ? vehicleDetails.fuelType.toUpperCase() : "");
       setOwnershipDetails(vehicleDetails.ownershipDetails || 1);
       setModel(vehicleDetails.model || "");
       setVariant(vehicleDetails.variant || "");
@@ -335,18 +335,45 @@ export default function VehicleForm({
   }, [vehicleDetails]);
 
   const handleSlotImageChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      if (!file.type.startsWith("image/")) {
-        toast.error("Only image files are allowed.");
+    if (e.target.files && e.target.files.length > 0) {
+      const files = Array.from(e.target.files).filter((file) => {
+        if (!file.type.startsWith("image/")) {
+          toast.error("Only image files are allowed.");
+          return false;
+        }
+        return true;
+      });
+
+      if (files.length === 0) {
         e.target.value = "";
         return;
       }
+
+      let addedExtra = 0;
+
       setSlotImages((prev) => {
         const next = [...prev];
-        next[index] = file;
+        let fileIdx = 0;
+        
+        next[index] = files[fileIdx++];
+        
+        for (let i = 0; i < next.length && fileIdx < files.length; i++) {
+          if (next[i] === null) {
+            next[i] = files[fileIdx++];
+          }
+        }
+        
+        while (fileIdx < files.length) {
+          next.push(files[fileIdx++]);
+          addedExtra++;
+        }
+        
+        if (addedExtra > 0) {
+          setTimeout(() => setExtraSlotsCount(c => c + addedExtra), 0);
+        }
         return next;
       });
+      e.target.value = "";
     }
   };
 
@@ -391,6 +418,7 @@ export default function VehicleForm({
     if (!model) newErrors.model = "Model is required";
     if (!variant) newErrors.variant = "Variant is required";
     if (!city) newErrors.city = "City is required";
+    if (!fuelType) newErrors.fuelType = "Fuel Type is required";
     const yearNum = Number(registrationYear);
     if (!registrationYear || yearNum < 1 || yearNum > new Date().getFullYear()) {
       toast.error(`Registration year must be a positive number not greater than ${new Date().getFullYear()}.`);
@@ -417,10 +445,7 @@ export default function VehicleForm({
         toast.error("Please upload all 10 required images.");
         return;
       }
-      if (videos.length < 1) {
-        toast.error("Please select at least 1 video.");
-        return;
-      }
+
     }
 
     const payload = {
@@ -599,15 +624,34 @@ export default function VehicleForm({
           {errors.variant && <p className="text-xs text-red-500 mt-1">{errors.variant}</p>}
         </div>
 
+        <div className="text-left">
+          <Label>
+            Fuel Type <span className="text-red-500">*</span>
+          </Label>
+          <Select key={fuelType} value={fuelType} onValueChange={(v) => { setFuelType(v); clearError("fuelType"); }} required>
+            <SelectTrigger className={`mt-1 ${errors.fuelType ? "border-red-500" : ""}`}>
+              <SelectValue placeholder="Select Fuel Type" />
+            </SelectTrigger>
+            <SelectContent>
+              {FUELS.map((o) => (
+                <SelectItem key={o} value={o}>
+                  {FUEL_LABELS[o] ?? o}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors.fuelType && <p className="text-xs text-red-500 mt-1">{errors.fuelType}</p>}
+        </div>
+
         <div id="field-city" className="text-left">
           <Label>
-            City <span className="text-red-500">*</span>
+            Location <span className="text-red-500">*</span>
           </Label>
           <SearchableSelect
             value={city}
             onValueChange={(v) => { setCity(v); clearError("city"); }}
             options={areas}
-            placeholder="Select or Type City"
+            placeholder="Select or Type Location"
             allowCustom={true}
             triggerClassName={`mt-1 ${errors.city ? "border-red-500" : ""}`}
           />
@@ -654,23 +698,7 @@ export default function VehicleForm({
           required
         />
 
-        <div className="text-left">
-          <Label>
-            Fuel Type <span className="text-red-500">*</span>
-          </Label>
-          <Select key={fuelType} value={fuelType} onValueChange={setFuelType} required>
-            <SelectTrigger className="mt-1">
-              <SelectValue placeholder="Select Fuel Type" />
-            </SelectTrigger>
-            <SelectContent>
-              {FUELS.map((o) => (
-                <SelectItem key={o} value={o}>
-                  {FUEL_LABELS[o] ?? o}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+
 
         <div className="text-left">
           <Label>
@@ -797,6 +825,7 @@ export default function VehicleForm({
                         <input
                           type="file"
                           accept="image/*"
+                          multiple
                           className="sr-only"
                           onChange={(e) => handleSlotImageChange(idx, e)}
                         />
@@ -828,10 +857,10 @@ export default function VehicleForm({
               <Video className="h-6 w-6 text-primary" />
             </div>
             <h3 className="font-semibold text-slate-800">
-              Walkaround Videos <span className="text-red-500">*</span>
+              Walkaround Videos
             </h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              Upload at least 1 vehicle video (Selected: {videos.length})
+            <p className="text-xs text-muted-foreground mt-1 mb-3">
+              Upload vehicle videos (Selected: {videos.length})
             </p>
             <label className="mt-4 inline-flex items-center gap-2 rounded-lg bg-primary hover:bg-primary/90 text-white px-4 py-2 text-sm font-semibold cursor-pointer transition-colors shadow-sm">
               <Upload className="h-4 w-4" /> Choose Videos

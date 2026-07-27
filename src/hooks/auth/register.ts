@@ -5,6 +5,7 @@ import apiClient from "@/lib/apiClient";
 type DealerRegistrationPayload = {
   businessName: string;
   ownerName: string;
+  dateOfBirth?: string;
   gstNumber: string;
   yearsInBusiness: number;
   dealerMobile: string;

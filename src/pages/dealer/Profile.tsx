@@ -28,6 +28,9 @@ import {
 } from "lucide-react";
 import { useGetDealerProfile } from "@/hooks/dealer/useGetDealerProfile";
 import { useUpdateDealerProfile, UpdateProfileError } from "@/hooks/dealer/useUpdateDealerProfile";
+import { Calendar as CalendarPicker } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
 import {
   useCustomerSendOtp,
   useCustomerVerifyOtp,
@@ -52,6 +55,7 @@ export default function DealerProfile() {
   // Profile form state
   const [businessName, setBusinessName] = useState("");
   const [ownerName, setOwnerName] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
   const [dealerMobile, setDealerMobile] = useState("");
   const [executiveMobile, setExecutiveMobile] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
@@ -66,6 +70,7 @@ export default function DealerProfile() {
     if (profile) {
       setBusinessName(profile.businessName || "");
       setOwnerName(profile.ownerName || "");
+      setDateOfBirth(profile.dateOfBirth || "");
       setDealerMobile(profile.dealerMobile || profile.mobile || "");
       setExecutiveMobile(profile.executiveMobile || "");
       setWhatsapp(profile.whatsapp || "");
@@ -87,6 +92,7 @@ export default function DealerProfile() {
     try {
       await updateMutation.mutateAsync({
         businessName,
+        dateOfBirth,
         executiveMobile: executiveMobile || null,
         whatsapp,
         address,
@@ -330,6 +336,10 @@ export default function DealerProfile() {
                 <span className="font-bold text-slate-700">{profile?.yearsInBusiness ?? "—"} years</span>
               </div>
               <div className="space-y-1">
+                <span className="text-slate-400 font-medium block">Date of Birth</span>
+                <span className="font-bold text-slate-700">{profile?.dateOfBirth || "—"}</span>
+              </div>
+              <div className="space-y-1">
                 <span className="text-slate-400 font-medium block">Registered On</span>
                 <span className="font-medium text-slate-700">{profile?.createdAt ? formatDate(profile.createdAt) : "—"}</span>
               </div>
@@ -369,6 +379,53 @@ export default function DealerProfile() {
                       readOnly
                       className="mt-1.5 rounded-xl h-11 border-slate-200 bg-slate-50 text-slate-400 cursor-not-allowed select-none"
                     />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-xs font-semibold text-slate-600">Date of Birth</Label>
+                    <div className="relative">
+                      <Input
+                        value={dateOfBirth}
+                        placeholder="dd/mm/yyyy"
+                        maxLength={10}
+                        onChange={(e) => {
+                          let val = e.target.value.replace(/\D/g, '');
+                          if (val.length >= 3 && val.length <= 4) val = val.slice(0,2) + '/' + val.slice(2);
+                          else if (val.length >= 5) val = val.slice(0,2) + '/' + val.slice(2,4) + '/' + val.slice(4,8);
+                          setDateOfBirth(val);
+                        }}
+                        className="mt-1.5 rounded-xl h-11 border-slate-200 focus-visible:ring-blue-600 bg-white pr-10"
+                        required
+                      />
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                            <Calendar className="w-5 h-5" />
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="end">
+                          <CalendarPicker
+                            mode="single"
+                            selected={
+                              dateOfBirth?.length === 10
+                                ? (()=>{
+                                    const parts = dateOfBirth.split('/');
+                                    if(parts.length===3) return new Date(Number(parts[2]), Number(parts[1])-1, Number(parts[0]))
+                                    return undefined;
+                                  })()
+                                : undefined
+                            }
+                            onSelect={(date) => {
+                              if (date) {
+                                setDateOfBirth(format(date, "dd/MM/yyyy"));
+                              }
+                            }}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
                   </div>
                 </div>
               </div>

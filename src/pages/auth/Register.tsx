@@ -28,7 +28,12 @@ import {
   Shield,
   LineChart,
   Zap,
+  CalendarIcon,
 } from "lucide-react";
+
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -42,6 +47,7 @@ import logo from "@/assets/logo.png";
 type FormData = {
   businessName: string;
   ownerName: string;
+  dateOfBirth: string;
   gstNumber: string;
   yearsInBusiness: string;
   email: string;
@@ -68,6 +74,7 @@ export default function Register() {
     defaultValues: {
       businessName: "",
       ownerName: "",
+      dateOfBirth: "",
       gstNumber: "",
       yearsInBusiness: "",
       email: "",
@@ -87,6 +94,7 @@ export default function Register() {
       const payload: any = {
         businessName: data.businessName,
         ownerName: data.ownerName,
+        dateOfBirth: data.dateOfBirth,
         yearsInBusiness: Number(data.yearsInBusiness),
         dealerMobile: data.dealerMobile,
         whatsapp: data.whatsapp,
@@ -320,6 +328,61 @@ export default function Register() {
 
                         <div className="space-y-1.5">
                           <Label className="text-xs font-semibold text-slate-200 md:text-slate-500">
+                            Date of Birth <span className="text-red-500">*</span>
+                          </Label>
+                          <div className="relative">
+                            <Input
+                              required
+                              placeholder="dd/mm/yyyy"
+                              maxLength={10}
+                              className="h-11 px-4 pr-10 rounded-xl border border-white/20 bg-white/10 text-white placeholder-white/40 focus-visible:bg-black/40 focus-visible:border-white focus-visible:ring-4 focus-visible:ring-white/10 md:border-slate-200 md:bg-slate-50/50 md:text-slate-900 md:placeholder-slate-400 md:focus-visible:bg-white md:focus-visible:border-rose-900 md:focus-visible:ring-rose-900/10 transition-all shadow-sm"
+                              {...form.register("dateOfBirth", {
+                                required: "Date of Birth is required",
+                                pattern: {
+                                  value: /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[012])\/(19|20)\d\d$/,
+                                  message: "Format must be dd/mm/yyyy"
+                                }
+                              })}
+                              onChange={(e) => {
+                                let val = e.target.value.replace(/\D/g, '');
+                                if (val.length >= 3 && val.length <= 4) val = val.slice(0,2) + '/' + val.slice(2);
+                                else if (val.length >= 5) val = val.slice(0,2) + '/' + val.slice(2,4) + '/' + val.slice(4,8);
+                                e.target.value = val;
+                                form.setValue("dateOfBirth", val);
+                              }}
+                            />
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 md:text-slate-400 hover:text-white md:hover:text-slate-600">
+                                  <CalendarIcon className="w-5 h-5" />
+                                </button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0" align="end">
+                                <Calendar
+                                  mode="single"
+                                  selected={
+                                    form.watch("dateOfBirth")?.length === 10
+                                      ? (()=>{
+                                          const parts = form.watch("dateOfBirth").split('/');
+                                          if(parts.length===3) return new Date(Number(parts[2]), Number(parts[1])-1, Number(parts[0]))
+                                          return undefined;
+                                        })()
+                                      : undefined
+                                  }
+                                  onSelect={(date) => {
+                                    if (date) {
+                                      form.setValue("dateOfBirth", format(date, "dd/MM/yyyy"));
+                                    }
+                                  }}
+                                  initialFocus
+                                />
+                              </PopoverContent>
+                            </Popover>
+                          </div>
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <Label className="text-xs font-semibold text-slate-200 md:text-slate-500">
                             GST Number <span className="text-slate-400 font-normal">(optional)</span>
                           </Label>
                           <Input
@@ -451,13 +514,13 @@ export default function Register() {
 
                         <div className="space-y-1.5">
                           <Label className="text-xs font-semibold text-slate-200 md:text-slate-500">
-                            Email Address <span className="text-slate-400 font-normal">(optional)</span>
+                            Email Address <span className="text-red-500">*</span>
                           </Label>
                           <Input
                             type="email"
                             placeholder="you@example.com"
                             className="h-11 px-4 rounded-xl border border-white/20 bg-white/10 text-white placeholder-white/40 focus-visible:bg-black/40 focus-visible:border-white focus-visible:ring-4 focus-visible:ring-white/10 md:border-slate-200 md:bg-slate-50/50 md:text-slate-900 md:placeholder-slate-400 md:focus-visible:bg-white md:focus-visible:border-rose-900 md:focus-visible:ring-rose-900/10 transition-all shadow-sm"
-                            {...form.register("email")}
+                            {...form.register("email", { required: "Email is required" })}
                           />
                         </div>
 
