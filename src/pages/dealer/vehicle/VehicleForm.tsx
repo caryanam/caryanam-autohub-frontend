@@ -137,7 +137,7 @@ export default function VehicleForm({
           api_id: "APID2629",
           api_key: "8cbaecfa-70cc-480d-9e21-0c9b11c81cb2",
           token_id: "K2I4y1qrQVtUme7OKFpIKVYfQfvFZFHm",
-          reg_no: regNo,
+          vehicle_num: regNo,
         }),
       });
 
@@ -145,13 +145,16 @@ export default function VehicleForm({
         throw new Error("Failed to fetch RC details.");
       }
 
-      const data = await res.json();
-      const resultData = data.data || data;
+      const responseJson = await res.json();
+      // The API returns { data: { data: { ... } } } or { data: { ... } } depending on the wrapper
+      const resultData = responseJson?.data?.data || responseJson?.data || responseJson;
 
       if (resultData) {
         setRcData(resultData);
-        if (resultData.vehicle_manufacturer_name) {
-          handleBrandChange(resultData.vehicle_manufacturer_name);
+        
+        const manufacturer = resultData.vehicleManufacturerName || resultData.vehicle_manufacturer_name;
+        if (manufacturer) {
+          handleBrandChange(manufacturer);
         }
         if (resultData.model) {
           handleModelChange(resultData.model);
@@ -161,24 +164,26 @@ export default function VehicleForm({
           if (FUELS.includes(typeUpper)) {
             setFuelType(typeUpper);
           } else {
-             if (typeUpper.includes('PETROL')) setFuelType('PETROL');
-             else if (typeUpper.includes('DIESEL')) setFuelType('DIESEL');
-             else if (typeUpper.includes('CNG')) setFuelType('CNG');
-             else if (typeUpper.includes('LPG')) setFuelType('LPG');
-             else if (typeUpper.includes('ELECTRIC')) setFuelType('ELECTRIC');
-             else if (typeUpper.includes('HYBRID')) setFuelType('HYBRID');
+            if (typeUpper.includes('PETROL')) setFuelType('PETROL');
+            else if (typeUpper.includes('DIESEL')) setFuelType('DIESEL');
+            else if (typeUpper.includes('CNG')) setFuelType('CNG');
+            else if (typeUpper.includes('LPG')) setFuelType('LPG');
+            else if (typeUpper.includes('ELECTRIC')) setFuelType('ELECTRIC');
+            else if (typeUpper.includes('HYBRID')) setFuelType('HYBRID');
           }
         }
-        if (resultData.reg_date) {
-           const parts = resultData.reg_date.split('-');
-           if (parts.length === 3) {
-             setRegistrationYear(parts[2].length === 4 ? parts[2] : parts[0]);
-           } else {
-             const parts2 = resultData.reg_date.split('/');
-             if (parts2.length === 3) {
-               setRegistrationYear(parts2[2].length === 4 ? parts2[2] : parts2[0]);
-             }
-           }
+        
+        const regDateStr = resultData.regDate || resultData.reg_date;
+        if (regDateStr) {
+          const parts = regDateStr.split('-');
+          if (parts.length === 3) {
+            setRegistrationYear(parts[2].length === 4 ? parts[2] : parts[0]);
+          } else {
+            const parts2 = regDateStr.split('/');
+            if (parts2.length === 3) {
+              setRegistrationYear(parts2[2].length === 4 ? parts2[2] : parts2[0]);
+            }
+          }
         }
         toast.success("RC details fetched successfully!");
       } else {
@@ -354,20 +359,20 @@ export default function VehicleForm({
       setSlotImages((prev) => {
         const next = [...prev];
         let fileIdx = 0;
-        
+
         next[index] = files[fileIdx++];
-        
+
         for (let i = 0; i < next.length && fileIdx < files.length; i++) {
           if (next[i] === null) {
             next[i] = files[fileIdx++];
           }
         }
-        
+
         while (fileIdx < files.length) {
           next.push(files[fileIdx++]);
           addedExtra++;
         }
-        
+
         if (addedExtra > 0) {
           setTimeout(() => setExtraSlotsCount(c => c + addedExtra), 0);
         }
@@ -513,501 +518,501 @@ export default function VehicleForm({
 
   return (
     <>
-    <form
-      key={vehicleId ?? "add"}
-      onSubmit={handleSubmit}
-      className="space-y-4 py-4 max-h-[70vh] overflow-y-auto px-1"
-    >
-      {!vehicleId && (
-        <div className="bg-white border border-slate-200 rounded-xl shadow-sm mb-6 overflow-hidden">
-          <div className="bg-slate-50 px-4 py-3 border-b border-slate-100">
-            <h3 className="font-semibold text-slate-800 flex items-center gap-2">
-              <Search className="h-4 w-4 text-primary" />
-              Quick Vehicle Verification
-            </h3>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Enter vehicle number to automatically fetch details and check pending challans.
-            </p>
-          </div>
-          <div className="p-4 sm:p-5 flex flex-col md:flex-row items-end gap-3">
-            <div className="flex-1 w-full text-left">
-              <Label htmlFor="regNo" className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5 block">
-                Registration Number
-              </Label>
-              <Input
-                id="regNo"
-                placeholder="e.g. MH15DC6628"
-                value={regNo}
-                onChange={(e) => setRegNo(e.target.value.toUpperCase())}
-                className="uppercase font-semibold tracking-widest text-lg h-12 bg-slate-50/50"
-              />
+      <form
+        key={vehicleId ?? "add"}
+        onSubmit={handleSubmit}
+        className="space-y-4 py-4 max-h-[70vh] overflow-y-auto px-1"
+      >
+        {!vehicleId && (
+          <div className="bg-white border border-slate-200 rounded-xl shadow-sm mb-6 overflow-hidden">
+            <div className="bg-slate-50 px-4 py-3 border-b border-slate-100">
+              <h3 className="font-semibold text-slate-800 flex items-center gap-2">
+                <Search className="h-4 w-4 text-primary" />
+                Quick Vehicle Verification
+              </h3>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Enter vehicle number to automatically fetch details and check pending challans.
+              </p>
             </div>
-            <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto mt-2 md:mt-0">
-              <Button
-                type="button"
-                onClick={handleFetchRc}
-                disabled={isFetchingRc || !regNo}
-                className="h-12 px-6 shadow-sm hover:shadow-md transition-all font-semibold"
-              >
-                {isFetchingRc && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Check RC
-              </Button>
-              <Button
-                type="button"
-                onClick={handleCheckChallan}
-                disabled={isFetchingChallan || !regNo}
-                className="h-12 px-6 shadow-sm hover:shadow-md transition-all bg-orange-500 hover:bg-orange-600 text-white font-semibold"
-              >
-                {isFetchingChallan && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Check Challan
-              </Button>
-              {rcData && (
+            <div className="p-4 sm:p-5 flex flex-col md:flex-row items-end gap-3">
+              <div className="flex-1 w-full text-left">
+                <Label htmlFor="regNo" className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5 block">
+                  Registration Number
+                </Label>
+                <Input
+                  id="regNo"
+                  placeholder="e.g. MH15DC6628"
+                  value={regNo}
+                  onChange={(e) => setRegNo(e.target.value.toUpperCase())}
+                  className="uppercase font-semibold tracking-widest text-lg h-12 bg-slate-50/50"
+                />
+              </div>
+              <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto mt-2 md:mt-0">
                 <Button
                   type="button"
-                  variant="outline"
-                  onClick={() => setIsRcModalOpen(true)}
-                  className="h-12 px-4 border-slate-200"
+                  onClick={handleFetchRc}
+                  disabled={isFetchingRc || !regNo}
+                  className="h-12 px-6 shadow-sm hover:shadow-md transition-all font-semibold"
                 >
-                  RC Details
+                  {isFetchingRc && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Check RC
                 </Button>
+                <Button
+                  type="button"
+                  onClick={handleCheckChallan}
+                  disabled={isFetchingChallan || !regNo}
+                  className="h-12 px-6 shadow-sm hover:shadow-md transition-all bg-orange-500 hover:bg-orange-600 text-white font-semibold"
+                >
+                  {isFetchingChallan && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Check Challan
+                </Button>
+                {rcData && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setIsRcModalOpen(true)}
+                    className="h-12 px-4 border-slate-200"
+                  >
+                    RC Details
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div id="field-brand" className="text-left">
+            <Label>
+              Brand <span className="text-red-500">*</span>
+            </Label>
+            <SearchableSelect
+              value={brand}
+              onValueChange={handleBrandChange}
+              options={CAR_BRANDS}
+              placeholder="Select Brand"
+              allowCustom={true}
+              triggerClassName={`mt-1 ${errors.brand ? "border-red-500" : ""}`}
+            />
+            {errors.brand && <p className="text-xs text-red-500 mt-1">{errors.brand}</p>}
+          </div>
+
+          <div id="field-model" className="text-left">
+            <Label>
+              Model <span className="text-red-500">*</span>
+            </Label>
+            <SearchableSelect
+              value={model}
+              onValueChange={handleModelChange}
+              options={models}
+              placeholder="Select or Type Model"
+              allowCustom={true}
+              triggerClassName={`mt-1 ${errors.model ? "border-red-500" : ""}`}
+              disabled={!brand}
+            />
+            {errors.model && <p className="text-xs text-red-500 mt-1">{errors.model}</p>}
+          </div>
+
+          <div id="field-variant" className="text-left">
+            <Label>
+              Variant <span className="text-red-500">*</span>
+            </Label>
+            <SearchableSelect
+              value={variant}
+              onValueChange={(val) => { setVariant(val); clearError("variant"); }}
+              options={variants}
+              placeholder="Select or Type Variant"
+              allowCustom={true}
+              triggerClassName={`mt-1 ${errors.variant ? "border-red-500" : ""}`}
+              disabled={!model}
+            />
+            {errors.variant && <p className="text-xs text-red-500 mt-1">{errors.variant}</p>}
+          </div>
+
+          <div className="text-left">
+            <Label>
+              Fuel Type <span className="text-red-500">*</span>
+            </Label>
+            <Select key={fuelType} value={fuelType} onValueChange={(v) => { setFuelType(v); clearError("fuelType"); }} required>
+              <SelectTrigger className={`mt-1 ${errors.fuelType ? "border-red-500" : ""}`}>
+                <SelectValue placeholder="Select Fuel Type" />
+              </SelectTrigger>
+              <SelectContent>
+                {FUELS.map((o) => (
+                  <SelectItem key={o} value={o}>
+                    {FUEL_LABELS[o] ?? o}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.fuelType && <p className="text-xs text-red-500 mt-1">{errors.fuelType}</p>}
+          </div>
+
+          <div id="field-city" className="text-left">
+            <Label>
+              Location <span className="text-red-500">*</span>
+            </Label>
+            <SearchableSelect
+              value={city}
+              onValueChange={(v) => { setCity(v); clearError("city"); }}
+              options={areas}
+              placeholder="Select or Type Location"
+              allowCustom={true}
+              triggerClassName={`mt-1 ${errors.city ? "border-red-500" : ""}`}
+            />
+            {errors.city && <p className="text-xs text-red-500 mt-1">{errors.city}</p>}
+          </div>
+
+          <Field
+            label="Asking Price (₹)"
+            type="number"
+            placeholder="e.g. 1200000"
+            value={askingPrice}
+            min={1}
+            onInput={(e) => {
+              const v = (e.target as HTMLInputElement).value;
+              if (Number(v) < 0) (e.target as HTMLInputElement).value = "";
+            }}
+            onChange={(e) => setAskingPrice(e.target.value)}
+            required
+          />
+          <Field
+            label="Registration Year"
+            type="number"
+            placeholder="e.g. 2023"
+            value={registrationYear}
+            onChange={(e) => setRegistrationYear(e.target.value)}
+            error={
+              registrationYear && (Number(registrationYear) < 1 || Number(registrationYear) > new Date().getFullYear())
+                ? `Enter a valid year (max ${new Date().getFullYear()})`
+                : undefined
+            }
+            required
+          />
+          <Field
+            label="Kilometer Driven"
+            type="number"
+            placeholder="e.g. 15000"
+            value={kilometerDriven}
+            min={0}
+            onInput={(e) => {
+              const v = (e.target as HTMLInputElement).value;
+              if (Number(v) < 0) (e.target as HTMLInputElement).value = "";
+            }}
+            onChange={(e) => setKilometerDriven(e.target.value)}
+            required
+          />
+
+
+
+          <div className="text-left">
+            <Label>
+              Ownership Details <span className="text-red-500">*</span>
+            </Label>
+            <Select
+              key={String(ownershipDetails)}
+              value={String(ownershipDetails)}
+              onValueChange={(v) => setOwnershipDetails(Number(v))}
+              required
+            >
+              <SelectTrigger className="mt-1">
+                <SelectValue placeholder="Select Ownership" />
+              </SelectTrigger>
+              <SelectContent>
+                {([1, 2, 3, 4] as const).map((n) => (
+                  <SelectItem key={n} value={String(n)}>
+                    {n === 1 ? "1st Owner" : n === 2 ? "2nd Owner" : n === 3 ? "3rd Owner" : "4th Owner"}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="text-left">
+            <Label>
+              Vehicle Type <span className="text-red-500">*</span>
+            </Label>
+            <Select key={vehicleType} value={vehicleType} onValueChange={setVehicleType} required>
+              <SelectTrigger className="mt-1">
+                <SelectValue placeholder="Select Vehicle Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="NON_PREMIUM">NON_PREMIUM</SelectItem>
+                <SelectItem value="PREMIUM">PREMIUM</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="text-left flex flex-col justify-end pb-1">
+            <Label className="mb-2">Finance Availability</Label>
+            <div className="flex items-center space-x-2 h-10 border rounded-md px-3 bg-background">
+              <Switch
+                id="financeAvailability"
+                checked={financeAvailability}
+                onCheckedChange={setFinanceAvailability}
+              />
+              <Label htmlFor="financeAvailability" className="text-sm font-medium cursor-pointer text-muted-foreground">
+                {financeAvailability ? "Available" : "Not Available"}
+              </Label>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <Label>
+            Vehicle Description <span className="text-red-500">*</span>
+          </Label>
+          <Textarea
+            rows={4}
+            placeholder="Describe the vehicle condition, service history, etc."
+            value={vehicleDescription}
+            onChange={(e) => setVehicleDescription(e.target.value)}
+            className="mt-1"
+            required
+          />
+        </div>
+
+        {!vehicleId && (
+          <div className="grid gap-4 md:grid-cols-1">
+            <div className="rounded-2xl border border-slate-100 p-6 bg-slate-50/50">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                  <ImageIcon className="h-5 w-5 text-primary" />
+                </div>
+                <div className="text-left">
+                  <h3 className="font-bold text-slate-800 text-lg">
+                    Vehicle Images <span className="text-red-500">*</span>
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    Upload at least 10 required photos (Selected: {slotImages.filter(Boolean).length} photos)
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mt-4">
+                {slotImages.map((file, idx) => {
+                  const isRequired = idx < 10;
+                  const slotName = isRequired ? PHOTO_SLOTS[idx] : `Extra Photo ${idx - 9}`;
+                  return (
+                    <div
+                      key={idx}
+                      className="relative aspect-square rounded-xl border-2 border-dashed border-slate-200 bg-white shadow-sm flex flex-col items-center justify-center overflow-hidden hover:border-primary transition-all group"
+                    >
+                      {file ? (
+                        <>
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt={slotName}
+                            className="h-full w-full object-cover"
+                          />
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-2 text-center">
+                            <p className="text-[10px] font-semibold text-white truncate max-w-full mb-1">
+                              {slotName}
+                            </p>
+                            <button
+                              type="button"
+                              onClick={() => removeSlotImage(idx)}
+                              className="p-1.5 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-lg transition-transform hover:scale-105"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </div>
+                        </>
+                      ) : (
+                        <label className="h-full w-full flex flex-col items-center justify-center cursor-pointer p-3 text-center hover:bg-slate-50/50 transition-colors">
+                          <Camera className="h-5 w-5 text-slate-400 mb-1.5" />
+                          <span className="text-xs font-semibold text-slate-700 leading-tight">
+                            {slotName}
+                          </span>
+                          <span className="text-[10px] text-muted-foreground mt-0.5">
+                            Click to upload
+                          </span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            className="sr-only"
+                            onChange={(e) => handleSlotImageChange(idx, e)}
+                          />
+                        </label>
+                      )}
+                    </div>
+                  );
+                })}
+
+                {/* Add Extra Photo Slot Button Card */}
+                <button
+                  type="button"
+                  onClick={addExtraSlot}
+                  className="relative aspect-square rounded-xl border-2 border-dashed border-slate-200 bg-white hover:bg-slate-50/50 hover:border-primary transition-all flex flex-col items-center justify-center cursor-pointer p-3 text-center"
+                >
+                  <Plus className="h-5 w-5 text-slate-400 mb-1.5" />
+                  <span className="text-xs font-semibold text-slate-700 leading-tight">
+                    Add Extra Photo
+                  </span>
+                  <span className="text-[10px] text-muted-foreground mt-0.5">
+                    Slot {11 + extraSlotsCount}
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border-2 border-dashed border-slate-200 p-6 text-center hover:border-primary transition-colors">
+              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                <Video className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="font-semibold text-slate-800">
+                Walkaround Videos
+              </h3>
+              <p className="text-xs text-muted-foreground mt-1 mb-3">
+                Upload vehicle videos (Selected: {videos.length})
+              </p>
+              <label className="mt-4 inline-flex items-center gap-2 rounded-lg bg-primary hover:bg-primary/90 text-white px-4 py-2 text-sm font-semibold cursor-pointer transition-colors shadow-sm">
+                <Upload className="h-4 w-4" /> Choose Videos
+                <input
+                  type="file"
+                  accept="video/*"
+                  multiple
+                  className="sr-only"
+                  onChange={handleVideosChange}
+                />
+              </label>
+              {videos.length > 0 && (
+                <div className="grid grid-cols-2 gap-2 mt-4 max-h-48 overflow-y-auto p-1">
+                  {videos.map((file, idx) => (
+                    <div
+                      key={idx}
+                      className="relative group aspect-video rounded-lg overflow-hidden border border-slate-200 bg-slate-50 shadow-sm"
+                    >
+                      <video
+                        src={URL.createObjectURL(file)}
+                        className="h-full w-full object-cover"
+                        controls={false}
+                        muted
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setVideos((prev) => prev.filter((_, i) => i !== idx))
+                        }
+                        className="absolute top-1 right-1 p-1 bg-red-600 hover:bg-red-700 text-white rounded-full shadow transition-all hover:scale-105"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                      <div className="absolute bottom-0 inset-x-0 bg-black/60 text-white text-xs px-2 py-1 truncate text-left">
+                        {file.name}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      <div className="grid sm:grid-cols-2 gap-4">
-        <div id="field-brand" className="text-left">
-          <Label>
-            Brand <span className="text-red-500">*</span>
-          </Label>
-          <SearchableSelect
-            value={brand}
-            onValueChange={handleBrandChange}
-            options={CAR_BRANDS}
-            placeholder="Select Brand"
-            allowCustom={true}
-            triggerClassName={`mt-1 ${errors.brand ? "border-red-500" : ""}`}
-          />
-          {errors.brand && <p className="text-xs text-red-500 mt-1">{errors.brand}</p>}
-        </div>
-
-        <div id="field-model" className="text-left">
-          <Label>
-            Model <span className="text-red-500">*</span>
-          </Label>
-          <SearchableSelect
-            value={model}
-            onValueChange={handleModelChange}
-            options={models}
-            placeholder="Select or Type Model"
-            allowCustom={true}
-            triggerClassName={`mt-1 ${errors.model ? "border-red-500" : ""}`}
-            disabled={!brand}
-          />
-          {errors.model && <p className="text-xs text-red-500 mt-1">{errors.model}</p>}
-        </div>
-
-        <div id="field-variant" className="text-left">
-          <Label>
-            Variant <span className="text-red-500">*</span>
-          </Label>
-          <SearchableSelect
-            value={variant}
-            onValueChange={(val) => { setVariant(val); clearError("variant"); }}
-            options={variants}
-            placeholder="Select or Type Variant"
-            allowCustom={true}
-            triggerClassName={`mt-1 ${errors.variant ? "border-red-500" : ""}`}
-            disabled={!model}
-          />
-          {errors.variant && <p className="text-xs text-red-500 mt-1">{errors.variant}</p>}
-        </div>
-
-        <div className="text-left">
-          <Label>
-            Fuel Type <span className="text-red-500">*</span>
-          </Label>
-          <Select key={fuelType} value={fuelType} onValueChange={(v) => { setFuelType(v); clearError("fuelType"); }} required>
-            <SelectTrigger className={`mt-1 ${errors.fuelType ? "border-red-500" : ""}`}>
-              <SelectValue placeholder="Select Fuel Type" />
-            </SelectTrigger>
-            <SelectContent>
-              {FUELS.map((o) => (
-                <SelectItem key={o} value={o}>
-                  {FUEL_LABELS[o] ?? o}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {errors.fuelType && <p className="text-xs text-red-500 mt-1">{errors.fuelType}</p>}
-        </div>
-
-        <div id="field-city" className="text-left">
-          <Label>
-            Location <span className="text-red-500">*</span>
-          </Label>
-          <SearchableSelect
-            value={city}
-            onValueChange={(v) => { setCity(v); clearError("city"); }}
-            options={areas}
-            placeholder="Select or Type Location"
-            allowCustom={true}
-            triggerClassName={`mt-1 ${errors.city ? "border-red-500" : ""}`}
-          />
-          {errors.city && <p className="text-xs text-red-500 mt-1">{errors.city}</p>}
-        </div>
-
-        <Field
-          label="Asking Price (₹)"
-          type="number"
-          placeholder="e.g. 1200000"
-          value={askingPrice}
-          min={1}
-          onInput={(e) => {
-            const v = (e.target as HTMLInputElement).value;
-            if (Number(v) < 0) (e.target as HTMLInputElement).value = "";
-          }}
-          onChange={(e) => setAskingPrice(e.target.value)}
-          required
-        />
-        <Field
-          label="Registration Year"
-          type="number"
-          placeholder="e.g. 2023"
-          value={registrationYear}
-          onChange={(e) => setRegistrationYear(e.target.value)}
-          error={
-            registrationYear && (Number(registrationYear) < 1 || Number(registrationYear) > new Date().getFullYear())
-              ? `Enter a valid year (max ${new Date().getFullYear()})`
-              : undefined
-          }
-          required
-        />
-        <Field
-          label="Kilometer Driven"
-          type="number"
-          placeholder="e.g. 15000"
-          value={kilometerDriven}
-          min={0}
-          onInput={(e) => {
-            const v = (e.target as HTMLInputElement).value;
-            if (Number(v) < 0) (e.target as HTMLInputElement).value = "";
-          }}
-          onChange={(e) => setKilometerDriven(e.target.value)}
-          required
-        />
-
-
-
-        <div className="text-left">
-          <Label>
-            Ownership Details <span className="text-red-500">*</span>
-          </Label>
-          <Select
-            key={String(ownershipDetails)}
-            value={String(ownershipDetails)}
-            onValueChange={(v) => setOwnershipDetails(Number(v))}
-            required
+        <div className="flex gap-2 justify-end pt-4 border-t">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            disabled={isPending}
           >
-            <SelectTrigger className="mt-1">
-              <SelectValue placeholder="Select Ownership" />
-            </SelectTrigger>
-            <SelectContent>
-              {([1, 2, 3, 4] as const).map((n) => (
-                <SelectItem key={n} value={String(n)}>
-                  {n === 1 ? "1st Owner" : n === 2 ? "2nd Owner" : n === 3 ? "3rd Owner" : "4th Owner"}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            className="gradient-primary text-white border-0"
+            disabled={isPending}
+          >
+            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {vehicleId ? "Update vehicle" : "Add vehicle"}
+          </Button>
         </div>
+      </form>
 
-        <div className="text-left">
-          <Label>
-            Vehicle Type <span className="text-red-500">*</span>
-          </Label>
-          <Select key={vehicleType} value={vehicleType} onValueChange={setVehicleType} required>
-            <SelectTrigger className="mt-1">
-              <SelectValue placeholder="Select Vehicle Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="NON_PREMIUM">NON_PREMIUM</SelectItem>
-              <SelectItem value="PREMIUM">PREMIUM</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="text-left flex flex-col justify-end pb-1">
-          <Label className="mb-2">Finance Availability</Label>
-          <div className="flex items-center space-x-2 h-10 border rounded-md px-3 bg-background">
-            <Switch
-              id="financeAvailability"
-              checked={financeAvailability}
-              onCheckedChange={setFinanceAvailability}
-            />
-            <Label htmlFor="financeAvailability" className="text-sm font-medium cursor-pointer text-muted-foreground">
-              {financeAvailability ? "Available" : "Not Available"}
-            </Label>
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <Label>
-          Vehicle Description <span className="text-red-500">*</span>
-        </Label>
-        <Textarea
-          rows={4}
-          placeholder="Describe the vehicle condition, service history, etc."
-          value={vehicleDescription}
-          onChange={(e) => setVehicleDescription(e.target.value)}
-          className="mt-1"
-          required
-        />
-      </div>
-
-      {!vehicleId && (
-        <div className="grid gap-4 md:grid-cols-1">
-          <div className="rounded-2xl border border-slate-100 p-6 bg-slate-50/50">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                <ImageIcon className="h-5 w-5 text-primary" />
-              </div>
-              <div className="text-left">
-                <h3 className="font-bold text-slate-800 text-lg">
-                  Vehicle Images <span className="text-red-500">*</span>
-                </h3>
-                <p className="text-xs text-muted-foreground">
-                  Upload at least 10 required photos (Selected: {slotImages.filter(Boolean).length} photos)
-                </p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mt-4">
-              {slotImages.map((file, idx) => {
-                const isRequired = idx < 10;
-                const slotName = isRequired ? PHOTO_SLOTS[idx] : `Extra Photo ${idx - 9}`;
+      {/* RC Details Modal */}
+      <Dialog open={isRcModalOpen} onOpenChange={setIsRcModalOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader className="flex flex-row items-center justify-between mt-2">
+            <DialogTitle>RC Details</DialogTitle>
+            <Button onClick={downloadRcPDF} size="sm" variant="outline" className="h-8 gap-2 border-slate-200">
+              <Download className="h-4 w-4" /> Download PDF
+            </Button>
+          </DialogHeader>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            {rcData && Object.entries(rcData).map(([key, value]) => {
+              if (typeof value === 'object' && value !== null) {
                 return (
-                  <div
-                    key={idx}
-                    className="relative aspect-square rounded-xl border-2 border-dashed border-slate-200 bg-white shadow-sm flex flex-col items-center justify-center overflow-hidden hover:border-primary transition-all group"
-                  >
-                    {file ? (
-                      <>
-                        <img
-                          src={URL.createObjectURL(file)}
-                          alt={slotName}
-                          className="h-full w-full object-cover"
-                        />
-                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-2 text-center">
-                          <p className="text-[10px] font-semibold text-white truncate max-w-full mb-1">
-                            {slotName}
-                          </p>
-                          <button
-                            type="button"
-                            onClick={() => removeSlotImage(idx)}
-                            className="p-1.5 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-lg transition-transform hover:scale-105"
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
+                  <div key={key} className="col-span-full">
+                    <h4 className="font-semibold text-sm text-slate-800 capitalize mb-2">{key.replace(/_/g, ' ')}</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-50 p-3 rounded-lg border">
+                      {Object.entries(value).map(([k, v]) => (
+                        <div key={k} className="flex flex-col">
+                          <span className="text-xs text-muted-foreground capitalize">{k.replace(/_/g, ' ')}</span>
+                          <span className="text-sm font-medium">{String(v || 'N/A')}</span>
                         </div>
-                      </>
-                    ) : (
-                      <label className="h-full w-full flex flex-col items-center justify-center cursor-pointer p-3 text-center hover:bg-slate-50/50 transition-colors">
-                        <Camera className="h-5 w-5 text-slate-400 mb-1.5" />
-                        <span className="text-xs font-semibold text-slate-700 leading-tight">
-                          {slotName}
-                        </span>
-                        <span className="text-[10px] text-muted-foreground mt-0.5">
-                          Click to upload
-                        </span>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          multiple
-                          className="sr-only"
-                          onChange={(e) => handleSlotImageChange(idx, e)}
-                        />
-                      </label>
-                    )}
-                  </div>
-                );
-              })}
-
-              {/* Add Extra Photo Slot Button Card */}
-              <button
-                type="button"
-                onClick={addExtraSlot}
-                className="relative aspect-square rounded-xl border-2 border-dashed border-slate-200 bg-white hover:bg-slate-50/50 hover:border-primary transition-all flex flex-col items-center justify-center cursor-pointer p-3 text-center"
-              >
-                <Plus className="h-5 w-5 text-slate-400 mb-1.5" />
-                <span className="text-xs font-semibold text-slate-700 leading-tight">
-                  Add Extra Photo
-                </span>
-                <span className="text-[10px] text-muted-foreground mt-0.5">
-                  Slot {11 + extraSlotsCount}
-                </span>
-              </button>
-            </div>
-          </div>
-
-          <div className="rounded-2xl border-2 border-dashed border-slate-200 p-6 text-center hover:border-primary transition-colors">
-            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-              <Video className="h-6 w-6 text-primary" />
-            </div>
-            <h3 className="font-semibold text-slate-800">
-              Walkaround Videos
-            </h3>
-            <p className="text-xs text-muted-foreground mt-1 mb-3">
-              Upload vehicle videos (Selected: {videos.length})
-            </p>
-            <label className="mt-4 inline-flex items-center gap-2 rounded-lg bg-primary hover:bg-primary/90 text-white px-4 py-2 text-sm font-semibold cursor-pointer transition-colors shadow-sm">
-              <Upload className="h-4 w-4" /> Choose Videos
-              <input
-                type="file"
-                accept="video/*"
-                multiple
-                className="sr-only"
-                onChange={handleVideosChange}
-              />
-            </label>
-            {videos.length > 0 && (
-              <div className="grid grid-cols-2 gap-2 mt-4 max-h-48 overflow-y-auto p-1">
-                {videos.map((file, idx) => (
-                  <div
-                    key={idx}
-                    className="relative group aspect-video rounded-lg overflow-hidden border border-slate-200 bg-slate-50 shadow-sm"
-                  >
-                    <video
-                      src={URL.createObjectURL(file)}
-                      className="h-full w-full object-cover"
-                      controls={false}
-                      muted
-                    />
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setVideos((prev) => prev.filter((_, i) => i !== idx))
-                      }
-                      className="absolute top-1 right-1 p-1 bg-red-600 hover:bg-red-700 text-white rounded-full shadow transition-all hover:scale-105"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                    <div className="absolute bottom-0 inset-x-0 bg-black/60 text-white text-xs px-2 py-1 truncate text-left">
-                      {file.name}
+                      ))}
                     </div>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      <div className="flex gap-2 justify-end pt-4 border-t">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onCancel}
-          disabled={isPending}
-        >
-          Cancel
-        </Button>
-        <Button
-          type="submit"
-          className="gradient-primary text-white border-0"
-          disabled={isPending}
-        >
-          {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {vehicleId ? "Update vehicle" : "Add vehicle"}
-        </Button>
-      </div>
-    </form>
-
-    {/* RC Details Modal */}
-    <Dialog open={isRcModalOpen} onOpenChange={setIsRcModalOpen}>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-        <DialogHeader className="flex flex-row items-center justify-between mt-2">
-          <DialogTitle>RC Details</DialogTitle>
-          <Button onClick={downloadRcPDF} size="sm" variant="outline" className="h-8 gap-2 border-slate-200">
-            <Download className="h-4 w-4" /> Download PDF
-          </Button>
-        </DialogHeader>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-          {rcData && Object.entries(rcData).map(([key, value]) => {
-            if (typeof value === 'object' && value !== null) {
+                );
+              }
               return (
-                <div key={key} className="col-span-full">
-                  <h4 className="font-semibold text-sm text-slate-800 capitalize mb-2">{key.replace(/_/g, ' ')}</h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-50 p-3 rounded-lg border">
-                    {Object.entries(value).map(([k, v]) => (
-                      <div key={k} className="flex flex-col">
-                        <span className="text-xs text-muted-foreground capitalize">{k.replace(/_/g, ' ')}</span>
-                        <span className="text-sm font-medium">{String(v || 'N/A')}</span>
-                      </div>
-                    ))}
-                  </div>
+                <div key={key} className="flex flex-col border-b pb-2">
+                  <span className="text-xs text-muted-foreground capitalize">{key.replace(/_/g, ' ')}</span>
+                  <span className="text-sm font-medium">{String(value || 'N/A')}</span>
                 </div>
               );
-            }
-            return (
-              <div key={key} className="flex flex-col border-b pb-2">
-                <span className="text-xs text-muted-foreground capitalize">{key.replace(/_/g, ' ')}</span>
-                <span className="text-sm font-medium">{String(value || 'N/A')}</span>
-              </div>
-            );
-          })}
-        </div>
-      </DialogContent>
-    </Dialog>
+            })}
+          </div>
+        </DialogContent>
+      </Dialog>
 
-    {/* Challan Details Modal */}
-    <Dialog open={isChallanModalOpen} onOpenChange={setIsChallanModalOpen}>
-      <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-        <DialogHeader className="flex flex-row items-center justify-between mt-2">
-          <DialogTitle>E-Challan Details ({challanData?.totalChallan || 0} found)</DialogTitle>
-          <Button onClick={downloadChallanPDF} size="sm" variant="outline" className="h-8 gap-2 border-slate-200">
-            <Download className="h-4 w-4" /> Download PDF
-          </Button>
-        </DialogHeader>
-        <div className="flex flex-col gap-4 mt-4">
-          {challanData?.results?.map((challan: any, index: number) => (
-            <div key={index} className="border rounded-lg p-4 bg-slate-50">
-              <div className="flex justify-between items-center mb-2 border-b pb-2">
-                <span className="font-semibold text-slate-800">Challan No: {challan.challanNo}</span>
-                <span className={`px-2 py-1 text-xs font-semibold rounded-full ${String(challan.status).toLowerCase() === 'pending' ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700'}`}>
-                  {String(challan.status).toUpperCase()}
-                </span>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
-                <div className="flex flex-col">
-                  <span className="text-xs text-muted-foreground">Amount</span>
-                  <span className="text-sm font-medium text-red-600">₹{challan.amount}</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-xs text-muted-foreground">Date & Time</span>
-                  <span className="text-sm font-medium">{challan.dateTime}</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-xs text-muted-foreground">Area</span>
-                  <span className="text-sm font-medium">{challan.areaName || 'N/A'}</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-xs text-muted-foreground">Offence</span>
-                  <span className="text-sm font-medium truncate" title={challan.offences?.[0]?.offenceName}>
-                    {challan.offences?.[0]?.offenceName || 'N/A'}
+      {/* Challan Details Modal */}
+      <Dialog open={isChallanModalOpen} onOpenChange={setIsChallanModalOpen}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader className="flex flex-row items-center justify-between mt-2">
+            <DialogTitle>E-Challan Details ({challanData?.totalChallan || 0} found)</DialogTitle>
+            <Button onClick={downloadChallanPDF} size="sm" variant="outline" className="h-8 gap-2 border-slate-200">
+              <Download className="h-4 w-4" /> Download PDF
+            </Button>
+          </DialogHeader>
+          <div className="flex flex-col gap-4 mt-4">
+            {challanData?.results?.map((challan: any, index: number) => (
+              <div key={index} className="border rounded-lg p-4 bg-slate-50">
+                <div className="flex justify-between items-center mb-2 border-b pb-2">
+                  <span className="font-semibold text-slate-800">Challan No: {challan.challanNo}</span>
+                  <span className={`px-2 py-1 text-xs font-semibold rounded-full ${String(challan.status).toLowerCase() === 'pending' ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700'}`}>
+                    {String(challan.status).toUpperCase()}
                   </span>
                 </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
+                  <div className="flex flex-col">
+                    <span className="text-xs text-muted-foreground">Amount</span>
+                    <span className="text-sm font-medium text-red-600">₹{challan.amount}</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-xs text-muted-foreground">Date & Time</span>
+                    <span className="text-sm font-medium">{challan.dateTime}</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-xs text-muted-foreground">Area</span>
+                    <span className="text-sm font-medium">{challan.areaName || 'N/A'}</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-xs text-muted-foreground">Offence</span>
+                    <span className="text-sm font-medium truncate" title={challan.offences?.[0]?.offenceName}>
+                      {challan.offences?.[0]?.offenceName || 'N/A'}
+                    </span>
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
-          {(!challanData?.results || challanData.results.length === 0) && (
-            <p className="text-center text-muted-foreground py-4">No challans found.</p>
-          )}
-        </div>
-      </DialogContent>
-    </Dialog>
+            ))}
+            {(!challanData?.results || challanData.results.length === 0) && (
+              <p className="text-center text-muted-foreground py-4">No challans found.</p>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
