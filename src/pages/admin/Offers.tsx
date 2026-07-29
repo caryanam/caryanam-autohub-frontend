@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { useAdminOffers, useSendDealerOffer, AdminOffer, DealerLog } from "@/hooks/admin/useAdminOffers";
+import { useAdminOffers, useSendDealerOffer, AdminOffer, useOfferDeliverySummary } from "@/hooks/admin/useAdminOffers";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,7 +29,8 @@ export default function AdminOffers() {
   const [selectedOfferId, setSelectedOfferId] = useState<number | null>(null);
 
   const selectedOffer = offers.find(o => o.offerId === selectedOfferId);
-  const selectedLogs = selectedOffer?.dealerLogs;
+  const { data: deliverySummary, isLoading: isLogsLoading, refetch: refetchLogs } = useOfferDeliverySummary(selectedOfferId);
+  const selectedLogs = deliverySummary?.dealerBreakdown;
 
   // Form state
   const [offerImage, setOfferImage] = useState<File | null>(null);
@@ -408,38 +409,74 @@ export default function AdminOffers() {
           <DialogHeader className="pb-4 border-b">
             <div className="flex items-center justify-between pr-8">
               <DialogTitle>Offer Delivery Logs</DialogTitle>
-              <Button variant="outline" size="sm" onClick={() => refetch()} className="gap-2 h-8" disabled={isLoading}>
-                <Loader2 className={`h-3.5 w-3.5 ${isLoading ? 'animate-spin' : ''}`} />
+              <Button variant="outline" size="sm" onClick={() => refetchLogs()} className="gap-2 h-8" disabled={isLogsLoading}>
+                <Loader2 className={`h-3.5 w-3.5 ${isLogsLoading ? 'animate-spin' : ''}`} />
                 Refresh Logs
               </Button>
             </div>
           </DialogHeader>
           <div className="overflow-y-auto flex-1 mt-4 pr-2">
-            {selectedLogs && selectedLogs.length > 0 ? (
-              <div className="space-y-3">
-                {selectedLogs.map((log, idx) => (
-                  <div key={idx} className={`p-4 rounded-xl border ${log.status === 'SUCCESS' ? 'bg-emerald-50/30 border-emerald-100' : 'bg-red-50/30 border-red-100'}`}>
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <h4 className="font-semibold text-slate-800">{log.dealerName}</h4>
-                        <p className="text-sm text-slate-500">+{log.mobileNumber}</p>
-                      </div>
-                      <span className={`px-2.5 py-1 text-xs font-bold rounded-full ${log.status === 'SUCCESS' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
-                        {log.status}
-                      </span>
-                    </div>
-                    {log.status === 'FAILED' && log.errorMessage && (
-                      <div className="mt-2 bg-white/60 p-2 rounded-lg border border-red-100 text-xs text-red-600 flex items-start gap-1.5">
-                        <AlertCircle className="h-3.5 w-3.5 shrink-0 mt-0.5" />
-                        <span className="break-all">{log.errorMessage}</span>
-                      </div>
-                    )}
-                    <div className="mt-2 flex justify-between items-center text-xs text-slate-400">
-                      <span>Attempted: {new Date(log.sentAt).toLocaleString()}</span>
-                      {log.whatsappMessageId && <span className="truncate max-w-[200px]" title={log.whatsappMessageId}>ID: {log.whatsappMessageId}</span>}
-                    </div>
+            {isLogsLoading ? (
+              <div className="flex justify-center items-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-rose-950" />
+              </div>
+            ) : deliverySummary ? (
+              <div className="space-y-6">
+                {/* Aggregated Stats Row */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+                  <div className="bg-slate-50 border border-slate-100 rounded-xl p-3 flex flex-col items-center justify-center text-center">
+                    <p className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Targeted</p>
+                    <p className="text-lg font-black text-slate-800">{deliverySummary.totalDealers}</p>
                   </div>
-                ))}
+                  <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 flex flex-col items-center justify-center text-center">
+                    <p className="text-[10px] uppercase font-bold text-blue-600 tracking-wider">Accepted</p>
+                    <p className="text-lg font-black text-blue-700">{deliverySummary.accepted}</p>
+                  </div>
+                  <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-3 flex flex-col items-center justify-center text-center">
+                    <p className="text-[10px] uppercase font-bold text-indigo-600 tracking-wider">Sent</p>
+                    <p className="text-lg font-black text-indigo-700">{deliverySummary.sent}</p>
+                  </div>
+                  <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-3 flex flex-col items-center justify-center text-center">
+                    <p className="text-[10px] uppercase font-bold text-emerald-600 tracking-wider">Delivered</p>
+                    <p className="text-lg font-black text-emerald-700">{deliverySummary.delivered}</p>
+                  </div>
+                  <div className="bg-teal-50 border border-teal-100 rounded-xl p-3 flex flex-col items-center justify-center text-center">
+                    <p className="text-[10px] uppercase font-bold text-teal-600 tracking-wider">Read</p>
+                    <p className="text-lg font-black text-teal-700">{deliverySummary.read}</p>
+                  </div>
+                  <div className="bg-rose-50 border border-rose-100 rounded-xl p-3 flex flex-col items-center justify-center text-center">
+                    <p className="text-[10px] uppercase font-bold text-rose-600 tracking-wider">Failed</p>
+                    <p className="text-lg font-black text-rose-700">{deliverySummary.failed}</p>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <h3 className="text-sm font-semibold text-slate-800 border-b pb-2">Dealer Logs</h3>
+                  {selectedLogs && selectedLogs.length > 0 ? (
+                    selectedLogs.map((log, idx) => {
+                      const isSuccess = log.deliveryStatus !== 'FAILED';
+                      return (
+                      <div key={idx} className={`p-4 rounded-xl border ${isSuccess ? 'bg-emerald-50/30 border-emerald-100' : 'bg-red-50/30 border-red-100'}`}>
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <h4 className="font-semibold text-slate-800">{log.dealerName}</h4>
+                            <p className="text-sm text-slate-500">+{log.mobileNumber}</p>
+                          </div>
+                          <span className={`px-2.5 py-1 text-xs font-bold rounded-full ${isSuccess ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
+                            {log.deliveryStatus}
+                          </span>
+                        </div>
+                        <div className="mt-2 flex justify-between items-center text-xs text-slate-400">
+                          <span>Attempted: {new Date(log.sentAt).toLocaleString()}</span>
+                          {log.whatsappMessageId && <span className="truncate max-w-[200px]" title={log.whatsappMessageId}>ID: {log.whatsappMessageId}</span>}
+                        </div>
+                      </div>
+                      );
+                    })
+                  ) : (
+                    <p className="text-center text-muted-foreground py-4">No specific dealer logs available.</p>
+                  )}
+                </div>
               </div>
             ) : (
               <p className="text-center text-muted-foreground py-8">No logs available for this offer.</p>
