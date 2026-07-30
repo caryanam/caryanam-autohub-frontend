@@ -58,7 +58,7 @@ import DealerFacebookRequests from "@/pages/dealer/FacebookRequests";
 import AdminFacebookDealerSummary from "@/pages/admin/facebook/FacebookDealerSummary";
 import AdminFacebookDealerRequests from "@/pages/admin/facebook/FacebookDealerRequests";
 import AdminFacebookBatchProgress from "@/pages/admin/facebook/FacebookBatchProgress";
-
+import AdminWhatsappDashboard from "@/pages/admin/WhatsappDashboard";
 export default function App() {
   return (
     <AdminAuthProvider>
@@ -130,6 +130,8 @@ export default function App() {
                 <Route path="facebook-requests" element={<AdminFacebookDealerSummary />} />
                 <Route path="facebook-requests/dealer/:dealerId" element={<AdminFacebookDealerRequests />} />
                 <Route path="facebook-requests/batch/:batchId" element={<AdminFacebookBatchProgress />} />
+
+                <Route path="whatsapp" element={<AdminWhatsappDashboard />} />
               </Route>
             </Route>
 

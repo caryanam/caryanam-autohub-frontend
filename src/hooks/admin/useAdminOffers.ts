@@ -60,3 +60,64 @@ export function useSendDealerOffer() {
     },
   });
 }
+
+export interface DealerDeliveryStatus {
+  dealerId: number;
+  dealerName: string;
+  mobileNumber: string;
+  deliveryStatus: "ACCEPTED" | "SENT" | "DELIVERED" | "READ" | "FAILED";
+  whatsappMessageId: string | null;
+  sentAt: string;
+}
+
+export interface OfferDeliverySummary {
+  offerId: number;
+  offerTitle: string;
+  totalDealers: number;
+  accepted: number;
+  sent: number;
+  delivered: number;
+  read: number;
+  failed: number;
+  deliveryRate: number;
+  dealerBreakdown: DealerDeliveryStatus[];
+}
+
+export function useOfferDeliverySummary(offerId: number | null) {
+  return useQuery<OfferDeliverySummary>({
+    queryKey: ["offer-delivery-summary", offerId],
+    queryFn: async () => {
+      if (!offerId) throw new Error("No offer ID");
+      const { data } = await apiClient.get(`/api/admin/whatsapp/offers/${offerId}/delivery-summary`);
+      return data?.data || data;
+    },
+    enabled: !!offerId,
+  });
+}
+
+export interface WhatsappTemplateStats {
+  sent?: number;
+  delivered?: number;
+  read?: number;
+  failed?: number;
+  deliveryRate?: number;
+  readRate?: number;
+  totalSent?: number;
+  totalDelivered?: number;
+  totalRead?: number;
+  totalFailed?: number;
+  totalQueued?: number;
+  totalAccepted?: number;
+  queued?: number;
+  accepted?: number;
+}
+
+export function useOfferGlobalStats() {
+  return useQuery<WhatsappTemplateStats>({
+    queryKey: ["offer-global-stats"],
+    queryFn: async () => {
+      const { data } = await apiClient.get("/api/admin/whatsapp/offers/stats");
+      return data?.data || data;
+    },
+  });
+}

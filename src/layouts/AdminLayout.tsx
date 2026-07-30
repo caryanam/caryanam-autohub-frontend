@@ -35,14 +35,19 @@ const nav = [
     icon: <Gift className="h-4 w-4" />,
   },
   {
-    to: "/admin/subscriptions",
-    label: "Subscriptions",
-    icon: <CreditCard className="h-4 w-4" />,
+    to: "/admin/whatsapp",
+    label: "WhatsApp",
+    icon: <Megaphone className="h-4 w-4" />,
   },
   {
     to: "/admin/facebook-requests",
     label: "Facebook Requests",
     icon: <Facebook className="h-4 w-4" />,
+  },
+  {
+    to: "/admin/subscriptions",
+    label: "Subscriptions",
+    icon: <CreditCard className="h-4 w-4" />,
   },
   {
     to: "/admin/chat",
