@@ -92,6 +92,75 @@ export function useWhatsappVehicleStats() {
   });
 }
 
+export function useWhatsappBirthdayStats() {
+  return useQuery<TemplateStats>({
+    queryKey: ["whatsapp-birthday-stats"],
+    queryFn: async () => {
+      const { data } = await apiClient.get("/api/admin/whatsapp/birthdays/stats");
+      return data?.data || data;
+    },
+  });
+}
+
+export interface WhatsappLogItem {
+  id: number;
+  dealerId?: number;
+  dealerName?: string;
+  mobileNumber?: string;
+  recipientMobile?: string;
+  templateName?: string;
+  apiStatus?: string;
+  deliveryStatus?: string;
+  errorMessage?: string;
+  retryCount?: number;
+  createdAt?: string;
+  lastRetryAt?: string;
+  offerId?: number;
+  vehicleId?: number;
+  leadId?: number;
+  [key: string]: any;
+}
+
+export function useWhatsappLeadLogs() {
+  return useQuery<WhatsappLogItem[]>({
+    queryKey: ["whatsapp-lead-logs"],
+    queryFn: async () => {
+      const { data } = await apiClient.get("/api/admin/whatsapp/logs/leads");
+      return Array.isArray(data) ? data : (data?.data ?? []);
+    },
+  });
+}
+
+export function useWhatsappOfferLogs() {
+  return useQuery<WhatsappLogItem[]>({
+    queryKey: ["whatsapp-offer-logs"],
+    queryFn: async () => {
+      const { data } = await apiClient.get("/api/admin/whatsapp/logs/offers");
+      return Array.isArray(data) ? data : (data?.data ?? []);
+    },
+  });
+}
+
+export function useWhatsappVehicleLogs() {
+  return useQuery<WhatsappLogItem[]>({
+    queryKey: ["whatsapp-vehicle-logs"],
+    queryFn: async () => {
+      const { data } = await apiClient.get("/api/admin/whatsapp/logs/vehicles");
+      return Array.isArray(data) ? data : (data?.data ?? []);
+    },
+  });
+}
+
+export function useWhatsappBirthdayLogs() {
+  return useQuery<WhatsappLogItem[]>({
+    queryKey: ["whatsapp-birthday-logs"],
+    queryFn: async () => {
+      const { data } = await apiClient.get("/api/admin/whatsapp/logs/birthdays");
+      return Array.isArray(data) ? data : (data?.data ?? []);
+    },
+  });
+}
+
 export function useWhatsappFailedMessages() {
   return useQuery<FailedMessageDTO[]>({
     queryKey: ["whatsapp-failed-messages"],
@@ -113,6 +182,10 @@ export function useRetryWhatsappMessage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["whatsapp-failed-messages"] });
       queryClient.invalidateQueries({ queryKey: ["whatsapp-dashboard-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["whatsapp-lead-logs"] });
+      queryClient.invalidateQueries({ queryKey: ["whatsapp-offer-logs"] });
+      queryClient.invalidateQueries({ queryKey: ["whatsapp-vehicle-logs"] });
+      queryClient.invalidateQueries({ queryKey: ["whatsapp-birthday-logs"] });
     },
   });
 }

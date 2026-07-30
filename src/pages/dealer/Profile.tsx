@@ -45,6 +45,22 @@ import {
 } from "@/components/ui/input-otp";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 
+const formatDateForInput = (dobStr: string): string => {
+  if (!dobStr) return "";
+  const parts = dobStr.split(/[-/]/);
+  if (parts.length === 3) {
+    if (parts[2].length === 4) {
+      const [dd, mm, yyyy] = parts;
+      return `${yyyy}-${mm.padStart(2, '0')}-${dd.padStart(2, '0')}`;
+    }
+    if (parts[0].length === 4) {
+      const [yyyy, mm, dd] = parts;
+      return `${yyyy}-${mm.padStart(2, '0')}-${dd.padStart(2, '0')}`;
+    }
+  }
+  return dobStr;
+};
+
 export default function DealerProfile() {
   const { user, updateUserFields } = useDealerAuth();
   const dealerId = user?.id?.toString() || "";
@@ -386,12 +402,12 @@ export default function DealerProfile() {
                     <Label className="text-xs font-semibold text-slate-600">Date of Birth</Label>
                     <Input
                       type="date"
-                      value={dateOfBirth.includes('/') ? dateOfBirth.split('/').reverse().join('-') : dateOfBirth}
+                      value={formatDateForInput(dateOfBirth)}
                       onChange={(e) => {
                         const val = e.target.value;
                         if (val) {
                           const [yyyy, mm, dd] = val.split('-');
-                          setDateOfBirth(`${dd}/${mm}/${yyyy}`);
+                          setDateOfBirth(`${dd}-${mm}-${yyyy}`);
                         } else {
                           setDateOfBirth('');
                         }

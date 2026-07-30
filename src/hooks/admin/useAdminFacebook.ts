@@ -124,7 +124,8 @@ export function useGetAdminFacebookBatchStatus(batchId: number | null) {
       }
     },
     enabled: !!batchId,
-    refetchInterval: (data) => {
+    refetchInterval: (query) => {
+      const data = query.state.data;
       if (!data) return 2000;
       const status = data.status;
       // Continue polling if batch is QUEUED or PROCESSING
