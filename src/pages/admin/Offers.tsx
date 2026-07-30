@@ -46,7 +46,7 @@ export default function AdminOffers() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
-
+      
       if (!file.type.startsWith("image/")) {
         toast.error("Please upload a valid image file (JPG, PNG, etc.)");
         if (fileInputRef.current) fileInputRef.current.value = "";
@@ -134,39 +134,39 @@ export default function AdminOffers() {
       {!isStatsLoading && globalStats && (
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
           <div className="bg-white border border-slate-100 rounded-2xl p-5 flex flex-col items-center justify-center shadow-sm hover:shadow-md transition-shadow">
-            <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center mb-2">
-              <History className="h-4 w-4 text-slate-600" />
-            </div>
-            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Total Sent</p>
-            <p className="text-3xl font-black text-slate-800">{globalStats.totalSent ?? globalStats.sent ?? 0}</p>
+             <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center mb-2">
+               <History className="h-4 w-4 text-slate-600" />
+             </div>
+             <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Total Sent</p>
+             <p className="text-3xl font-black text-slate-800">{globalStats.totalSent ?? globalStats.sent ?? 0}</p>
           </div>
           <div className="bg-amber-50/50 border border-amber-100 rounded-2xl p-5 flex flex-col items-center justify-center shadow-sm hover:shadow-md transition-shadow">
-            <div className="h-8 w-8 rounded-full bg-amber-100 flex items-center justify-center mb-2">
-              <RefreshCw className="h-4 w-4 text-amber-600" />
-            </div>
-            <p className="text-[11px] font-bold text-amber-600 uppercase tracking-wider mb-1">Queued</p>
-            <p className="text-3xl font-black text-amber-700">{globalStats.totalQueued ?? globalStats.queued ?? globalStats.totalAccepted ?? globalStats.accepted ?? 0}</p>
+             <div className="h-8 w-8 rounded-full bg-amber-100 flex items-center justify-center mb-2">
+               <RefreshCw className="h-4 w-4 text-amber-600" />
+             </div>
+             <p className="text-[11px] font-bold text-amber-600 uppercase tracking-wider mb-1">Queued</p>
+             <p className="text-3xl font-black text-amber-700">{globalStats.totalQueued ?? globalStats.queued ?? globalStats.totalAccepted ?? globalStats.accepted ?? 0}</p>
           </div>
           <div className="bg-emerald-50/50 border border-emerald-100 rounded-2xl p-5 flex flex-col items-center justify-center shadow-sm hover:shadow-md transition-shadow">
-            <div className="h-8 w-8 rounded-full bg-emerald-100 flex items-center justify-center mb-2">
-              <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-            </div>
-            <p className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider mb-1">Delivered</p>
-            <p className="text-3xl font-black text-emerald-700">{globalStats.totalDelivered ?? globalStats.delivered ?? 0}</p>
+             <div className="h-8 w-8 rounded-full bg-emerald-100 flex items-center justify-center mb-2">
+               <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+             </div>
+             <p className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider mb-1">Delivered</p>
+             <p className="text-3xl font-black text-emerald-700">{globalStats.totalDelivered ?? globalStats.delivered ?? 0}</p>
           </div>
           <div className="bg-blue-50/50 border border-blue-100 rounded-2xl p-5 flex flex-col items-center justify-center shadow-sm hover:shadow-md transition-shadow">
-            <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center mb-2">
-              <Users className="h-4 w-4 text-blue-600" />
-            </div>
-            <p className="text-[11px] font-bold text-blue-600 uppercase tracking-wider mb-1">Read</p>
-            <p className="text-3xl font-black text-blue-700">{globalStats.totalRead ?? globalStats.read ?? 0}</p>
+             <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center mb-2">
+               <Users className="h-4 w-4 text-blue-600" />
+             </div>
+             <p className="text-[11px] font-bold text-blue-600 uppercase tracking-wider mb-1">Read</p>
+             <p className="text-3xl font-black text-blue-700">{globalStats.totalRead ?? globalStats.read ?? 0}</p>
           </div>
           <div className="bg-rose-50/50 border border-rose-100 rounded-2xl p-5 flex flex-col items-center justify-center shadow-sm hover:shadow-md transition-shadow">
-            <div className="h-8 w-8 rounded-full bg-rose-100 flex items-center justify-center mb-2">
-              <XCircle className="h-4 w-4 text-rose-600" />
-            </div>
-            <p className="text-[11px] font-bold text-rose-600 uppercase tracking-wider mb-1">Failed</p>
-            <p className="text-3xl font-black text-rose-700">{globalStats.totalFailed ?? globalStats.failed ?? 0}</p>
+             <div className="h-8 w-8 rounded-full bg-rose-100 flex items-center justify-center mb-2">
+               <XCircle className="h-4 w-4 text-rose-600" />
+             </div>
+             <p className="text-[11px] font-bold text-rose-600 uppercase tracking-wider mb-1">Failed</p>
+             <p className="text-3xl font-black text-rose-700">{globalStats.totalFailed ?? globalStats.failed ?? 0}</p>
           </div>
         </div>
       )}
@@ -181,9 +181,9 @@ export default function AdminOffers() {
         ) : (
           offers.map((offer) => (
             <div key={offer.offerId} className="bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col md:flex-row group">
-
+              
               {/* Left Side: Image & Title */}
-              <div
+              <div 
                 className="relative md:w-2/5 min-h-[300px] flex flex-col justify-between bg-slate-950 p-6 overflow-hidden"
                 style={offer.imageUrl ? { backgroundImage: `url(${offer.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
               >
@@ -194,7 +194,7 @@ export default function AdminOffers() {
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent z-0" />
                 <div className="absolute inset-0 bg-gradient-to-r from-slate-950/40 to-transparent z-0" />
-
+                
                 <div className="relative z-10 flex justify-between items-start">
                   <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-rose-500/20 backdrop-blur-md text-rose-300 text-[10px] font-bold uppercase tracking-wider border border-rose-500/30">
                     ID: {offer.offerId}
@@ -225,7 +225,7 @@ export default function AdminOffers() {
                         <p className="text-xl font-black text-slate-800 leading-none mt-1">{offer.totalDealersTargeted}</p>
                       </div>
                     </div>
-
+                    
                     <div className="flex-1 bg-emerald-50 border border-emerald-100 rounded-2xl p-4 flex items-center gap-3">
                       <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
                         <CheckCircle2 className="h-5 w-5 text-emerald-600" />
@@ -274,7 +274,7 @@ export default function AdminOffers() {
                         "{offer.offerDetails}"
                       </p>
                     </div>
-
+                    
                     <div className="space-y-1 bg-slate-50 p-4 rounded-xl border border-slate-100">
                       <div className="flex items-center gap-1.5 text-emerald-700 mb-2">
                         <Sparkles className="h-4 w-4" />
@@ -286,13 +286,13 @@ export default function AdminOffers() {
                     </div>
                   </div>
                 </div>
-
+                
                 {/* Action Button */}
                 <Button
                   onClick={() => setSelectedOfferId(offer.offerId)}
                   className="w-full sm:w-auto self-end bg-rose-50 hover:bg-rose-100 text-rose-950 border border-rose-200 shadow-sm gap-2 rounded-xl h-11 px-8 transition-all"
                 >
-                  <History className="h-4 w-4" />
+                  <History className="h-4 w-4" /> 
                   View Detailed Logs
                 </Button>
               </div>
@@ -312,7 +312,7 @@ export default function AdminOffers() {
               <Gift className="h-5 w-5 text-rose-950" /> Send Offer to Dealers
             </DialogTitle>
           </DialogHeader>
-
+          
           <form onSubmit={handleSendOffer} className="space-y-5 mt-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -376,9 +376,10 @@ export default function AdminOffers() {
               </div>
               <div className="space-y-2 col-span-1 md:col-span-2">
                 <Label className="text-slate-700 font-medium">Offer Image (.jpg or .png) <span className="text-red-500">*</span></Label>
-                <div
-                  className={`relative border-2 border-dashed rounded-xl p-6 transition-all duration-200 ease-in-out flex flex-col items-center justify-center cursor-pointer overflow-hidden ${offerImage ? 'border-rose-300 bg-rose-50/50' : 'border-slate-300 bg-slate-50 hover:bg-slate-100 hover:border-slate-400'
-                    }`}
+                <div 
+                  className={`relative border-2 border-dashed rounded-xl p-6 transition-all duration-200 ease-in-out flex flex-col items-center justify-center cursor-pointer overflow-hidden ${
+                    offerImage ? 'border-rose-300 bg-rose-50/50' : 'border-slate-300 bg-slate-50 hover:bg-slate-100 hover:border-slate-400'
+                  }`}
                   onClick={() => fileInputRef.current?.click()}
                   style={{ minHeight: '160px' }}
                 >
@@ -390,24 +391,24 @@ export default function AdminOffers() {
                     ref={fileInputRef}
                     className="hidden"
                   />
-
+                  
                   {offerImage ? (
                     <div className="flex flex-col items-center z-10 w-full">
                       <div className="relative w-full max-h-48 rounded-lg overflow-hidden mb-3 border border-slate-200 shadow-sm flex items-center justify-center bg-white">
-                        <img
-                          src={URL.createObjectURL(offerImage)}
-                          alt="Offer Preview"
+                        <img 
+                          src={URL.createObjectURL(offerImage)} 
+                          alt="Offer Preview" 
                           className="max-h-48 object-contain"
                         />
                       </div>
                       <div className="flex items-center justify-between w-full px-2">
                         <p className="text-sm text-emerald-700 font-medium truncate flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-md shadow-sm border border-emerald-100">
-                          <CheckCircle2 className="h-4 w-4" />
+                          <CheckCircle2 className="h-4 w-4" /> 
                           {offerImage.name} <span className="text-emerald-500 text-xs ml-1">({(offerImage.size / 1024 / 1024).toFixed(2)} MB)</span>
                         </p>
-                        <Button
-                          type="button"
-                          variant="ghost"
+                        <Button 
+                          type="button" 
+                          variant="ghost" 
                           size="sm"
                           className="text-slate-500 hover:text-rose-600 hover:bg-rose-50 h-8"
                           onClick={(e) => {
@@ -497,21 +498,21 @@ export default function AdminOffers() {
                     selectedLogs.map((log, idx) => {
                       const isSuccess = log.deliveryStatus !== 'FAILED';
                       return (
-                        <div key={idx} className={`p-4 rounded-xl border ${isSuccess ? 'bg-emerald-50/30 border-emerald-100' : 'bg-red-50/30 border-red-100'}`}>
-                          <div className="flex justify-between items-start mb-2">
-                            <div>
-                              <h4 className="font-semibold text-slate-800">{log.dealerName}</h4>
-                              <p className="text-sm text-slate-500">+{log.mobileNumber}</p>
-                            </div>
-                            <span className={`px-2.5 py-1 text-xs font-bold rounded-full ${isSuccess ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
-                              {log.deliveryStatus}
-                            </span>
+                      <div key={idx} className={`p-4 rounded-xl border ${isSuccess ? 'bg-emerald-50/30 border-emerald-100' : 'bg-red-50/30 border-red-100'}`}>
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <h4 className="font-semibold text-slate-800">{log.dealerName}</h4>
+                            <p className="text-sm text-slate-500">+{log.mobileNumber}</p>
                           </div>
-                          <div className="mt-2 flex justify-between items-center text-xs text-slate-400">
-                            <span>Attempted: {new Date(log.sentAt).toLocaleString()}</span>
-                            {log.whatsappMessageId && <span className="truncate max-w-[200px]" title={log.whatsappMessageId}>ID: {log.whatsappMessageId}</span>}
-                          </div>
+                          <span className={`px-2.5 py-1 text-xs font-bold rounded-full ${isSuccess ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
+                            {log.deliveryStatus}
+                          </span>
                         </div>
+                        <div className="mt-2 flex justify-between items-center text-xs text-slate-400">
+                          <span>Attempted: {new Date(log.sentAt).toLocaleString()}</span>
+                          {log.whatsappMessageId && <span className="truncate max-w-[200px]" title={log.whatsappMessageId}>ID: {log.whatsappMessageId}</span>}
+                        </div>
+                      </div>
                       );
                     })
                   ) : (
