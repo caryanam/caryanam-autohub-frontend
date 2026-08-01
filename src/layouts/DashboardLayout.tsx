@@ -6,7 +6,7 @@ import {
   useNavigate,
 } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Car, LogOut, Menu, Wallet, Info, RefreshCw, Plus } from "lucide-react";
+import { Car, LogOut, Menu, Wallet, Info, RefreshCw, Plus, AlertCircle } from "lucide-react";
 import { useState, useEffect, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -133,7 +133,7 @@ export default function DashboardLayout({ title, nav, accentLabel }: Props) {
           </Sheet>
 
           {/* Breadcrumb Info */}
-          <div className="inline-flex flex-col text-left shrink">
+          <div className="inline-flex flex-col text-left shrink-0">
             <span className="text-[9px] font-black uppercase tracking-[0.2em] text-rose-500 truncate">
               {title}
             </span>
@@ -141,6 +141,16 @@ export default function DashboardLayout({ title, nav, accentLabel }: Props) {
               {displayName}
             </h1>
           </div>
+
+          {/* Compact Header Pill for Large Displays */}
+          {!isAdmin && (
+            <div className="hidden 2xl:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-400/30 text-amber-900 text-xs font-medium shrink-0 ml-2">
+              <AlertCircle className="h-4 w-4 text-amber-600 shrink-0" />
+              <span>
+                <strong className="font-bold text-amber-950">Notice:</strong> Update profile details properly to avoid customer issue.
+              </span>
+            </div>
+          )}
 
           {/* Business Wallet Widget */}
           {!isAdmin && (
@@ -168,6 +178,29 @@ export default function DashboardLayout({ title, nav, accentLabel }: Props) {
             </div>
           )}
         </header>
+
+        {/* Full Prominent Notice Bar for Dealer Profile Update */}
+        {!isAdmin && (
+          <div className="bg-gradient-to-r from-amber-500/15 via-amber-400/10 to-amber-500/15 border-b border-amber-300/60 px-4 sm:px-6 py-3 shadow-xs">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="flex items-start gap-2.5 text-xs sm:text-sm text-amber-950 font-medium">
+                <AlertCircle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5 sm:mt-0" />
+                <p className="leading-snug">
+                  <span className="font-bold text-amber-950 uppercase tracking-wide text-xs bg-amber-200/70 px-1.5 py-0.5 rounded mr-1.5">
+                    Important Notice
+                  </span>
+                  Your account may contain initial placeholder or dummy data. Please update your complete dealership profile (business name, contact info, address & logo) properly so customers do not face any issues when contacting you.
+                </p>
+              </div>
+              <Link
+                to="/dealer/profile"
+                className="shrink-0 px-4 py-1.5 bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-1"
+              >
+                Update Profile Now
+              </Link>
+            </div>
+          </div>
+        )}
 
         {/* Dynamic page transition wrapper */}
         <AnimatePresence mode="wait">
