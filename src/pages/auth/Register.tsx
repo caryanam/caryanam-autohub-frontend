@@ -33,14 +33,21 @@ import {
 
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { format } from "date-fns";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
+import { REGEXP_ONLY_DIGITS } from "input-otp";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { SEO } from "@/components/shared/SEO";
-import { useRegister, ApiError } from "@/hooks/auth/register";
+import { useRegister, ApiError, useSendRegistrationOtp, useVerifyRegistrationOtp } from "@/hooks/auth/register";
 import { toast } from "sonner";
 import carImg from "@/assets/download.jpg";
 import logo from "@/assets/logo.png";
@@ -69,7 +76,14 @@ export default function Register() {
   const [dealerLogo, setDealerLogo] = useState<File | null>(null);
   const formRef = React.useRef<HTMLFormElement>(null);
   const { isSubmitting, registerDealer } = useRegister();
+  const { isSending, sendOtp } = useSendRegistrationOtp();
+  const { isVerifying, verifyOtp } = useVerifyRegistrationOtp();
   const [showPassword, setShowPassword] = useState(false);
+  
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [showOtpInput, setShowOtpInput] = useState(false);
+  const [otp, setOtp] = useState("");
+
   const form = useForm<FormData>({
     defaultValues: {
       businessName: "",
@@ -144,6 +158,40 @@ export default function Register() {
       }
     }
   };
+
+  const handleSendOtp = async () => {
+    const email = form.getValues("email");
+    if (!email) {
+      toast.error("Please enter an email address");
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+    
+    try {
+      await sendOtp(email);
+      toast.success("OTP sent to your email");
+      setShowOtpInput(true);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to send OTP");
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    if (otp.length !== 6) return;
+    try {
+      await verifyOtp(form.getValues("email"), otp);
+      toast.success("Email verified successfully");
+      setIsEmailVerified(true);
+      setShowOtpInput(false);
+    } catch (err: any) {
+      toast.error(err.message || "Invalid OTP");
+    }
+  };
+
 
   const steps = [
     {
@@ -481,12 +529,93 @@ export default function Register() {
                           <Label className="text-xs font-semibold text-slate-200 md:text-slate-500">
                             Email Address <span className="text-red-500">*</span>
                           </Label>
-                          <Input
-                            type="email"
-                            placeholder="you@example.com"
-                            className="h-11 px-4 rounded-xl border border-white/20 bg-white/10 text-white placeholder-white/40 focus-visible:bg-black/40 focus-visible:border-white focus-visible:ring-4 focus-visible:ring-white/10 md:border-slate-200 md:bg-slate-50/50 md:text-slate-900 md:placeholder-slate-400 md:focus-visible:bg-white md:focus-visible:border-rose-900 md:focus-visible:ring-rose-900/10 transition-all shadow-sm"
-                            {...form.register("email", { required: "Email is required" })}
-                          />
+                          <div className="relative group">
+                            <Input
+                              type="email"
+                              placeholder="you@example.com"
+                              disabled={isEmailVerified || showOtpInput}
+                              className="h-11 px-4 pr-24 w-full rounded-xl border border-white/20 bg-white/10 text-white placeholder-white/40 focus-visible:bg-black/40 focus-visible:border-white focus-visible:ring-4 focus-visible:ring-white/10 md:border-slate-200 md:bg-slate-50/50 md:text-slate-900 md:placeholder-slate-400 md:focus-visible:bg-white md:focus-visible:border-rose-900 md:focus-visible:ring-rose-900/10 transition-all shadow-sm disabled:opacity-60"
+                              {...form.register("email", { 
+                                required: "Email is required",
+                                onChange: (e) => {
+                                  setIsEmailVerified(false);
+                                  setShowOtpInput(false);
+                                }
+                              })}
+                            />
+                            
+                            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
+                              {!isEmailVerified ? (
+                                <button
+                                  type="button"
+                                  onClick={handleSendOtp}
+                                  disabled={isSending || showOtpInput || !form.watch("email")}
+                                  className="text-[11px] font-bold text-rose-400 hover:text-rose-300 md:text-rose-600 md:hover:text-rose-700 uppercase tracking-wider px-2 py-1 disabled:opacity-50 transition-colors cursor-pointer"
+                                >
+                                  {isSending ? "Sending..." : "Verify"}
+                                </button>
+                              ) : (
+                                <div className="text-[11px] font-bold text-emerald-400 md:text-emerald-600 uppercase tracking-wider flex items-center gap-1 px-2 py-1">
+                                  <CheckCircle2 size={14} className="text-emerald-500" /> Verified
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* OTP Modal Popup */}
+                          <Dialog open={showOtpInput} onOpenChange={(open) => {
+                            if (!open) setShowOtpInput(false);
+                          }}>
+                            <DialogContent className="sm:max-w-md bg-slate-900 border border-white/10 text-white md:bg-white md:border-slate-200 md:text-slate-900 rounded-2xl">
+                              <DialogHeader>
+                                <DialogTitle className="text-xl font-bold text-white md:text-slate-900">Verify Email</DialogTitle>
+                                <DialogDescription className="text-sm text-slate-400 md:text-slate-500">
+                                  Enter the 6-digit OTP sent to <span className="font-bold text-white md:text-slate-900">{form.watch("email")}</span>
+                                </DialogDescription>
+                              </DialogHeader>
+                              
+                              <div className="flex flex-col gap-4 py-6">
+                                <div className="flex justify-center">
+                                  <InputOTP
+                                    maxLength={6}
+                                    pattern={REGEXP_ONLY_DIGITS}
+                                    value={otp}
+                                    onChange={setOtp}
+                                  >
+                                    <InputOTPGroup className="gap-2">
+                                      {[0, 1, 2, 3, 4, 5].map((index) => (
+                                        <InputOTPSlot 
+                                          key={index} 
+                                          index={index} 
+                                          className="w-12 h-14 rounded-xl border-white/20 bg-white/10 text-white text-xl md:border-rose-900/20 md:bg-white md:text-slate-900"
+                                        />
+                                      ))}
+                                    </InputOTPGroup>
+                                  </InputOTP>
+                                </div>
+                                
+                                <div className="flex justify-between items-center text-xs px-1 mt-2">
+                                  <button type="button" onClick={handleSendOtp} disabled={isSending} className="text-slate-400 hover:text-white md:text-rose-600 md:hover:text-rose-800 font-medium underline cursor-pointer disabled:opacity-50">
+                                    Resend OTP
+                                  </button>
+                                  <button type="button" onClick={() => setShowOtpInput(false)} className="text-slate-400 hover:text-white md:text-slate-500 md:hover:text-slate-700 font-medium cursor-pointer">
+                                    Change Email
+                                  </button>
+                                </div>
+                              </div>
+                              
+                              <DialogFooter className="sm:justify-end">
+                                <Button
+                                  type="button"
+                                  onClick={handleVerifyOtp}
+                                  disabled={isVerifying || otp.length !== 6}
+                                  className="h-11 w-full sm:w-auto px-8 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold transition-all shadow-sm cursor-pointer"
+                                >
+                                  {isVerifying ? "Verifying..." : "Confirm OTP"}
+                                </Button>
+                              </DialogFooter>
+                            </DialogContent>
+                          </Dialog>
                         </div>
 
                         <div className="space-y-1.5">
@@ -724,8 +853,13 @@ export default function Register() {
                   <Button
                     type="button"
                     onClick={() => {
-                      if (formRef.current?.reportValidity())
+                      if (formRef.current?.reportValidity()) {
+                        if (step === 1 && !isEmailVerified) {
+                          toast.error("Please verify your email address to proceed.");
+                          return;
+                        }
                         setStep(step + 1);
+                      }
                     }}
                     disabled={isSubmitting}
                     className="h-10 px-6 gradient-primary text-white rounded-xl font-bold transition-all duration-200 flex items-center gap-2 cursor-pointer shadow-lg shadow-rose-900/10 text-xs uppercase tracking-widest border-0"

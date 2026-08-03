@@ -7,6 +7,8 @@ import {
   useCustomerLogin,
   useCustomerRegister,
   CustomerRegisterError,
+  useCustomerSendRegistrationOtp,
+  useCustomerVerifyRegistrationOtp,
   type CustomerUser,
 } from "@/hooks/public/useCustomerAuth";
 import {
@@ -466,7 +468,44 @@ function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
   const [showPassword, setShowPassword] = useState(false);
   const [err, setErr] = useState("");
 
+  const { isSending, sendOtp } = useCustomerSendRegistrationOtp();
+  const { isVerifying, verifyOtp } = useCustomerVerifyRegistrationOtp();
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [otp, setOtp] = useState("");
+
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
+
+  const handleSendOtp = async () => {
+    if (!form.email) {
+      toast.error("Please enter an email address");
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+    try {
+      const res = await sendOtp(form.email);
+      toast.success(res?.message || "OTP sent successfully");
+      setShowOtpModal(true);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to send OTP");
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    if (otp.length !== 6) return;
+    try {
+      const res = await verifyOtp(form.email, otp);
+      toast.success(res?.message || "Email verified successfully");
+      setIsEmailVerified(true);
+      setShowOtpModal(false);
+    } catch (err: any) {
+      toast.error(err.message || "Invalid OTP");
+    }
+  };
 
   // Dynamic mobile validation: digits only, must start with 6-9, max length 10
   const handleMobileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -491,6 +530,13 @@ function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErr("");
+
+    if (!isEmailVerified) {
+      setErr("Please verify your email address to proceed.");
+      setTimeout(() => setErr(""), 3000);
+      return;
+    }
+
     try {
       await register(form);
       onSuccess();
@@ -569,16 +615,43 @@ function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
         <Label className="text-xs font-semibold text-muted-foreground/90 uppercase tracking-wider pl-0.5">
           Email Address
         </Label>
-        <div className="relative group">
-          <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/70 group-focus-within:text-rose-900 dark:group-focus-within:text-rose-400 transition-colors duration-200" />
+        <div className="relative group flex items-center">
+          <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/70 group-focus-within:text-rose-900 dark:group-focus-within:text-rose-400 transition-colors duration-200 z-10" />
           <Input
             type="email"
             value={form.email}
-            onChange={(e) => set("email", e.target.value)}
+            onChange={(e) => {
+              set("email", e.target.value);
+              setIsEmailVerified(false);
+            }}
+            disabled={isEmailVerified}
             placeholder="you@example.com"
-            className="h-12 pl-11 rounded-xl bg-muted/20 border-border/60 hover:bg-muted/30  text-black  focus-visible:ring-rose-900/15 focus-visible:border-rose-900 dark:focus-visible:border-rose-500 dark:focus-visible:ring-rose-500/20 transition-all duration-200 placeholder:text-muted-foreground/50"
+            className="h-12 pl-11 pr-24 rounded-xl bg-muted/20 border-border/60 hover:bg-muted/30 text-black focus-visible:ring-rose-900/15 focus-visible:border-rose-900 dark:focus-visible:border-rose-500 dark:focus-visible:ring-rose-500/20 transition-all duration-200 placeholder:text-muted-foreground/50"
             required
           />
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center">
+            {!isEmailVerified ? (
+              <button
+                type="button"
+                onClick={handleSendOtp}
+                disabled={isSending || !form.email}
+                className="text-xs font-bold uppercase tracking-wider text-rose-500 hover:text-rose-600 disabled:opacity-50 transition-colors bg-transparent border-0 cursor-pointer"
+              >
+                {isSending ? (
+                  <Loader2 className="h-4 w-4 animate-spin text-rose-500" />
+                ) : (
+                  "Verify"
+                )}
+              </button>
+            ) : (
+              <div className="flex items-center gap-1.5 text-emerald-500">
+                <CheckCircle2 className="h-4 w-4" />
+                <span className="text-[10px] font-bold uppercase tracking-wider">
+                  Verified
+                </span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -635,6 +708,80 @@ function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
           "Create Account"
         )}
       </Button>
+
+      {/* Verify OTP Modal for Registration */}
+      <Dialog open={showOtpModal} onOpenChange={setShowOtpModal}>
+        <DialogContent className="sm:max-w-md p-6 sm:p-8 rounded-3xl border-none shadow-2xl bg-white dark:bg-slate-950">
+          <div className="flex flex-col items-center justify-center space-y-6">
+            <div className="h-16 w-16 bg-rose-50 dark:bg-rose-950/30 rounded-full flex items-center justify-center border-4 border-rose-100 dark:border-rose-900/20">
+              <Mail className="h-7 w-7 text-rose-500 dark:text-rose-400" />
+            </div>
+
+            <div className="space-y-2 text-center">
+              <h2 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+                Verify Email
+              </h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                We've sent a 6-digit verification code to<br />
+                <span className="font-bold text-slate-700 dark:text-slate-300">{form.email}</span>
+              </p>
+            </div>
+
+            <div className="w-full flex justify-center py-2">
+              <InputOTP
+                maxLength={6}
+                value={otp}
+                onChange={setOtp}
+                pattern={REGEXP_ONLY_DIGITS}
+                disabled={isVerifying}
+                autoFocus
+              >
+                <InputOTPGroup className="gap-2">
+                  <InputOTPSlot index={0} className="w-12 h-14 text-xl font-bold rounded-xl border-slate-200 dark:border-slate-800" />
+                  <InputOTPSlot index={1} className="w-12 h-14 text-xl font-bold rounded-xl border-slate-200 dark:border-slate-800" />
+                  <InputOTPSlot index={2} className="w-12 h-14 text-xl font-bold rounded-xl border-slate-200 dark:border-slate-800" />
+                  <InputOTPSlot index={3} className="w-12 h-14 text-xl font-bold rounded-xl border-slate-200 dark:border-slate-800" />
+                  <InputOTPSlot index={4} className="w-12 h-14 text-xl font-bold rounded-xl border-slate-200 dark:border-slate-800" />
+                  <InputOTPSlot index={5} className="w-12 h-14 text-xl font-bold rounded-xl border-slate-200 dark:border-slate-800" />
+                </InputOTPGroup>
+              </InputOTP>
+            </div>
+
+            <Button
+              className="w-full h-12 text-sm font-bold rounded-xl bg-slate-900 hover:bg-slate-800 text-white dark:bg-rose-600 dark:hover:bg-rose-500 transition-all shadow-md active:scale-[0.98]"
+              onClick={handleVerifyOtp}
+              disabled={otp.length !== 6 || isVerifying}
+            >
+              {isVerifying ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Verifying...
+                </>
+              ) : (
+                "Verify & Continue"
+              )}
+            </Button>
+
+            <div className="flex items-center justify-between w-full pt-2">
+              <button
+                type="button"
+                onClick={handleSendOtp}
+                disabled={isSending}
+                className="text-xs font-bold text-rose-500 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-300 disabled:opacity-50 transition-colors"
+              >
+                {isSending ? "Sending..." : "Resend Code"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowOtpModal(false)}
+                className="text-xs font-bold text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300 transition-colors"
+              >
+                Change Email
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </form>
   );
 }
