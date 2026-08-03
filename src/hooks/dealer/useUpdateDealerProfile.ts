@@ -18,16 +18,28 @@ export interface UpdateProfilePayload {
   city: string;
   state: string;
   pinCode: string;
+  ownerName?: string;
+  dealerLogo?: string;
+  showroomImage?: string;
 }
 
 export function useUpdateDealerProfile(dealerId: string) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (payload: UpdateProfilePayload) => {
+    mutationFn: async ({ payload, showroomImage, dealerLogo }: { payload: UpdateProfilePayload, showroomImage?: File | null, dealerLogo?: File | null }) => {
       try {
+        const formData = new FormData();
+        formData.append("request", JSON.stringify(payload));
+        if (showroomImage) {
+          formData.append("showroomImage", showroomImage);
+        }
+        if (dealerLogo) {
+          formData.append("dealerLogo", dealerLogo);
+        }
+
         const { data: body } = await apiClient.put(
           `/api/dealer/update-profile/${dealerId}`,
-          payload,
+          formData,
         );
         return body.data;
       } catch (err: any) {

@@ -25,6 +25,9 @@ import {
   Mail,
   Eye,
   EyeOff,
+  ImageIcon,
+  Upload,
+  X,
 } from "lucide-react";
 import { useGetDealerProfile } from "@/hooks/dealer/useGetDealerProfile";
 import { useUpdateDealerProfile, UpdateProfileError } from "@/hooks/dealer/useUpdateDealerProfile";
@@ -81,6 +84,8 @@ export default function DealerProfile() {
   const [pinCode, setPinCode] = useState("");
   const [gstNumber, setGstNumber] = useState("");
   const [yearsInBusiness, setYearsInBusiness] = useState<number | "">("");
+  const [dealerLogo, setDealerLogo] = useState<File | string | null>(null);
+  const [showroomImage, setShowroomImage] = useState<File | string | null>(null);
 
   useEffect(() => {
     if (profile) {
@@ -95,6 +100,8 @@ export default function DealerProfile() {
       setState(profile.state || "");
       setPinCode(profile.pinCode || "");
       setGstNumber(profile.gstNumber || "");
+      setDealerLogo(profile.dealerLogo || null);
+      setShowroomImage(profile.showroomImage || null);
       setYearsInBusiness(
         profile.yearsInBusiness !== undefined && profile.yearsInBusiness !== null
           ? Number(profile.yearsInBusiness)
@@ -107,14 +114,19 @@ export default function DealerProfile() {
     e.preventDefault();
     try {
       await updateMutation.mutateAsync({
-        businessName,
-        dateOfBirth,
-        executiveMobile: executiveMobile || null,
-        whatsapp,
-        address,
-        city,
-        state,
-        pinCode,
+        payload: {
+          businessName,
+          ownerName,
+          dateOfBirth,
+          executiveMobile: executiveMobile || null,
+          whatsapp,
+          address,
+          city,
+          state,
+          pinCode,
+        },
+        dealerLogo: dealerLogo instanceof File ? dealerLogo : null,
+        showroomImage: showroomImage instanceof File ? showroomImage : null,
       });
       updateUserFields({ businessName });
       toast.success("Profile updated successfully");
@@ -392,8 +404,9 @@ export default function DealerProfile() {
                     <Label className="text-xs font-semibold text-slate-600">Owner Name</Label>
                     <Input
                       value={ownerName}
-                      readOnly
-                      className="mt-1.5 rounded-xl h-11 border-slate-200 bg-slate-50 text-slate-400 cursor-not-allowed select-none"
+                      onChange={(e) => setOwnerName(e.target.value)}
+                      className="mt-1.5 rounded-xl h-11 border-slate-200 focus-visible:ring-blue-600 bg-white"
+                      required
                     />
                   </div>
                 </div>
@@ -415,6 +428,136 @@ export default function DealerProfile() {
                       className="relative w-full mt-1.5 rounded-xl h-11 border-slate-200 focus-visible:ring-blue-600 bg-white [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-4 [&::-webkit-calendar-picker-indicator]:cursor-pointer"
                       required
                     />
+                  </div>
+                </div>
+              </div>
+
+              {/* Brand Visuals Section */}
+              <div className="space-y-4 pt-2">
+                <h4 className="text-xs font-bold text-blue-900 uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-100 pb-2">
+                  <ImageIcon className="h-4 w-4" /> Brand Visuals
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Dealer Logo Upload */}
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold text-slate-600">
+                      Dealer Logo <span className="text-slate-400 font-normal">(optional)</span>
+                    </Label>
+
+                    {!dealerLogo ? (
+                      <label
+                        htmlFor="dealer-logo-input"
+                        className="group relative flex cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-slate-50/50 py-6 px-4 text-center transition-all duration-200 hover:border-blue-500 hover:bg-blue-50/10 shadow-sm"
+                      >
+                        <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-xl bg-slate-200 text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-all duration-200 shadow-sm">
+                          <Upload size={14} />
+                        </div>
+                        <span className="text-xs font-bold text-slate-700 group-hover:text-blue-600 transition-colors">
+                          Upload logo
+                        </span>
+                        <input
+                          id="dealer-logo-input"
+                          type="file"
+                          accept="image/*"
+                          className="sr-only"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file && !file.type.startsWith("image/")) {
+                              toast.error("Only image files are allowed.");
+                              e.target.value = "";
+                              return;
+                            }
+                            setDealerLogo(file ?? null);
+                          }}
+                        />
+                      </label>
+                    ) : (
+                      <div className="relative flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-3 shadow-sm h-[80px]">
+                        <div className="h-10 w-16 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
+                          <img
+                            src={dealerLogo instanceof File ? URL.createObjectURL(dealerLogo) : dealerLogo}
+                            alt="Logo preview"
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-bold text-slate-800 truncate">
+                            {dealerLogo instanceof File ? dealerLogo.name : "Current Logo"}
+                          </p>
+                          <span className="inline-flex items-center gap-1 text-[8px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded mt-1">
+                            {dealerLogo instanceof File ? "New Selected" : "Current"}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setDealerLogo(null)}
+                          className="p-1 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer self-start"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Showroom Image Upload */}
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold text-slate-600">
+                      Showroom Image <span className="text-slate-400 font-normal">(optional)</span>
+                    </Label>
+
+                    {!showroomImage ? (
+                      <label
+                        htmlFor="showroom-image-input"
+                        className="group relative flex cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-slate-50/50 py-6 px-4 text-center transition-all duration-200 hover:border-blue-500 hover:bg-blue-50/10 shadow-sm"
+                      >
+                        <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-xl bg-slate-200 text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-all duration-200 shadow-sm">
+                          <Upload size={14} />
+                        </div>
+                        <span className="text-xs font-bold text-slate-700 group-hover:text-blue-600 transition-colors">
+                          Upload showroom
+                        </span>
+                        <input
+                          id="showroom-image-input"
+                          type="file"
+                          accept="image/*"
+                          className="sr-only"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file && !file.type.startsWith("image/")) {
+                              toast.error("Only image files are allowed.");
+                              e.target.value = "";
+                              return;
+                            }
+                            setShowroomImage(file ?? null);
+                          }}
+                        />
+                      </label>
+                    ) : (
+                      <div className="relative flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-3 shadow-sm h-[80px]">
+                        <div className="h-10 w-16 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
+                          <img
+                            src={showroomImage instanceof File ? URL.createObjectURL(showroomImage) : showroomImage}
+                            alt="Showroom preview"
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-bold text-slate-800 truncate">
+                            {showroomImage instanceof File ? showroomImage.name : "Current Showroom"}
+                          </p>
+                          <span className="inline-flex items-center gap-1 text-[8px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded mt-1">
+                            {showroomImage instanceof File ? "New Selected" : "Current"}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setShowroomImage(null)}
+                          className="p-1 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer self-start"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
