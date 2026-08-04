@@ -55,3 +55,17 @@ export function useUpdateDealerStatus() {
     },
   });
 }
+
+export function useDeleteDealer() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (dealerId: number) => {
+      const { data } = await apiClient.delete(`/api/admin/dealer/${dealerId}`);
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-dealers"] });
+    },
+  });
+}
+

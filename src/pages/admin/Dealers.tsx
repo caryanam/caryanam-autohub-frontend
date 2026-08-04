@@ -27,11 +27,13 @@ import {
   MapPin,
   Landmark,
   Building,
+  Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
   useAdminDealers,
   useUpdateDealerStatus,
+  useDeleteDealer,
   type AdminDealer,
 } from "@/hooks/admin/useAdminDealers";
 import { formatDate } from "@/utils/helpers";
@@ -54,6 +56,7 @@ export default function AdminDealers() {
     isFetching,
   } = useAdminDealers();
   const { mutate: updateStatus, isPending } = useUpdateDealerStatus();
+  const { mutate: deleteDealer, isPending: isDeleting } = useDeleteDealer();
 
   const filtered = dealers.filter(
     (d) =>
@@ -73,6 +76,19 @@ export default function AdminDealers() {
           toast.error(err?.response?.data?.message ?? "Action failed"),
       },
     );
+  };
+
+  const handleDelete = (dealerId: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (window.confirm("Are you sure you want to delete this dealer? This action cannot be undone.")) {
+      deleteDealer(dealerId, {
+        onSuccess: (res) => {
+          toast.success(res?.message ?? "Dealer deleted successfully");
+        },
+        onError: (err: any) =>
+          toast.error(err?.response?.data?.message ?? "Failed to delete dealer"),
+      });
+    }
   };
 
   const getImageUrl = (path?: string | null) => {
@@ -282,14 +298,26 @@ export default function AdminDealers() {
                       className="py-4 pr-6 text-right w-28"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-8 w-8 rounded-lg bg-slate-100 hover:bg-slate-200 hover:text-blue-600 cursor-pointer"
-                        onClick={() => navigate(`/admin/dealers/${d.id}`)}
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
+                      <div className="flex items-center justify-end gap-2">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-8 w-8 rounded-lg bg-slate-100 hover:bg-slate-200 hover:text-blue-600 cursor-pointer"
+                          onClick={() => navigate(`/admin/dealers/${d.id}`)}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-8 w-8 rounded-lg bg-red-50 hover:bg-red-100 hover:text-red-600 cursor-pointer"
+                          onClick={(e) => handleDelete(d.id, e)}
+                          disabled={isDeleting}
+                          title="Delete Dealer"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))
