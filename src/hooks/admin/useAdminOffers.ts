@@ -18,7 +18,9 @@ export interface AdminOffer {
   offerDetails: string;
   benefits: string;
   contactInfo: string;
-  imageUrl: string;
+  imageUrl: string | null;
+  videoUrl: string | null;
+  templateType: "IMAGE" | "VIDEO";
   message: string | null;
   status: string | null;
   totalDealersTargeted: number;

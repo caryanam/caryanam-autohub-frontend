@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Loader2, Plus, Gift, Image as ImageIcon, X, History, CheckCircle2, AlertCircle, Users, XCircle, Phone, Info, Sparkles, RefreshCw } from "lucide-react";
+import { Loader2, Plus, Gift, Image as ImageIcon, X, History, CheckCircle2, AlertCircle, Users, XCircle, Phone, Info, Sparkles, RefreshCw, Video } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -34,14 +34,17 @@ export default function AdminOffers() {
   const selectedLogs = deliverySummary?.dealerBreakdown;
 
   // Form state
+  const [templateType, setTemplateType] = useState<"IMAGE" | "VIDEO">("IMAGE");
   const [offerImage, setOfferImage] = useState<File | null>(null);
+  const [offerVideo, setOfferVideo] = useState<File | null>(null);
   const [offerTitle, setOfferTitle] = useState("");
-  const [dealerGreetingName, setDealerGreetingName] = useState("");
+  const [dealerGreetingName, setDealerGreetingName] = useState("Valued Partner");
   const [offerDetails, setOfferDetails] = useState("");
   const [benefits, setBenefits] = useState("");
   const [contactInfo, setContactInfo] = useState("8483079733");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -54,7 +57,7 @@ export default function AdminOffers() {
       }
 
       if (file.size > 5 * 1024 * 1024) {
-        toast.error("File size must be less than 5MB");
+        toast.error("Image file size must be less than 5MB");
         if (fileInputRef.current) fileInputRef.current.value = "";
         return;
       }
@@ -62,25 +65,56 @@ export default function AdminOffers() {
     }
   };
 
+  const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      
+      if (!file.type.startsWith("video/")) {
+        toast.error("Please upload a valid video file (MP4, 3GP, etc.)");
+        if (videoInputRef.current) videoInputRef.current.value = "";
+        return;
+      }
+
+      if (file.size > 16 * 1024 * 1024) {
+        toast.error("Video file size must be less than 16MB");
+        if (videoInputRef.current) videoInputRef.current.value = "";
+        return;
+      }
+      setOfferVideo(file);
+    }
+  };
+
   const resetForm = () => {
+    setTemplateType("IMAGE");
     setOfferImage(null);
+    setOfferVideo(null);
     setOfferTitle("");
-    setDealerGreetingName("");
+    setDealerGreetingName("Valued Partner");
     setOfferDetails("");
     setBenefits("");
     setContactInfo("8483079733");
     if (fileInputRef.current) fileInputRef.current.value = "";
+    if (videoInputRef.current) videoInputRef.current.value = "";
   };
 
   const handleSendOffer = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!offerImage) {
+    if (templateType === "IMAGE" && !offerImage) {
       toast.error("Please select an offer image.");
+      return;
+    }
+    if (templateType === "VIDEO" && !offerVideo) {
+      toast.error("Please select an offer video.");
       return;
     }
 
     const formData = new FormData();
-    formData.append("offerImage", offerImage);
+    formData.append("templateType", templateType);
+    if (templateType === "IMAGE" && offerImage) {
+      formData.append("offerImage", offerImage);
+    } else if (templateType === "VIDEO" && offerVideo) {
+      formData.append("offerVideo", offerVideo);
+    }
     formData.append("offerTitle", offerTitle);
     formData.append("dealerGreetingName", dealerGreetingName);
     formData.append("offerDetails", offerDetails);
@@ -182,23 +216,38 @@ export default function AdminOffers() {
           offers.map((offer) => (
             <div key={offer.offerId} className="bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col md:flex-row group">
               
-              {/* Left Side: Image & Title */}
+              {/* Left Side: Image/Video & Title */}
               <div 
                 className="relative md:w-2/5 min-h-[300px] flex flex-col justify-between bg-slate-950 p-6 overflow-hidden"
-                style={offer.imageUrl ? { backgroundImage: `url(${offer.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
+                style={offer.templateType === "IMAGE" && offer.imageUrl ? { backgroundImage: `url(${offer.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
               >
-                {!offer.imageUrl && (
+                {offer.templateType === "VIDEO" && offer.videoUrl ? (
+                  <video 
+                    src={offer.videoUrl} 
+                    className="absolute inset-0 w-full h-full object-cover"
+                    autoPlay 
+                    muted 
+                    loop 
+                    playsInline 
+                  />
+                ) : !offer.imageUrl ? (
                   <div className="absolute inset-0 flex items-center justify-center opacity-10">
                     <Gift className="w-32 h-32 text-white" />
                   </div>
-                )}
+                ) : null}
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent z-0" />
                 <div className="absolute inset-0 bg-gradient-to-r from-slate-950/40 to-transparent z-0" />
                 
                 <div className="relative z-10 flex justify-between items-start">
-                  <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-rose-500/20 backdrop-blur-md text-rose-300 text-[10px] font-bold uppercase tracking-wider border border-rose-500/30">
-                    ID: {offer.offerId}
-                  </span>
+                  <div className="flex gap-2">
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-rose-500/20 backdrop-blur-md text-rose-300 text-[10px] font-bold uppercase tracking-wider border border-rose-500/30">
+                      ID: {offer.offerId}
+                    </span>
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-indigo-500/20 backdrop-blur-md text-indigo-300 text-[10px] font-bold uppercase tracking-wider border border-indigo-500/30">
+                      {offer.templateType === "VIDEO" ? <Video className="h-3 w-3 mr-1" /> : <ImageIcon className="h-3 w-3 mr-1" />}
+                      {offer.templateType}
+                    </span>
+                  </div>
                 </div>
 
                 <div className="relative z-10 mt-auto">
@@ -314,27 +363,34 @@ export default function AdminOffers() {
           </DialogHeader>
           
           <form onSubmit={handleSendOffer} className="space-y-5 mt-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="offerTitle">Offer Title <span className="text-red-500">*</span></Label>
-                <Input
-                  id="offerTitle"
-                  value={offerTitle}
-                  onChange={(e) => setOfferTitle(e.target.value)}
-                  placeholder="e.g. Dealer Festival Offer"
-                  required
-                />
+            {/* Template Type Selection */}
+            <div className="space-y-2">
+              <Label className="text-slate-700 font-medium">Select Template Type <span className="text-red-500">*</span></Label>
+              <div className="grid grid-cols-2 gap-4">
+                <div 
+                  className={`border-2 rounded-xl p-4 flex items-center justify-center gap-2 cursor-pointer transition-all ${templateType === "IMAGE" ? 'border-rose-950 bg-rose-50 text-rose-950 font-semibold' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}
+                  onClick={() => setTemplateType("IMAGE")}
+                >
+                  <ImageIcon className="h-5 w-5" /> Image Template
+                </div>
+                <div 
+                  className={`border-2 rounded-xl p-4 flex items-center justify-center gap-2 cursor-pointer transition-all ${templateType === "VIDEO" ? 'border-rose-950 bg-rose-50 text-rose-950 font-semibold' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}
+                  onClick={() => setTemplateType("VIDEO")}
+                >
+                  <Video className="h-5 w-5" /> Video Template
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="dealerGreetingName">Greeting Name <span className="text-red-500">*</span></Label>
-                <Input
-                  id="dealerGreetingName"
-                  value={dealerGreetingName}
-                  onChange={(e) => setDealerGreetingName(e.target.value)}
-                  placeholder="e.g. Valued Partner"
-                  required
-                />
-              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="offerTitle">Offer Title <span className="text-red-500">*</span></Label>
+              <Input
+                id="offerTitle"
+                value={offerTitle}
+                onChange={(e) => setOfferTitle(e.target.value)}
+                placeholder="e.g. Dealer Festival Offer"
+                required
+              />
             </div>
 
             <div className="space-y-2">
@@ -375,62 +431,123 @@ export default function AdminOffers() {
                 />
               </div>
               <div className="space-y-2 col-span-1 md:col-span-2">
-                <Label className="text-slate-700 font-medium">Offer Image (.jpg or .png) <span className="text-red-500">*</span></Label>
-                <div 
-                  className={`relative border-2 border-dashed rounded-xl p-6 transition-all duration-200 ease-in-out flex flex-col items-center justify-center cursor-pointer overflow-hidden ${
-                    offerImage ? 'border-rose-300 bg-rose-50/50' : 'border-slate-300 bg-slate-50 hover:bg-slate-100 hover:border-slate-400'
-                  }`}
-                  onClick={() => fileInputRef.current?.click()}
-                  style={{ minHeight: '160px' }}
-                >
-                  <Input
-                    id="offerImage"
-                    type="file"
-                    accept=".jpg, .jpeg, .png"
-                    onChange={handleImageChange}
-                    ref={fileInputRef}
-                    className="hidden"
-                  />
-                  
-                  {offerImage ? (
-                    <div className="flex flex-col items-center z-10 w-full">
-                      <div className="relative w-full max-h-48 rounded-lg overflow-hidden mb-3 border border-slate-200 shadow-sm flex items-center justify-center bg-white">
-                        <img 
-                          src={URL.createObjectURL(offerImage)} 
-                          alt="Offer Preview" 
-                          className="max-h-48 object-contain"
-                        />
+                <Label className="text-slate-700 font-medium">
+                  {templateType === "IMAGE" ? "Offer Image (.jpg or .png)" : "Offer Video (.mp4 or .3gp)"} <span className="text-red-500">*</span>
+                </Label>
+                
+                {templateType === "IMAGE" ? (
+                  <div 
+                    className={`relative border-2 border-dashed rounded-xl p-6 transition-all duration-200 ease-in-out flex flex-col items-center justify-center cursor-pointer overflow-hidden ${
+                      offerImage ? 'border-rose-300 bg-rose-50/50' : 'border-slate-300 bg-slate-50 hover:bg-slate-100 hover:border-slate-400'
+                    }`}
+                    onClick={() => fileInputRef.current?.click()}
+                    style={{ minHeight: '160px' }}
+                  >
+                    <Input
+                      id="offerImage"
+                      type="file"
+                      accept=".jpg, .jpeg, .png"
+                      onChange={handleImageChange}
+                      ref={fileInputRef}
+                      className="hidden"
+                    />
+                    
+                    {offerImage ? (
+                      <div className="flex flex-col items-center z-10 w-full">
+                        <div className="relative w-full max-h-48 rounded-lg overflow-hidden mb-3 border border-slate-200 shadow-sm flex items-center justify-center bg-white">
+                          <img 
+                            src={URL.createObjectURL(offerImage)} 
+                            alt="Offer Preview" 
+                            className="max-h-48 object-contain"
+                          />
+                        </div>
+                        <div className="flex items-center justify-between w-full px-2">
+                          <p className="text-sm text-emerald-700 font-medium truncate flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-md shadow-sm border border-emerald-100">
+                            <CheckCircle2 className="h-4 w-4" /> 
+                            {offerImage.name} <span className="text-emerald-500 text-xs ml-1">({(offerImage.size / 1024 / 1024).toFixed(2)} MB)</span>
+                          </p>
+                          <Button 
+                            type="button" 
+                            variant="ghost" 
+                            size="sm"
+                            className="text-slate-500 hover:text-rose-600 hover:bg-rose-50 h-8"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setOfferImage(null);
+                              if (fileInputRef.current) fileInputRef.current.value = "";
+                            }}
+                          >
+                            <X className="h-4 w-4 mr-1" /> Remove
+                          </Button>
+                        </div>
                       </div>
-                      <div className="flex items-center justify-between w-full px-2">
-                        <p className="text-sm text-emerald-700 font-medium truncate flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-md shadow-sm border border-emerald-100">
-                          <CheckCircle2 className="h-4 w-4" /> 
-                          {offerImage.name} <span className="text-emerald-500 text-xs ml-1">({(offerImage.size / 1024 / 1024).toFixed(2)} MB)</span>
-                        </p>
-                        <Button 
-                          type="button" 
-                          variant="ghost" 
-                          size="sm"
-                          className="text-slate-500 hover:text-rose-600 hover:bg-rose-50 h-8"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setOfferImage(null);
-                            if (fileInputRef.current) fileInputRef.current.value = "";
-                          }}
-                        >
-                          <X className="h-4 w-4 mr-1" /> Remove
-                        </Button>
+                    ) : (
+                      <div className="flex flex-col items-center text-center p-4">
+                        <div className="h-12 w-12 rounded-full bg-indigo-50 flex items-center justify-center mb-3 text-indigo-500 shadow-sm border border-indigo-100">
+                          <ImageIcon className="h-6 w-6" />
+                        </div>
+                        <p className="text-slate-700 font-semibold text-sm mb-1">Click to upload banner image</p>
+                        <p className="text-slate-400 text-xs max-w-xs">High resolution JPG or PNG up to 5MB. This will be sent directly to dealers.</p>
                       </div>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center text-center p-4">
-                      <div className="h-12 w-12 rounded-full bg-indigo-50 flex items-center justify-center mb-3 text-indigo-500 shadow-sm border border-indigo-100">
-                        <ImageIcon className="h-6 w-6" />
+                    )}
+                  </div>
+                ) : (
+                  <div 
+                    className={`relative border-2 border-dashed rounded-xl p-6 transition-all duration-200 ease-in-out flex flex-col items-center justify-center cursor-pointer overflow-hidden ${
+                      offerVideo ? 'border-indigo-300 bg-indigo-50/50' : 'border-slate-300 bg-slate-50 hover:bg-slate-100 hover:border-slate-400'
+                    }`}
+                    onClick={() => videoInputRef.current?.click()}
+                    style={{ minHeight: '160px' }}
+                  >
+                    <Input
+                      id="offerVideo"
+                      type="file"
+                      accept="video/mp4, video/3gpp"
+                      onChange={handleVideoChange}
+                      ref={videoInputRef}
+                      className="hidden"
+                    />
+                    
+                    {offerVideo ? (
+                      <div className="flex flex-col items-center z-10 w-full">
+                        <div className="relative w-full max-h-48 rounded-lg overflow-hidden mb-3 border border-slate-200 shadow-sm flex items-center justify-center bg-black/5">
+                          <video 
+                            src={URL.createObjectURL(offerVideo)} 
+                            controls
+                            className="max-h-48 object-contain"
+                          />
+                        </div>
+                        <div className="flex items-center justify-between w-full px-2">
+                          <p className="text-sm text-emerald-700 font-medium truncate flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-md shadow-sm border border-emerald-100">
+                            <CheckCircle2 className="h-4 w-4" /> 
+                            {offerVideo.name} <span className="text-emerald-500 text-xs ml-1">({(offerVideo.size / 1024 / 1024).toFixed(2)} MB)</span>
+                          </p>
+                          <Button 
+                            type="button" 
+                            variant="ghost" 
+                            size="sm"
+                            className="text-slate-500 hover:text-rose-600 hover:bg-rose-50 h-8"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setOfferVideo(null);
+                              if (videoInputRef.current) videoInputRef.current.value = "";
+                            }}
+                          >
+                            <X className="h-4 w-4 mr-1" /> Remove
+                          </Button>
+                        </div>
                       </div>
-                      <p className="text-slate-700 font-semibold text-sm mb-1">Click to upload banner image</p>
-                      <p className="text-slate-400 text-xs max-w-xs">High resolution JPG or PNG up to 5MB. This will be sent directly to dealers.</p>
-                    </div>
-                  )}
-                </div>
+                    ) : (
+                      <div className="flex flex-col items-center text-center p-4">
+                        <div className="h-12 w-12 rounded-full bg-indigo-50 flex items-center justify-center mb-3 text-indigo-500 shadow-sm border border-indigo-100">
+                          <Video className="h-6 w-6" />
+                        </div>
+                        <p className="text-slate-700 font-semibold text-sm mb-1">Click to upload offer video</p>
+                        <p className="text-slate-400 text-xs max-w-xs">MP4 or 3GP up to 16MB. This will be sent directly to dealers.</p>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 
