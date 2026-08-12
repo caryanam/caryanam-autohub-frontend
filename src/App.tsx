@@ -58,6 +58,11 @@ import DealerFacebookRequests from "@/pages/dealer/FacebookRequests";
 import AdminFacebookDealerSummary from "@/pages/admin/facebook/FacebookDealerSummary";
 import AdminFacebookDealerRequests from "@/pages/admin/facebook/FacebookDealerRequests";
 import AdminFacebookBatchProgress from "@/pages/admin/facebook/FacebookBatchProgress";
+
+import DealerInstagramRequests from "@/pages/dealer/InstagramRequests";
+import AdminInstagramDealerSummary from "@/pages/admin/instagram/InstagramDealerSummary";
+import AdminInstagramDealerRequests from "@/pages/admin/instagram/InstagramDealerRequests";
+import AdminInstagramBatchProgress from "@/pages/admin/instagram/InstagramBatchProgress";
 import AdminWhatsappDashboard from "@/pages/admin/WhatsappDashboard";
 export default function App() {
   return (
@@ -108,6 +113,7 @@ export default function App() {
                 <Route path="chat" element={<DealerChat />} />
                 <Route path="subscription" element={<DealerSubscription />} />
                 <Route path="facebook-requests" element={<DealerFacebookRequests />} />
+                <Route path="instagram-requests" element={<DealerInstagramRequests />} />
               </Route>
             </Route>
 
@@ -130,6 +136,9 @@ export default function App() {
                 <Route path="facebook-requests" element={<AdminFacebookDealerSummary />} />
                 <Route path="facebook-requests/dealer/:dealerId" element={<AdminFacebookDealerRequests />} />
                 <Route path="facebook-requests/batch/:batchId" element={<AdminFacebookBatchProgress />} />
+                <Route path="instagram-requests" element={<AdminInstagramDealerSummary />} />
+                <Route path="instagram-requests/dealer/:dealerId" element={<AdminInstagramDealerRequests />} />
+                <Route path="instagram-requests/batch/:batchId" element={<AdminInstagramBatchProgress />} />
 
                 <Route path="whatsapp" element={<AdminWhatsappDashboard />} />
               </Route>

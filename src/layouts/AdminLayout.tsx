@@ -9,6 +9,7 @@ import {
   MessageSquare,
   Gift,
   Facebook,
+  Instagram,
 } from "lucide-react";
 import DashboardLayout from "./DashboardLayout";
 
@@ -43,6 +44,11 @@ const nav = [
     to: "/admin/facebook-requests",
     label: "Facebook Requests",
     icon: <Facebook className="h-4 w-4" />,
+  },
+  {
+    to: "/admin/instagram-requests",
+    label: "Instagram Requests",
+    icon: <Instagram className="h-4 w-4" />,
   },
   {
     to: "/admin/subscriptions",

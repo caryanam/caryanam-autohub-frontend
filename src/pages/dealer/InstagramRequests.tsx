@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {
-  Facebook,
+  Instagram,
   Search,
   RefreshCw,
   AlertCircle,
@@ -27,16 +27,16 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import {
-  useGetDealerFacebookVehicles,
-  useSubmitBulkFacebookPost,
-} from "@/hooks/dealer/useDealerFacebook";
+  useGetDealerInstagramVehicles,
+  useSubmitBulkInstagramPost,
+} from "@/hooks/dealer/useDealerInstagram";
 import { formatINR } from "@/utils/helpers";
-import type { FacebookDealerVehicleStatusDTO } from "@/types/facebook";
+import type { InstagramDealerVehicleStatusDTO } from "@/types/instagram";
 
 const FALLBACK_IMG =
   "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&h=533&fit=crop";
 
-export default function DealerFacebookRequests() {
+export default function DealerInstagramRequests() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -47,9 +47,9 @@ export default function DealerFacebookRequests() {
     isRefetching,
     refetch,
     error,
-  } = useGetDealerFacebookVehicles();
+  } = useGetDealerInstagramVehicles();
 
-  const submitMutation = useSubmitBulkFacebookPost();
+  const submitMutation = useSubmitBulkInstagramPost();
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
@@ -131,7 +131,7 @@ export default function DealerFacebookRequests() {
     (v) => v.publishStatus === "FAILED" || v.approvalStatus === "REJECTED"
   ).length;
 
-  const renderApprovalStatus = (v: FacebookDealerVehicleStatusDTO) => {
+  const renderApprovalStatus = (v: InstagramDealerVehicleStatusDTO) => {
     if (v.approvalStatus === "PENDING") {
       return (
         <Badge className="bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-50 font-semibold gap-1 py-1 rounded-full px-3">
@@ -167,7 +167,7 @@ export default function DealerFacebookRequests() {
     );
   };
 
-  const renderPublishStatus = (v: FacebookDealerVehicleStatusDTO) => {
+  const renderPublishStatus = (v: InstagramDealerVehicleStatusDTO) => {
     if (v.publishStatus === "QUEUED") {
       return (
         <Badge className="bg-cyan-50 text-cyan-700 border border-cyan-200 hover:bg-cyan-50 font-semibold gap-1 py-1 rounded-full px-3">
@@ -215,7 +215,7 @@ export default function DealerFacebookRequests() {
       <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
         <AlertCircle className="h-10 w-10 text-destructive" />
         <div>
-          <p className="font-semibold text-lg">Failed to load Facebook request list</p>
+          <p className="font-semibold text-lg">Failed to load Instagram request list</p>
           <p className="text-sm text-muted-foreground mt-1">{error.message}</p>
         </div>
         <Button onClick={() => refetch()} className="gap-2">
@@ -236,10 +236,10 @@ export default function DealerFacebookRequests() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-            <Facebook className="h-8 w-8 text-[#1877F2] fill-[#1877F2]" /> Facebook Publishing
+            <Instagram className="h-8 w-8 text-[#E1306C]" /> Instagram Publishing
           </h2>
           <p className="text-base text-slate-500 mt-1">
-            Request, track, and manage your vehicle auto-posts on the official Facebook Page.
+            Request, track, and manage your vehicle auto-posts on the official Instagram Page.
           </p>
         </div>
 
@@ -370,23 +370,23 @@ export default function DealerFacebookRequests() {
 
         {/* Selected count header floating */}
         {selectedIds.length > 0 && (
-          <div className="flex items-center justify-between bg-[#1877F2]/10 border border-[#1877F2]/20 rounded-xl p-4 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="flex items-center justify-between bg-gradient-to-r from-pink-50 to-purple-50 border border-pink-100 rounded-xl p-4 animate-in fade-in slide-in-from-top-2 duration-200">
             <div className="flex items-center gap-2">
-              <Facebook className="h-5 w-5 text-[#1877F2]" />
-              <span className="text-sm font-semibold text-[#1877F2]">
-                {selectedIds.length} vehicle{selectedIds.length > 1 ? "s" : ""} selected for Facebook posting
+              <Instagram className="h-5 w-5 text-[#E1306C]" />
+              <span className="text-sm font-semibold text-[#E1306C]">
+                {selectedIds.length} vehicle{selectedIds.length > 1 ? "s" : ""} selected for Instagram posting
               </span>
               <span className="text-xs text-slate-500">(Max 10 at a time)</span>
             </div>
             <Button
               onClick={handleSubmit}
               disabled={submitMutation.isPending}
-              className="bg-[#1877F2] hover:bg-[#1877F2]/90 text-white rounded-xl font-bold text-xs gap-2 px-5 py-2 cursor-pointer h-9 shrink-0 shadow-sm"
+              className="bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#F56040] hover:opacity-90 text-white border-0 rounded-xl font-bold text-xs gap-2 px-5 py-2 cursor-pointer h-9 shrink-0 shadow-sm"
             >
               {submitMutation.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                <Facebook className="h-4 w-4 fill-white" />
+                <Instagram className="h-4 w-4 fill-white" />
               )}
               Submit Request
             </Button>
@@ -458,7 +458,7 @@ export default function DealerFacebookRequests() {
                       colSpan={6}
                       className="text-center py-12 text-muted-foreground font-medium"
                     >
-                      {search ? "No matching vehicles found." : "No vehicles found for Facebook requests."}
+                      {search ? "No matching vehicles found." : "No vehicles found for Instagram requests."}
                     </TableCell>
                   </TableRow>
                 ) : (

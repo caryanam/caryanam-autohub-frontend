@@ -8,6 +8,7 @@ import {
   Heart,
   MessageSquare,
   Facebook,
+  Instagram,
 } from "lucide-react";
 import DashboardLayout from "./DashboardLayout";
 
@@ -42,6 +43,11 @@ const nav = [
     to: "/dealer/facebook-requests",
     label: "Facebook Posts",
     icon: <Facebook className="h-4 w-4" />,
+  },
+  {
+    to: "/dealer/instagram-requests",
+    label: "Instagram Posts",
+    icon: <Instagram className="h-4 w-4" />,
   },
   {
     to: "/dealer/subscription",
