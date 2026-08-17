@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import axios from "axios";
 
 /**
@@ -36,6 +37,10 @@ apiClient.interceptors.response.use(
           detail: { role: isAdminApi ? "admin" : "dealer" },
         }),
       );
+    }
+    if (error.response && error.response.status === 429) {
+      const retryAfter = error.response.headers['retry-after'] || error.response.headers['Retry-After'];
+      toast.error(`Too many requests. Please try again ${retryAfter ? `in ${retryAfter} seconds` : 'later'}.`);
     }
     return Promise.reject(error);
   },
