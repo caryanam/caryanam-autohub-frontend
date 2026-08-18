@@ -47,7 +47,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { SEO } from "@/components/shared/SEO";
-import { useRegister, ApiError, useSendRegistrationOtp, useVerifyRegistrationOtp } from "@/hooks/auth/register";
+import { useRegister, ApiError, useSendRegistrationOtp, useVerifyRegistrationOtp, useSendWhatsappOtp, useVerifyWhatsappOtp } from "@/hooks/auth/register";
 import { toast } from "sonner";
 import carImg from "@/assets/download.jpg";
 import logo from "@/assets/logo.png";
@@ -83,6 +83,12 @@ export default function Register() {
   const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [otp, setOtp] = useState("");
+
+  const { isSending: isSendingWhatsappOtp, sendWhatsappOtp } = useSendWhatsappOtp();
+  const { isVerifying: isVerifyingWhatsappOtp, verifyWhatsappOtp } = useVerifyWhatsappOtp();
+  const [isWhatsappVerified, setIsWhatsappVerified] = useState(false);
+  const [showWhatsappOtpInput, setShowWhatsappOtpInput] = useState(false);
+  const [whatsappOtp, setWhatsappOtp] = useState("");
 
   const form = useForm<FormData>({
     defaultValues: {
@@ -187,6 +193,38 @@ export default function Register() {
       toast.success("Email verified successfully");
       setIsEmailVerified(true);
       setShowOtpInput(false);
+    } catch (err: any) {
+      toast.error(err.message || "Invalid OTP");
+    }
+  };
+
+  const handleSendWhatsappOtp = async () => {
+    const whatsapp = form.getValues("whatsapp");
+    if (!whatsapp) {
+      toast.error("Please enter a WhatsApp number");
+      return;
+    }
+    const mobileRegex = /^[6-9][0-9]{9}$/;
+    if (!mobileRegex.test(whatsapp)) {
+      toast.error("Please enter a valid 10-digit WhatsApp number");
+      return;
+    }
+    try {
+      await sendWhatsappOtp(whatsapp);
+      toast.success("OTP sent to your WhatsApp");
+      setShowWhatsappOtpInput(true);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to send WhatsApp OTP");
+    }
+  };
+
+  const handleVerifyWhatsappOtp = async () => {
+    if (whatsappOtp.length !== 6) return;
+    try {
+      await verifyWhatsappOtp(form.getValues("whatsapp"), whatsappOtp);
+      toast.success("WhatsApp number verified successfully");
+      setIsWhatsappVerified(true);
+      setShowWhatsappOtpInput(false);
     } catch (err: any) {
       toast.error(err.message || "Invalid OTP");
     }
@@ -495,34 +533,113 @@ export default function Register() {
                           <Label className="text-xs font-semibold text-slate-200 md:text-slate-500">
                             WhatsApp Number <span className="text-red-500">*</span>
                           </Label>
-                          <Input
-                            required
-                            type="tel"
-                            maxLength={10}
-                            pattern="[6-9][0-9]{9}"
-                            title="WhatsApp number must start with 6-9 and be exactly 10 digits"
-                            placeholder="9579******"
-                            onInput={(e: React.FormEvent<HTMLInputElement>) => {
-                              const target = e.currentTarget;
-                              const val = target.value.replace(/\D/g, "");
-                              if (val.length > 0) {
-                                const firstDigit = val[0];
-                                if (!["6", "7", "8", "9"].includes(firstDigit)) {
-                                  target.value = "";
-                                  return;
+                          <div className="relative group">
+                            <Input
+                              required
+                              type="tel"
+                              maxLength={10}
+                              pattern="[6-9][0-9]{9}"
+                              title="WhatsApp number must start with 6-9 and be exactly 10 digits"
+                              placeholder="9579******"
+                              disabled={isWhatsappVerified || showWhatsappOtpInput}
+                              onInput={(e: React.FormEvent<HTMLInputElement>) => {
+                                const target = e.currentTarget;
+                                const val = target.value.replace(/\D/g, "");
+                                if (val.length > 0) {
+                                  const firstDigit = val[0];
+                                  if (!["6", "7", "8", "9"].includes(firstDigit)) {
+                                    target.value = "";
+                                    return;
+                                  }
                                 }
-                              }
-                              target.value = val.slice(0, 10);
-                            }}
-                            className="h-11 px-4 rounded-xl border border-white/20 bg-white/10 text-white placeholder-white/40 focus-visible:bg-black/40 focus-visible:border-white focus-visible:ring-4 focus-visible:ring-white/10 md:border-slate-200 md:bg-slate-50/50 md:text-slate-900 md:placeholder-slate-400 md:focus-visible:bg-white md:focus-visible:border-rose-900 md:focus-visible:ring-rose-900/10 transition-all shadow-sm"
-                            {...form.register("whatsapp", {
-                              required: "WhatsApp number is required",
-                              pattern: {
-                                value: /^[6-9][0-9]{9}$/,
-                                message: "WhatsApp number must start with 6-9 and be exactly 10 digits"
-                              }
-                            })}
-                          />
+                                target.value = val.slice(0, 10);
+                              }}
+                              className="h-11 px-4 pr-24 w-full rounded-xl border border-white/20 bg-white/10 text-white placeholder-white/40 focus-visible:bg-black/40 focus-visible:border-white focus-visible:ring-4 focus-visible:ring-white/10 md:border-slate-200 md:bg-slate-50/50 md:text-slate-900 md:placeholder-slate-400 md:focus-visible:bg-white md:focus-visible:border-rose-900 md:focus-visible:ring-rose-900/10 transition-all shadow-sm disabled:opacity-60"
+                              {...form.register("whatsapp", {
+                                required: "WhatsApp number is required",
+                                pattern: {
+                                  value: /^[6-9][0-9]{9}$/,
+                                  message: "WhatsApp number must start with 6-9 and be exactly 10 digits"
+                                },
+                                onChange: () => {
+                                  setIsWhatsappVerified(false);
+                                  setShowWhatsappOtpInput(false);
+                                }
+                              })}
+                            />
+
+                            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
+                              {!isWhatsappVerified ? (
+                                <button
+                                  type="button"
+                                  onClick={handleSendWhatsappOtp}
+                                  disabled={isSendingWhatsappOtp || showWhatsappOtpInput || !form.watch("whatsapp")}
+                                  className="text-[11px] font-bold text-rose-400 hover:text-rose-300 md:text-rose-600 md:hover:text-rose-700 uppercase tracking-wider px-2 py-1 disabled:opacity-50 transition-colors cursor-pointer"
+                                >
+                                  {isSendingWhatsappOtp ? "Sending..." : "Verify"}
+                                </button>
+                              ) : (
+                                <div className="text-[11px] font-bold text-emerald-400 md:text-emerald-600 uppercase tracking-wider flex items-center gap-1 px-2 py-1">
+                                  <CheckCircle2 size={14} className="text-emerald-500" /> Verified
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* WhatsApp OTP Modal */}
+                          <Dialog open={showWhatsappOtpInput} onOpenChange={(open) => {
+                            if (!open) setShowWhatsappOtpInput(false);
+                          }}>
+                            <DialogContent className="sm:max-w-md bg-slate-900 border border-white/10 text-white md:bg-white md:border-slate-200 md:text-slate-900 rounded-2xl">
+                              <DialogHeader>
+                                <DialogTitle className="text-xl font-bold text-white md:text-slate-900">Verify WhatsApp</DialogTitle>
+                                <DialogDescription className="text-sm text-slate-400 md:text-slate-500">
+                                  Enter the 6-digit OTP sent to <span className="font-bold text-white md:text-slate-900">{form.watch("whatsapp")}</span> on WhatsApp
+                                </DialogDescription>
+                              </DialogHeader>
+
+                              <div className="flex flex-col gap-4 py-6">
+                                <div className="flex justify-center">
+                                  <InputOTP
+                                    maxLength={6}
+                                    pattern={REGEXP_ONLY_DIGITS}
+                                    value={whatsappOtp}
+                                    onChange={setWhatsappOtp}
+                                  >
+                                    <InputOTPGroup className="gap-2">
+                                      {[0, 1, 2, 3, 4, 5].map((index) => (
+                                        <InputOTPSlot
+                                          key={index}
+                                          index={index}
+                                          className="w-12 h-14 rounded-xl border-white/20 bg-white/10 text-white text-xl md:border-rose-900/20 md:bg-white md:text-slate-900"
+                                        />
+                                      ))}
+                                    </InputOTPGroup>
+                                  </InputOTP>
+                                </div>
+
+                                <div className="flex justify-between items-center text-xs px-1 mt-2">
+                                  <button type="button" onClick={handleSendWhatsappOtp} disabled={isSendingWhatsappOtp} className="text-slate-400 hover:text-white md:text-rose-600 md:hover:text-rose-800 font-medium underline cursor-pointer disabled:opacity-50">
+                                    Resend OTP
+                                  </button>
+                                  <button type="button" onClick={() => setShowWhatsappOtpInput(false)} className="text-slate-400 hover:text-white md:text-slate-500 md:hover:text-slate-700 font-medium cursor-pointer">
+                                    Change Number
+                                  </button>
+                                </div>
+                              </div>
+
+                              <DialogFooter className="sm:justify-end">
+                                <Button
+                                  type="button"
+                                  onClick={handleVerifyWhatsappOtp}
+                                  disabled={isVerifyingWhatsappOtp || whatsappOtp.length !== 6}
+                                  className="h-11 w-full sm:w-auto px-8 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold transition-all shadow-sm cursor-pointer"
+                                >
+                                  {isVerifyingWhatsappOtp ? "Verifying..." : "Confirm OTP"}
+                                </Button>
+                              </DialogFooter>
+                            </DialogContent>
+                          </Dialog>
                         </div>
 
                         <div className="space-y-1.5">
@@ -854,9 +971,17 @@ export default function Register() {
                     type="button"
                     onClick={() => {
                       if (formRef.current?.reportValidity()) {
-                        if (step === 1 && !isEmailVerified) {
-                          toast.error("Please verify your email address to proceed.");
-                          return;
+                        if (step === 1) {
+                          if (!isEmailVerified && !isWhatsappVerified) {
+                            toast.error("Please verify the WhatsApp number and Email to proceed.");
+                            return;
+                          } else if (isWhatsappVerified && !isEmailVerified) {
+                            toast.error("Please verify the Email to proceed.");
+                            return;
+                          } else if (isEmailVerified && !isWhatsappVerified) {
+                            toast.error("Please verify the WhatsApp number to proceed.");
+                            return;
+                          }
                         }
                         setStep(step + 1);
                       }
