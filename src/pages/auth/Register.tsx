@@ -214,7 +214,11 @@ export default function Register() {
       toast.success("OTP sent to your WhatsApp");
       setShowWhatsappOtpInput(true);
     } catch (err: any) {
-      toast.error(err.message || "Failed to send WhatsApp OTP");
+      if (err instanceof ApiError && err.status === 400) {
+        toast.error(err.message || "Failed to send WhatsApp OTP");
+      } else {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
     }
   };
 
