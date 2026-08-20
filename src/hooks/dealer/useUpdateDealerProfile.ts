@@ -21,6 +21,7 @@ export interface UpdateProfilePayload {
   ownerName?: string;
   dealerLogo?: string;
   showroomImage?: string;
+  email?: string;
 }
 
 export function useUpdateDealerProfile(dealerId: string) {

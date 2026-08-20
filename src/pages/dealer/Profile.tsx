@@ -87,10 +87,13 @@ export default function DealerProfile() {
   const [dealerLogo, setDealerLogo] = useState<File | string | null>(null);
   const [showroomImage, setShowroomImage] = useState<File | string | null>(null);
 
+  const [emailState, setEmailState] = useState("");
+
   useEffect(() => {
     if (profile) {
       setBusinessName(profile.businessName || "");
       setOwnerName(profile.ownerName || "");
+      setEmailState(profile.email || "");
       setDateOfBirth(profile.dateOfBirth || "");
       setDealerMobile(profile.dealerMobile || profile.mobile || "");
       setExecutiveMobile(profile.executiveMobile || "");
@@ -117,6 +120,7 @@ export default function DealerProfile() {
         payload: {
           businessName,
           ownerName,
+          email: emailState,
           dateOfBirth,
           executiveMobile: executiveMobile || null,
           whatsapp,
@@ -411,6 +415,16 @@ export default function DealerProfile() {
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-xs font-semibold text-slate-600">Email Address</Label>
+                    <Input
+                      type="email"
+                      value={emailState}
+                      onChange={(e) => setEmailState(e.target.value)}
+                      className="mt-1.5 rounded-xl h-11 border-slate-200 focus-visible:ring-blue-600 bg-white"
+                      required
+                    />
+                  </div>
                   <div>
                     <Label className="text-xs font-semibold text-slate-600">Date of Birth</Label>
                     <Input
