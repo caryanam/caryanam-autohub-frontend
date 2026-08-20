@@ -128,6 +128,7 @@ export default function DealerProfile() {
           city,
           state,
           pinCode,
+          mobile: dealerMobile,
         },
         dealerLogo: dealerLogo instanceof File ? dealerLogo : null,
         showroomImage: showroomImage instanceof File ? showroomImage : null,
@@ -587,8 +588,19 @@ export default function DealerProfile() {
                     <Label className="text-xs font-semibold text-slate-600">Dealer Mobile</Label>
                     <Input
                       value={dealerMobile}
-                      readOnly
-                      className="mt-1.5 rounded-xl h-11 border-slate-200 bg-slate-50 text-slate-400 cursor-not-allowed select-none"
+                      type="tel"
+                      maxLength={10}
+                      placeholder="Dealer mobile"
+                      onInput={(e: React.FormEvent<HTMLInputElement>) => {
+                        const t = e.currentTarget;
+                        const val = t.value.replace(/\D/g, "");
+                        if (val.length > 0 && !["6","7","8","9"].includes(val[0])) { t.value = ""; setDealerMobile(""); return; }
+                        t.value = val.slice(0, 10);
+                        setDealerMobile(t.value);
+                      }}
+                      onChange={(e) => setDealerMobile(e.target.value)}
+                      className="mt-1.5 rounded-xl h-11 border-slate-200 focus-visible:ring-blue-600 bg-white"
+                      required
                     />
                   </div>
                   <div>
