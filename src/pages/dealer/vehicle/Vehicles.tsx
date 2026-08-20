@@ -60,6 +60,12 @@ export default function DealerVehicles() {
   );
   const [selectedVehicles, setSelectedVehicles] = useState<number[]>([]);
 
+  // Share Modal State
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [shareToSelf, setShareToSelf] = useState(true);
+  const [customerWhatsapp, setCustomerWhatsapp] = useState("");
+  const [shareValidationErr, setShareValidationErr] = useState("");
+
   const {
     data: vehicles = [],
     isLoading: fetching,
@@ -93,46 +99,51 @@ export default function DealerVehicles() {
     );
   };
 
-  const handleShareWhatsApp = (vehicleId: number) => {
-    shareMutation.mutate(
-      { vehicleId, dealerId },
-      {
-        onSuccess: (data) => {
-          toast.success("Vehicle shared successfully!");
-          // Optional: You could open the WhatsApp link in a new tab if returned by API
-          if (data.whatsappLink || data.shareUrl) {
-            window.open(data.whatsappLink || data.shareUrl, "_blank");
-          }
-        },
-        onError: (err) => toast.error(err.message || "Failed to share on WhatsApp"),
-      }
-    );
-  };
-
-  const handleBulkShareWhatsApp = async () => {
-    if (selectedVehicles.length === 0) return;
-
-    if (selectedVehicles.length === 1) {
-      handleShareWhatsApp(selectedVehicles[0]);
+  const submitShare = async () => {
+    setShareValidationErr("");
+    if (!shareToSelf && !customerWhatsapp.trim()) {
+      setShareValidationErr("Please select at least one sharing option.");
+      return;
+    }
+    if (customerWhatsapp.trim() && !/^[6-9]\d{9}$/.test(customerWhatsapp.trim())) {
+      setShareValidationErr("Please enter a valid 10-digit mobile number.");
       return;
     }
 
     try {
       let sharedLinks: string[] = [];
+      const payload = { 
+        dealerId, 
+        shareToSelf, 
+        customerWhatsapp: customerWhatsapp.trim() || undefined 
+      };
+
       for (const vId of selectedVehicles) {
-        const res = await shareMutation.mutateAsync({ vehicleId: vId, dealerId });
-        if (res.shareUrl || res.whatsappLink) {
-          sharedLinks.push((res.shareUrl || res.whatsappLink) as string);
-        }
+        const results = await shareMutation.mutateAsync({ vehicleId: vId, payload });
+        
+        results.forEach(result => {
+          if (result.status === 'SUCCESS') {
+            toast.success(`Successfully sent to ${result.shareType === 'SELF' ? 'you' : 'customer'}!`);
+            if (result.whatsappLink || result.shareUrl) {
+              sharedLinks.push((result.whatsappLink || result.shareUrl) as string);
+            }
+          } else {
+            toast.error(`Failed to send to ${result.shareType === 'SELF' ? 'you' : 'customer'}.`);
+          }
+        });
       }
-      toast.success(`Successfully shared ${selectedVehicles.length} vehicles!`);
+      
       if (sharedLinks.length > 0) {
         const text = encodeURIComponent(`Check out these vehicles:\n\n${sharedLinks.join('\n\n')}`);
         window.open(`https://wa.me/?text=${text}`, "_blank");
       }
+      
+      setIsShareModalOpen(false);
       setSelectedVehicles([]);
+      setCustomerWhatsapp("");
+      setShareToSelf(true);
     } catch (err: any) {
-      toast.error(err.message || "Failed to share some vehicles on WhatsApp");
+      toast.error(err.response?.data?.message || err.message || "Failed to share on WhatsApp");
     }
   };
 
@@ -260,8 +271,8 @@ export default function DealerVehicles() {
 
           {/* {selectedVehicles.length > 0 && ( */}
           <Button
-            onClick={handleBulkShareWhatsApp}
-            disabled={shareMutation.isPending || selectedVehicles.length === 0}
+            onClick={() => setIsShareModalOpen(true)}
+            disabled={selectedVehicles.length === 0}
             className="gap-2 h-10 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl shrink-0"
           >
             <MessageCircle className="h-4 w-4" />
@@ -559,6 +570,78 @@ export default function DealerVehicles() {
             onSuccess={handleSuccess}
             onCancel={() => setIsModalOpen(false)}
           />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isShareModalOpen} onOpenChange={(open) => {
+        if (!open) {
+          setShareValidationErr("");
+          setCustomerWhatsapp("");
+          setShareToSelf(true);
+        }
+        setIsShareModalOpen(open);
+      }}>
+        <DialogContent className="sm:max-w-md bg-white">
+          <DialogHeader>
+            <DialogTitle>Share on WhatsApp</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="shareToSelf" 
+                checked={shareToSelf} 
+                onCheckedChange={(checked) => setShareToSelf(checked as boolean)}
+                className="border-slate-300"
+              />
+              <label
+                htmlFor="shareToSelf"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-slate-700"
+              >
+                Share to my personal WhatsApp
+              </label>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-700">
+                Customer WhatsApp Number (Optional)
+              </label>
+              <Input
+                placeholder="e.g. 9876543210"
+                value={customerWhatsapp}
+                onChange={(e) => {
+                  setCustomerWhatsapp(e.target.value);
+                  setShareValidationErr("");
+                }}
+                maxLength={10}
+                className="rounded-xl"
+              />
+            </div>
+            {shareValidationErr && (
+              <p className="text-sm text-red-500 font-medium">{shareValidationErr}</p>
+            )}
+          </div>
+          <div className="flex justify-end gap-3">
+            <Button
+              variant="outline"
+              onClick={() => setIsShareModalOpen(false)}
+              className="rounded-xl"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={submitShare}
+              disabled={shareMutation.isPending}
+              className="bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl gap-2 min-w-[100px]"
+            >
+              {shareMutation.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <>
+                  <MessageCircle className="h-4 w-4" />
+                  Share
+                </>
+              )}
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

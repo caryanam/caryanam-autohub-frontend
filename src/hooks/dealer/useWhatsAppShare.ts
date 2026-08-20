@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import apiClient from "@/lib/apiClient";
 
 export interface VehicleShareResponseDTO {
@@ -8,21 +8,29 @@ export interface VehicleShareResponseDTO {
   sharedAt?: string;
   whatsappLink?: string;
   shareUrl?: string;
+  shareType?: string;
+  status?: string;
+}
+
+export interface ShareVehicleRequest {
+  dealerId: string;
+  shareToSelf: boolean;
+  customerWhatsapp?: string;
 }
 
 export function useShareVehicleOnWhatsApp() {
   return useMutation<
-    VehicleShareResponseDTO,
+    VehicleShareResponseDTO[],
     Error,
-    { vehicleId: number; dealerId: string }
+    { vehicleId: number; payload: ShareVehicleRequest }
   >({
-    mutationFn: async ({ vehicleId, dealerId }) => {
+    mutationFn: async ({ vehicleId, payload }) => {
       const response = await apiClient.post(
-        `/api/dealer/vehicles/${vehicleId}/share-on-whatsapp?dealerId=${dealerId}`
+        `/api/dealer/vehicles/${vehicleId}/share-on-whatsapp`,
+        payload
       );
       return response.data?.data || response.data;
     },
   });
 }
-
 
