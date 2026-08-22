@@ -421,7 +421,6 @@ export default function VehicleForm({
     const newErrors: Record<string, string> = {};
     if (!brand) newErrors.brand = "Brand is required";
     if (!model) newErrors.model = "Model is required";
-    if (!variant) newErrors.variant = "Variant is required";
     if (!city) newErrors.city = "City is required";
     if (!fuelType) newErrors.fuelType = "Fuel Type is required";
     const yearNum = Number(registrationYear);
@@ -445,12 +444,11 @@ export default function VehicleForm({
     const images = slotImages.filter((file): file is File => file !== null);
 
     if (!vehicleId) {
-      const missingRequired = slotImages.slice(0, 10).some((img) => img === null);
-      if (missingRequired) {
-        toast.error("Please upload all 10 required images.");
+      const uploadedImagesCount = slotImages.filter((img) => img !== null).length;
+      if (uploadedImagesCount < 5) {
+        toast.error("Please upload at least 5 images.");
         return;
       }
-
     }
 
     const payload = {
@@ -615,7 +613,7 @@ export default function VehicleForm({
 
           <div id="field-variant" className="text-left">
             <Label>
-              Variant <span className="text-red-500">*</span>
+              Variant
             </Label>
             <SearchableSelect
               value={variant}
@@ -784,15 +782,15 @@ export default function VehicleForm({
                     Vehicle Images <span className="text-red-500">*</span>
                   </h3>
                   <p className="text-xs text-muted-foreground">
-                    Upload at least 10 required photos (Selected: {slotImages.filter(Boolean).length} photos)
+                    Upload at least 5 required photos (Selected: {slotImages.filter(Boolean).length} photos)
                   </p>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mt-4">
                 {slotImages.map((file, idx) => {
-                  const isRequired = idx < 10;
-                  const slotName = isRequired ? PHOTO_SLOTS[idx] : `Extra Photo ${idx - 9}`;
+                  const isRequired = idx < 5;
+                  const slotName = idx < 10 ? PHOTO_SLOTS[idx] : `Extra Photo ${idx - 9}`;
                   return (
                     <div
                       key={idx}
