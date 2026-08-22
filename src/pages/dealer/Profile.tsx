@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
@@ -65,13 +66,15 @@ const formatDateForInput = (dobStr: string): string => {
 };
 
 export default function DealerProfile() {
-  const { user, updateUserFields } = useDealerAuth();
+  const { user, updateUserFields, logout } = useDealerAuth();
+  const navigate = useNavigate();
   const dealerId = user?.id?.toString() || "";
 
   const { data: profile, isLoading } = useGetDealerProfile(dealerId);
   const updateMutation = useUpdateDealerProfile(dealerId);
 
   // Profile form state
+  const [initialMobile, setInitialMobile] = useState("");
   const [businessName, setBusinessName] = useState("");
   const [ownerName, setOwnerName] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
@@ -96,6 +99,7 @@ export default function DealerProfile() {
       setEmailState(profile.email || "");
       setDateOfBirth(profile.dateOfBirth || "");
       setDealerMobile(profile.dealerMobile || profile.mobile || "");
+      setInitialMobile(profile.dealerMobile || profile.mobile || "");
       setExecutiveMobile(profile.executiveMobile || "");
       setWhatsapp(profile.whatsapp || "");
       setAddress(profile.address || "");
@@ -134,7 +138,14 @@ export default function DealerProfile() {
         showroomImage: showroomImage instanceof File ? showroomImage : null,
       });
       updateUserFields({ businessName });
-      toast.success("Profile updated successfully");
+      
+      if (dealerMobile !== initialMobile) {
+        toast.success("Mobile number updated successfully. Please login again.");
+        await logout();
+        navigate("/auth/login");
+      } else {
+        toast.success("Profile updated successfully");
+      }
     } catch (err) {
       if (err instanceof UpdateProfileError && err.fieldErrors && Object.keys(err.fieldErrors).length > 0) {
         Object.values(err.fieldErrors).forEach((message, i) => {
