@@ -15,6 +15,15 @@ import {
   Phone,
   Lock,
   Coins,
+  Wrench,
+  Sparkles,
+  Gift,
+  CheckCircle2,
+  X,
+  Flame,
+  BadgePercent,
+  Clock,
+  Car,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -610,8 +619,8 @@ export default function Home() {
           const text = document.getElementById(`scroll-indicator-text-${i}`);
           if (dot && text) {
             const isActive = (i === 0 && self.progress < 0.33) ||
-                             (i === 1 && self.progress >= 0.33 && self.progress < 0.68) ||
-                             (i === 2 && self.progress >= 0.68);
+              (i === 1 && self.progress >= 0.33 && self.progress < 0.68) ||
+              (i === 2 && self.progress >= 0.68);
             if (isActive) {
               dot.classList.add("bg-rose-500", "scale-125", "border-rose-500");
               dot.classList.remove("bg-white/20", "border-white/10");

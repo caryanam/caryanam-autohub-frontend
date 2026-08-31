@@ -20,6 +20,9 @@ import {
   Instagram,
   Facebook,
   Twitter,
+  ArrowRight,
+  Sparkles,
+  Gift,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
@@ -181,10 +184,45 @@ export default function PublicLayout() {
       <header
         className={`${isHome ? "fixed" : "sticky"
           } top-0 left-0 right-0 z-50 transition-all duration-300 ${isHome && !scrolled
-            ? "bg-transparent border-transparent"
+            ? "bg-black/90 backdrop-blur-md border-b border-white/5"
             : "bg-black backdrop-blur-md border-b border-white/5 shadow-[0_1px_30px_rgba(0,0,0,0.4)]"
           }`}
       >
+        {/* Top Horizontal Auto-Moving Offer Ticker Banner (Light Theme) */}
+        <Link
+          to="/cars"
+          className="block bg-gradient-to-r from-rose-50 via-amber-50/70 to-rose-50 border-b border-rose-200/80 overflow-hidden py-1.5 hover:bg-rose-100/60 transition-colors cursor-pointer group shadow-2xs"
+          title="Click to explore eligible cars and claim free 1st servicing"
+        >
+          <div className="flex overflow-hidden select-none">
+            <div className="animate-marquee flex items-center whitespace-nowrap text-xs text-slate-800">
+              {Array.from({ length: 4 }).map((_, idx) => (
+                <div key={idx} className="flex items-center gap-5 mx-4 shrink-0">
+                  <div className="flex items-center gap-2">
+                    <span className="bg-rose-600 text-white font-black text-[10px] uppercase px-2 py-0.5 rounded-full tracking-wider shadow-xs flex items-center gap-1">
+                      <Gift className="h-3 w-3" />
+                      Special Offer
+                    </span>
+                    <span className="font-medium text-slate-800">
+                      Buy any car on <strong className="text-slate-950 font-bold">Caryanam</strong> & get <strong className="text-rose-600 font-black">1st Servicing FREE!</strong>
+                    </span>
+                  </div>
+                  <span className="text-amber-900 font-bold text-[11px] bg-amber-100/90 px-2 py-0.5 rounded-full border border-amber-300/80">
+                    Worth ₹4,999 • Free 150+ Point Diagnostic Included
+                  </span>
+                  <span className="text-slate-700 text-[11px] font-mono bg-white/90 border border-rose-200 px-2 py-0.5 rounded-md shadow-2xs">
+                    Code: <strong className="text-rose-700 font-bold">FREE-1ST-SERVICE</strong>
+                  </span>
+                  <span className="text-rose-600 group-hover:translate-x-1 transition-transform flex items-center gap-1 text-[11px] font-black">
+                    Claim Offer <ArrowRight className="h-3 w-3" />
+                  </span>
+                  <span className="text-slate-300 font-bold">•</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Link>
+
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center gap-4 relative">
 
           {/* Logo */}
