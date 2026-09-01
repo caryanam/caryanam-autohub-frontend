@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Instagram, Search, RefreshCw, ExternalLink, AlertCircle } from "lucide-react";
+import { MousePointerClick, Search, RefreshCw, ExternalLink, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -34,7 +34,9 @@ export default function AdminSocialVisitLogs() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Instagram className="h-6 w-6 text-pink-500" />
+          <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
+            <MousePointerClick className="h-6 w-6" />
+          </div>
           <div>
             <h1 className="text-2xl font-bold">Social Media Visit Logs</h1>
             <p className="text-sm text-muted-foreground">

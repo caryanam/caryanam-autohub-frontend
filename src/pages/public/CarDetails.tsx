@@ -53,6 +53,7 @@ import {
   type CustomerUser,
 } from "@/hooks/public/useCustomerAuth";
 import { useWishlist } from "@/hooks/public/useWishlist";
+import apiClient from "@/lib/apiClient";
 import { formatINR, formatKM } from "@/utils/helpers";
 import { toast } from "sonner";
 import {
@@ -104,7 +105,28 @@ export default function CarDetails() {
     }
   }, [vehicleId, customer, generateView]);
 
+  // Track social media visits (Facebook/Instagram)
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const source = urlParams.get('source');
 
+    if (source === 'facebook' || source === 'instagram') {
+      const pathname = window.location.pathname;
+      const segments = pathname.split('/');
+      const dynamicVehicleId = segments[segments.length - 1];
+
+      apiClient.post('/api/social-visits/track', {
+        vehicleId: parseInt(dynamicVehicleId, 10),
+        source: source
+      })
+      .then(response => {
+        if (response.status === 200 || response.status === 201) {
+          console.log("Social visit tracked successfully in dashboard.");
+        }
+      })
+      .catch(error => console.error("Failed to track social visit:", error));
+    }
+  }, []);
 
   // Autofill lead form from customer data
   const openContactDialog = () => {
