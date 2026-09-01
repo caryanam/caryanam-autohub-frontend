@@ -207,12 +207,7 @@ export default function PublicLayout() {
                       Buy any car on <strong className="text-slate-950 font-bold">Caryanam</strong> & get <strong className="text-rose-600 font-black">1st Servicing FREE!</strong>
                     </span>
                   </div>
-                  <span className="text-amber-900 font-bold text-[11px] bg-amber-100/90 px-2 py-0.5 rounded-full border border-amber-300/80">
-                    Worth ₹4,999 • Free 150+ Point Diagnostic Included
-                  </span>
-                  <span className="text-slate-700 text-[11px] font-mono bg-white/90 border border-rose-200 px-2 py-0.5 rounded-md shadow-2xs">
-                    Code: <strong className="text-rose-700 font-bold">FREE-1ST-SERVICE</strong>
-                  </span>
+                  
                   <span className="text-rose-600 group-hover:translate-x-1 transition-transform flex items-center gap-1 text-[11px] font-black">
                     Claim Offer <ArrowRight className="h-3 w-3" />
                   </span>

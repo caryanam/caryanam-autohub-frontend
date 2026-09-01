@@ -1,3 +1,4 @@
+import { MousePointerClick } from "lucide-react";
 import {
   LayoutDashboard,
   Users,
@@ -49,6 +50,11 @@ const nav = [
     to: "/admin/instagram-requests",
     label: "Instagram Requests",
     icon: <Instagram className="h-4 w-4" />,
+  },
+  {
+    to: "/admin/social-visits",
+    label: "Social Media Visits",
+      icon: <MousePointerClick className="h-4 w-4" />,
   },
   {
     to: "/admin/subscriptions",

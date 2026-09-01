@@ -1,3 +1,4 @@
+import { MousePointerClick } from "lucide-react";
 import {
   LayoutDashboard,
   CarFront,
@@ -48,6 +49,11 @@ const nav = [
     to: "/dealer/instagram-requests",
     label: "Instagram Posts",
     icon: <Instagram className="h-4 w-4" />,
+  },
+  {
+    to: "/dealer/social-visits",
+    label: "Social Media Visits",
+      icon: <MousePointerClick className="h-4 w-4" />,
   },
   {
     to: "/dealer/subscription",

@@ -63,6 +63,8 @@ import DealerInstagramRequests from "@/pages/dealer/InstagramRequests";
 import AdminInstagramDealerSummary from "@/pages/admin/instagram/InstagramDealerSummary";
 import AdminInstagramDealerRequests from "@/pages/admin/instagram/InstagramDealerRequests";
 import AdminInstagramBatchProgress from "@/pages/admin/instagram/InstagramBatchProgress";
+import AdminSocialVisitLogs from "@/pages/admin/instagram/SocialVisitLogs";
+import DealerSocialVisits from "@/pages/dealer/DealerSocialVisits";
 import AdminWhatsappDashboard from "@/pages/admin/WhatsappDashboard";
 export default function App() {
   return (
@@ -114,6 +116,7 @@ export default function App() {
                 <Route path="subscription" element={<DealerSubscription />} />
                 <Route path="facebook-requests" element={<DealerFacebookRequests />} />
                 <Route path="instagram-requests" element={<DealerInstagramRequests />} />
+                  <Route path="social-visits" element={<DealerSocialVisits />} />
               </Route>
             </Route>
 
@@ -139,6 +142,7 @@ export default function App() {
                 <Route path="instagram-requests" element={<AdminInstagramDealerSummary />} />
                 <Route path="instagram-requests/dealer/:dealerId" element={<AdminInstagramDealerRequests />} />
                 <Route path="instagram-requests/batch/:batchId" element={<AdminInstagramBatchProgress />} />
+                  <Route path="social-visits" element={<AdminSocialVisitLogs />} />
 
                 <Route path="whatsapp" element={<AdminWhatsappDashboard />} />
               </Route>
