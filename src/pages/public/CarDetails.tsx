@@ -53,7 +53,6 @@ import {
   type CustomerUser,
 } from "@/hooks/public/useCustomerAuth";
 import { useWishlist } from "@/hooks/public/useWishlist";
-import apiClient from "@/lib/apiClient";
 import { formatINR, formatKM } from "@/utils/helpers";
 import { toast } from "sonner";
 import {
@@ -115,12 +114,22 @@ export default function CarDetails() {
       const segments = pathname.split('/');
       const dynamicVehicleId = segments[segments.length - 1];
 
-      apiClient.post('/api/social-visits/track', {
-        vehicleId: parseInt(dynamicVehicleId, 10),
-        source: source
+      const API_URL = import.meta.env.VITE_API_BASE_URL || "https://c1.caryanam.com";
+      const postId = urlParams.get('postId') || urlParams.get('postUrl') || "";
+      
+      fetch(`${API_URL}/api/social-tracking/visit`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          vehicleId: parseInt(dynamicVehicleId, 10),
+          source: source,
+          postId: postId
+        })
       })
       .then(response => {
-        if (response.status === 200 || response.status === 201) {
+        if (response.ok) {
           console.log("Social visit tracked successfully in dashboard.");
         }
       })
