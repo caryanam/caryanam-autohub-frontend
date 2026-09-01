@@ -21,11 +21,15 @@ export default function DealerSocialVisits() {
     v.vehicleName?.toLowerCase().includes(search.toLowerCase())
   );
 
-  const formatDateTime = (iso: string) =>
-    new Date(iso).toLocaleString("en-IN", {
+  const formatDateTime = (iso: string) => {
+    if (!iso) return "—";
+    const isUtc = iso.endsWith("Z");
+    const dateStr = isUtc ? iso : `${iso}Z`;
+    return new Date(dateStr).toLocaleString("en-IN", {
       day: "2-digit", month: "short", year: "numeric",
       hour: "2-digit", minute: "2-digit",
     });
+  };
 
   return (
     <div className="p-6 space-y-6">
