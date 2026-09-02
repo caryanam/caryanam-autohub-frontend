@@ -835,6 +835,7 @@ export default function CarDetails() {
                 <option value="FACEBOOK">Facebook</option>
                 <option value="INSTAGRAM">Instagram</option>
                 <option value="GOOGLE">Google</option>
+                <option value="WHATSAPP">WhatsApp</option>
                 <option value="OTHER">Other</option>
               </select>
             </div>
