@@ -313,9 +313,7 @@ export function useChat({ currentUserId, currentUserRole, token, users }: UseCha
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
-      debug: (str) => {
-        console.log(str);
-      },
+      debug: () => {},
     });
 
     client.onConnect = () => {
