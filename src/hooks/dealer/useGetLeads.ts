@@ -26,6 +26,7 @@ export interface ApiLead {
   leadStatus: "NEW" | "CONTACTED" | "CONVERTED";
   vehicleName: string;
   dealer: number;
+  socialMediaPlatform?: string;
 }
 
 const statusMapToFrontend: Record<ApiLead["leadStatus"], LeadStatus> = {
@@ -56,6 +57,7 @@ export function useGetLeads(dealerId: string) {
           status: statusMapToFrontend[l.leadStatus] || "New",
           createdAt: l.enquiryDate,
           customerCity: l.customerCity || "",
+          socialMediaPlatform: l.socialMediaPlatform || "",
         }));
       } catch (err) {
         if (axios.isAxiosError(err)) {

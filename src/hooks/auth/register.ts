@@ -60,8 +60,9 @@ export function useRegister() {
           formData.append("dealerLogo", dealerLogo);
         }
 
-        const { data: body } = await apiClient.post(
-          "/api/dealer/register",
+        const baseURL = import.meta.env.VITE_API_BASE_URL as string;
+        const { data: body } = await axios.post(
+          `${baseURL}/api/dealer/register`,
           formData,
         );
         return body;

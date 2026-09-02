@@ -95,6 +95,7 @@ export default function CarDetails() {
   const [leadName, setLeadName] = useState("");
   const [leadMobile, setLeadMobile] = useState("");
   const [leadCity, setLeadCity] = useState("");
+  const [socialPlatform, setSocialPlatform] = useState("");
   const [leadErr, setLeadErr] = useState("");
 
   // Generate view when logged-in customer lands on this page
@@ -174,7 +175,7 @@ export default function CarDetails() {
   const handleLeadSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLeadErr("");
-    if (!leadName.trim() || !leadMobile.trim() || !leadCity.trim()) {
+    if (!leadName.trim() || !leadMobile.trim() || !leadCity.trim() || !socialPlatform) {
       setLeadErr("All fields are required.");
       return;
     }
@@ -183,6 +184,7 @@ export default function CarDetails() {
         customerName: leadName,
         customerMobile: leadMobile,
         customerCity: leadCity,
+        socialMediaPlatform: socialPlatform,
       });
       setRevealed(true);
       setShowContact(false);
@@ -820,6 +822,21 @@ export default function CarDetails() {
                 className="mt-1"
                 required
               />
+            </div>
+            <div>
+              <Label>How did you hear about us?</Label>
+              <select
+                value={socialPlatform}
+                onChange={(e) => setSocialPlatform(e.target.value)}
+                className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
+                required
+              >
+                <option value="" disabled>Select a platform</option>
+                <option value="FACEBOOK">Facebook</option>
+                <option value="INSTAGRAM">Instagram</option>
+                <option value="GOOGLE">Google</option>
+                <option value="OTHER">Other</option>
+              </select>
             </div>
             {leadErr && <p className="text-xs text-destructive">{leadErr}</p>}
             <Button

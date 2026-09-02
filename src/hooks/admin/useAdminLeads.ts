@@ -17,6 +17,7 @@ export interface AdminLead {
   }
   | string
   | null;
+  socialMediaPlatform?: string;
 }
 
 export function useAdminLeads() {

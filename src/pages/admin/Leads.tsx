@@ -52,7 +52,8 @@ export default function AdminLeads() {
         l.customerName?.toLowerCase().includes(search.toLowerCase()) ||
         vehicle.toLowerCase().includes(search.toLowerCase()) ||
         l.customerCity?.toLowerCase().includes(search.toLowerCase()) ||
-        l.customerMobile?.includes(search)
+        l.customerMobile?.includes(search) ||
+        l.socialMediaPlatform?.toLowerCase().includes(search.toLowerCase())
       );
     } catch {
       return true;
@@ -120,6 +121,9 @@ export default function AdminLeads() {
                   Vehicle
                 </TableHead>
                 <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4">
+                  Source
+                </TableHead>
+                <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4">
                   Date
                 </TableHead>
                 <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4 pr-6">
@@ -155,6 +159,9 @@ export default function AdminLeads() {
                     <TableCell className="py-4">
                       <Skeleton className="h-4 w-20" />
                     </TableCell>
+                    <TableCell className="py-4">
+                      <Skeleton className="h-4 w-20" />
+                    </TableCell>
                     <TableCell className="py-4 pr-6">
                       <Skeleton className="h-7 w-24 rounded-full" />
                     </TableCell>
@@ -163,7 +170,7 @@ export default function AdminLeads() {
               ) : filtered.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={8}
+                    colSpan={9}
                     className="text-center py-12 text-muted-foreground font-medium"
                   >
                     {search ? "No matching leads found." : "No leads found."}
@@ -194,6 +201,9 @@ export default function AdminLeads() {
                       {typeof l.vehicleName === "object" && l.vehicleName
                         ? `${l.vehicleName.brand} ${l.vehicleName.model} ${l.vehicleName.variant}`
                         : (l.vehicleName ?? "—")}
+                    </TableCell>
+                    <TableCell className="text-sm text-slate-500 capitalize py-4">
+                      {l.socialMediaPlatform?.toLowerCase() || "-"}
                     </TableCell>
                     <TableCell className="text-sm text-slate-400 py-4">
                       {l.enquiryDate

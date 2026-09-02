@@ -6,6 +6,7 @@ type LeadPayload = {
   customerName: string;
   customerMobile: string;
   customerCity: string;
+  socialMediaPlatform: string;
 };
 
 const getHeaders = () => {

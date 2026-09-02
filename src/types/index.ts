@@ -68,6 +68,7 @@ export interface Lead {
   status: LeadStatus;
   createdAt: string;
   customerCity?: string;
+  socialMediaPlatform?: string;
 }
 
 export interface SubscriptionPlan {

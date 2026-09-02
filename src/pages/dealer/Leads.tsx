@@ -63,12 +63,13 @@ export default function DealerLeads() {
       l.mobile?.toLowerCase().includes(searchLower) ||
       l.customerCity?.toLowerCase().includes(searchLower) ||
       l.vehicleTitle?.toLowerCase().includes(searchLower) ||
-      l.status?.toLowerCase().includes(searchLower)
+      l.status?.toLowerCase().includes(searchLower) ||
+      l.socialMediaPlatform?.toLowerCase().includes(searchLower)
     );
   });
 
   const handleExportCSV = () => {
-    const headers = ["Sr No", "Lead ID", "Customer Name", "Mobile", "City", "Vehicle", "Date", "Status"];
+    const headers = ["Sr No", "Lead ID", "Customer Name", "Mobile", "City", "Vehicle", "Source", "Date", "Status"];
     const csvData = filteredLeads.map((l, idx) => ({
       srNo: idx + 1,
       uniqueLeadId: l.uniqueLeadId || "",
@@ -76,6 +77,7 @@ export default function DealerLeads() {
       mobile: l.mobile || "",
       customerCity: l.customerCity || "",
       vehicleTitle: l.vehicleTitle || "",
+      source: l.socialMediaPlatform || "",
       createdAt: formatDate(l.createdAt),
       status: l.status || "",
     }));
@@ -89,6 +91,7 @@ export default function DealerLeads() {
         `"${row.mobile.replace(/"/g, '""')}"`,
         `"${row.customerCity.replace(/"/g, '""')}"`,
         `"${row.vehicleTitle.replace(/"/g, '""')}"`,
+        `"${row.source.replace(/"/g, '""')}"`,
         `"${row.createdAt.replace(/"/g, '""')}"`,
         `"${row.status.replace(/"/g, '""')}"`
       ].join(","))
@@ -176,6 +179,9 @@ export default function DealerLeads() {
                   Vehicle
                 </TableHead>
                 <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4">
+                  Source
+                </TableHead>
+                <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4">
                   Date
                 </TableHead>
                 <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4">
@@ -204,10 +210,10 @@ export default function DealerLeads() {
                       <Skeleton className="h-4 w-32" />
                     </TableCell>
                     <TableCell className="py-4">
-                      <Skeleton className="h-4 w-16" />
+                      <Skeleton className="h-4 w-20" />
                     </TableCell>
                     <TableCell className="py-4">
-                      <Skeleton className="h-4 w-20" />
+                      <Skeleton className="h-4 w-16" />
                     </TableCell>
                     <TableCell className="py-4">
                       <Skeleton className="h-4 w-20" />
@@ -220,7 +226,7 @@ export default function DealerLeads() {
               ) : filteredLeads.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={8}
+                    colSpan={9}
                     className="text-center py-12 text-muted-foreground font-medium"
                   >
                     {searchQuery
@@ -251,6 +257,9 @@ export default function DealerLeads() {
                     </TableCell>
                     <TableCell className="text-sm font-medium text-slate-600 truncate max-w-[240px] text-left py-4">
                       {l.vehicleTitle}
+                    </TableCell>
+                    <TableCell className="text-sm text-slate-500 text-left py-4 capitalize">
+                      {l.socialMediaPlatform?.toLowerCase() || "-"}
                     </TableCell>
                     <TableCell className="text-sm text-slate-400 text-left py-4">
                       {formatDate(l.createdAt)}
