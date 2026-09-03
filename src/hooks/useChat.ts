@@ -324,46 +324,82 @@ export function useChat({ currentUserId, currentUserRole, token, users }: UseCha
       client.subscribe(userQueue, (message) => {
         try {
           const msg = JSON.parse(message.body);
+          const isSentByMe =
+            msg.senderId === currentUserId && msg.senderRole === currentUserRole;
           const formatted: Message = {
             id: msg.id ? String(msg.id) : `msg-${Date.now()}`,
-            sender:
-              msg.senderId === currentUserId && msg.senderRole === currentUserRole
-                ? "me"
-                : "other",
+            sender: isSentByMe ? "me" : "other",
             text: msg.content,
             timestamp: formatTime(msg.sentAt || new Date().toISOString()),
             isRead: msg.isRead || false,
           };
 
-          const senderId = msg.senderId;
-          const senderRole = msg.senderRole;
-
           const lastMsgTime = msg.sentAt || new Date().toISOString();
 
-          setThreads((prev) =>
-            prev.map((t) => {
-              if (t.userId === senderId && t.userRole === senderRole) {
-                const isCurrentActive =
-                  activeUserIdRef.current === senderId &&
-                  activeUserRoleRef.current === senderRole;
+          if (isSentByMe) {
+            // This is the server echo of a message we already added optimistically.
+            // Replace the optimistic entry (identified by the "msg-sent-" prefix)
+            // with the real server-confirmed message (which has the correct
+            // timestamp and database id).
+            setThreads((prev) =>
+              prev.map((t) => {
+                if (t.userId === msg.receiverId && t.userRole === msg.receiverRole) {
+                  // Find the first optimistic message that matches the content
+                  const optimisticIdx = t.messages.findIndex(
+                    (m) => m.id.startsWith("msg-sent-") && m.text === formatted.text
+                  );
 
-                if (isCurrentActive) {
-                  markAsSeen(senderId, senderRole);
+                  let updatedMessages: Message[];
+                  if (optimisticIdx !== -1) {
+                    // Replace the optimistic message with the server-confirmed one
+                    updatedMessages = [...t.messages];
+                    updatedMessages[optimisticIdx] = formatted;
+                  } else {
+                    // No optimistic message found (e.g. sent from another tab/device)
+                    updatedMessages = [...t.messages, formatted];
+                  }
+
+                  return {
+                    ...t,
+                    messages: updatedMessages,
+                    lastMessage: formatted.text,
+                    lastTime: formatted.timestamp,
+                    lastMsgAt: lastMsgTime,
+                  };
                 }
+                return t;
+              })
+            );
+          } else {
+            // Message from another user
+            const senderId = msg.senderId;
+            const senderRole = msg.senderRole;
 
-                return {
-                  ...t,
-                  messages: [...t.messages, formatted],
-                  lastMessage: formatted.text,
-                  lastTime: formatted.timestamp,
-                  unread: !isCurrentActive,
-                  lastMsgAt: lastMsgTime,
-                  unreadCount: isCurrentActive ? 0 : (t.unreadCount ?? 0) + 1,
-                };
-              }
-              return t;
-            })
-          );
+            setThreads((prev) =>
+              prev.map((t) => {
+                if (t.userId === senderId && t.userRole === senderRole) {
+                  const isCurrentActive =
+                    activeUserIdRef.current === senderId &&
+                    activeUserRoleRef.current === senderRole;
+
+                  if (isCurrentActive) {
+                    markAsSeen(senderId, senderRole);
+                  }
+
+                  return {
+                    ...t,
+                    messages: [...t.messages, formatted],
+                    lastMessage: formatted.text,
+                    lastTime: formatted.timestamp,
+                    unread: !isCurrentActive,
+                    lastMsgAt: lastMsgTime,
+                    unreadCount: isCurrentActive ? 0 : (t.unreadCount ?? 0) + 1,
+                  };
+                }
+                return t;
+              })
+            );
+          }
 
           // Refresh unread counts
           fetchTotalUnreadCount();

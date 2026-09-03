@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import {
   MessageSquare,
   Send,
-  Clock,
   CheckCheck,
   Search,
   Sparkles,
@@ -350,15 +349,14 @@ export default function CustomerChat() {
                                   >
                                     {m.text}
                                   </div>
-                                  <div className={`flex items-center gap-1.5 text-[9px] text-slate-400 px-1 ${isMe ? "justify-end" : "justify-start"}`}>
-                                    <Clock className="h-2.5 w-2.5" />
+                                  <div className={`flex items-center gap-1.5 text-[9px] px-1 ${isMe ? "justify-end text-rose-400" : "justify-start text-slate-500"}`}>
                                     {m.timestamp}
-                                    {isMe && (
-                                      <CheckCheck
-                                        className={`h-3 w-3 ${m.isRead ? "text-rose-500" : "text-slate-300"
-                                          }`}
-                                      />
-                                    )}
+                                    <CheckCheck
+                                      className={`h-3 w-3 ${isMe
+                                        ? (m.isRead ? "text-rose-600" : "text-rose-300")
+                                        : "text-slate-400"
+                                        }`}
+                                    />
                                   </div>
                                 </div>
                               </motion.div>
