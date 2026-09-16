@@ -48,6 +48,8 @@ import AdminDealers from "@/pages/admin/Dealers";
 import AdminDealerDetails from "@/pages/admin/DealerDetails";
 import AdminVehicles from "@/pages/admin/Vehicles";
 import AdminOffers from "@/pages/admin/Offers";
+import AdminPromoVideo from "@/pages/admin/PromoVideo";
+import AdminFestivalOffer from "@/pages/admin/FestivalOffer";
 import AdminLeads from "@/pages/admin/Leads";
 import AdminSubscriptions from "@/pages/admin/Subscriptions";
 
@@ -131,6 +133,8 @@ export default function App() {
                 <Route path="dealers" element={<AdminDealers />} />
                 <Route path="dealers/:id" element={<AdminDealerDetails />} />
                 <Route path="vehicles" element={<AdminVehicles />} />
+                <Route path="promo-video" element={<AdminPromoVideo />} />
+                <Route path="festival-offer" element={<AdminFestivalOffer />} />
                 <Route path="offers" element={<AdminOffers />} />
                 <Route path="leads" element={<AdminLeads />} />
                 <Route path="subscriptions" element={<AdminSubscriptions />} />

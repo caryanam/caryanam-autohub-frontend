@@ -9,6 +9,8 @@ import {
   FileBarChart,
   MessageSquare,
   Gift,
+  Video,
+  Sparkles,
   Facebook,
   Instagram,
 } from "lucide-react";
@@ -31,6 +33,16 @@ const nav = [
     icon: <CarFront className="h-4 w-4" />,
   },
   { to: "/admin/leads", label: "Leads", icon: <Inbox className="h-4 w-4" /> },
+  {
+    to: "/admin/promo-video",
+    label: "Promo Video",
+    icon: <Video className="h-4 w-4" />,
+  },
+  {
+    to: "/admin/festival-offer",
+    label: "Festival Offer",
+    icon: <Sparkles className="h-4 w-4" />,
+  },
   {
     to: "/admin/offers",
     label: "Offers",
