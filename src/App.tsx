@@ -4,12 +4,18 @@ import {
   Route,
   Navigate,
   useNavigate,
+  useParams,
 } from "react-router-dom";
 import { AdminAuthProvider } from "@/contexts/AdminAuthContext";
 import { DealerAuthProvider } from "@/contexts/DealerAuthContext";
 import { Toaster } from "@/components/ui/sonner";
 import { SessionExpiredModal } from "@/components/shared/SessionExpiredModal";
 import { useEffect } from "react";
+
+function VehicleLegacyRedirect() {
+  const { id } = useParams();
+  return <Navigate to={`/car/${id}`} replace />;
+}
 
 import PublicLayout from "@/layouts/PublicLayout";
 import DealerLayout from "@/layouts/DealerLayout";
@@ -80,6 +86,7 @@ export default function App() {
               <Route path="/cars" element={<Cars />} />
               <Route path="/premium" element={<PremiumCars />} />
               <Route path="/car/:id" element={<CarDetails />} />
+              <Route path="/vehicle/:id" element={<VehicleLegacyRedirect />} />
               <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/about" element={<About />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />

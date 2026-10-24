@@ -90,3 +90,21 @@ export interface AuthUser {
   role: AuthRole;
   dealerId?: string;
 }
+
+export interface VehicleQrData {
+  vehicleId: number;
+  brand: string;
+  model: string;
+  variant: string;
+  askingPrice: number;
+  fuelType: string;
+  city: string;
+  registrationYear: number;
+  kilometerDriven: number;
+  dealerBusinessName?: string;
+  dealerName?: string;
+  dealerContactNumber?: string;
+  dealerWhatsappNumber?: string;
+  vehiclePageUrl?: string;
+  qrCodeBase64?: string;
+}

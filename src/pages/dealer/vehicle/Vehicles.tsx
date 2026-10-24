@@ -8,6 +8,7 @@ import {
   Eye,
   Download,
   MessageCircle,
+  QrCode,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -42,6 +43,7 @@ import { formatINR, formatKM } from "@/utils/helpers";
 import { useState } from "react";
 import { toast } from "sonner";
 import VehicleForm from "./VehicleForm";
+import VehicleQrModal from "./VehicleQrModal";
 import { useGetVehicles } from "@/hooks/dealer/useGetVehicles";
 import { useDeleteVehicle } from "@/hooks/dealer/useDeleteVehicle";
 import { useUpdateVehicleStatus } from "@/hooks/dealer/useUpdateVehicleStatus";
@@ -65,6 +67,10 @@ export default function DealerVehicles() {
   const [shareToSelf, setShareToSelf] = useState(true);
   const [customerWhatsapp, setCustomerWhatsapp] = useState("");
   const [shareValidationErr, setShareValidationErr] = useState("");
+
+  // QR Code Modal State
+  const [qrVehicleId, setQrVehicleId] = useState<number | null>(null);
+  const [isQrModalOpen, setIsQrModalOpen] = useState(false);
 
   const {
     data: vehicles = [],
@@ -517,8 +523,21 @@ export default function DealerVehicles() {
                             variant="ghost"
                             onClick={() => navigate(`/dealer/vehicles/${v.id}`)}
                             className="h-8 w-8 bg-yellow-100 rounded-lg text-yellow-400 hover:bg-yellow-300 hover:text-yellow-700 transition-colors cursor-pointer"
+                            title="View Vehicle Details"
                           >
                             <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            onClick={() => {
+                              setQrVehicleId(v.id);
+                              setIsQrModalOpen(true);
+                            }}
+                            className="h-8 w-8 bg-emerald-100 rounded-lg text-emerald-600 hover:bg-emerald-300 hover:text-emerald-800 transition-colors cursor-pointer"
+                            title="View & Download QR Code"
+                          >
+                            <QrCode className="h-4 w-4" />
                           </Button>
                           <Button
                             size="icon"
@@ -644,6 +663,16 @@ export default function DealerVehicles() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Unique Vehicle QR Code Modal */}
+      <VehicleQrModal
+        vehicleId={qrVehicleId}
+        isOpen={isQrModalOpen}
+        onClose={() => {
+          setIsQrModalOpen(false);
+          setQrVehicleId(null);
+        }}
+      />
     </div>
   );
 }

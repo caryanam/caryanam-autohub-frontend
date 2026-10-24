@@ -12,14 +12,17 @@ import {
   Calendar,
   Gauge,
   DollarSign,
+  QrCode,
 } from "lucide-react";
 import { useState } from "react";
 import { useGetVehicleDetails } from "@/hooks/dealer/useGetVehicleDetails";
+import VehicleQrModal from "./VehicleQrModal";
 
 export default function DealerVehicleDetails() {
   const { vehicleId } = useParams<{ vehicleId: string }>();
   const navigate = useNavigate();
   const [activeImg, setActiveImg] = useState(0);
+  const [isQrModalOpen, setIsQrModalOpen] = useState(false);
 
   const { data: vehicle, isLoading } = useGetVehicleDetails(
     vehicleId ? Number(vehicleId) : undefined,
@@ -61,25 +64,35 @@ export default function DealerVehicleDetails() {
   return (
     <div className="space-y-6 ">
       {/* Back */}
-      {/* Breadcrumbs */}
-      <div className="flex items-center gap-3">
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-8 w-8 rounded-xl bg-white border-slate-200 hover:bg-slate-50 hover:text-slate-900 transition-colors shrink-0 cursor-pointer"
-          onClick={() => navigate(-1)}
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400 select-none">
-          <Link to="/dealer/vehicles" className="hover:text-rose-900 transition-colors cursor-pointer">
-            Vehicles
-          </Link>
-          <ChevronRight size={12} className="text-slate-300" />
-          <span className="text-slate-900 font-black truncate max-w-[200px]">
-            {vehicle.brand} {vehicle.model}
-          </span>
+      {/* Breadcrumbs & Actions */}
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8 rounded-xl bg-white border-slate-200 hover:bg-slate-50 hover:text-slate-900 transition-colors shrink-0 cursor-pointer"
+            onClick={() => navigate(-1)}
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400 select-none">
+            <Link to="/dealer/vehicles" className="hover:text-rose-900 transition-colors cursor-pointer">
+              Vehicles
+            </Link>
+            <ChevronRight size={12} className="text-slate-300" />
+            <span className="text-slate-900 font-black truncate max-w-[200px]">
+              {vehicle.brand} {vehicle.model}
+            </span>
+          </div>
         </div>
+
+        <Button
+          onClick={() => setIsQrModalOpen(true)}
+          className="gap-2 h-9 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-sm text-xs px-3.5 cursor-pointer"
+        >
+          <QrCode className="h-4 w-4" />
+          <span>Vehicle QR Code</span>
+        </Button>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
@@ -180,6 +193,32 @@ export default function DealerVehicleDetails() {
             />
           </div>
 
+          {/* Vehicle QR Code Card */}
+          <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 border border-emerald-200/80 rounded-2xl p-4 flex items-center justify-between gap-4 shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="h-11 w-11 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+                <QrCode className="h-6 w-6" />
+              </div>
+              <div>
+                <h4 className="font-bold text-sm text-slate-900 flex items-center gap-2">
+                  Vehicle QR Code
+                  <Badge className="bg-emerald-100 text-emerald-800 border-0 text-[10px] font-bold">
+                    Unique
+                  </Badge>
+                </h4>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Scan to view full details with dealer contact, download or share
+                </p>
+              </div>
+            </div>
+            <Button
+              onClick={() => setIsQrModalOpen(true)}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs h-9 px-4 shrink-0 shadow-sm cursor-pointer"
+            >
+              View QR
+            </Button>
+          </div>
+
         </div>
       </div>
 
@@ -213,6 +252,13 @@ export default function DealerVehicleDetails() {
           </CardContent>
         </Card>
       )}
+
+      {/* QR Code Modal */}
+      <VehicleQrModal
+        vehicleId={vehicleId ? Number(vehicleId) : null}
+        isOpen={isQrModalOpen}
+        onClose={() => setIsQrModalOpen(false)}
+      />
     </div>
   );
 }
