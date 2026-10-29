@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import { AdminAuthProvider } from "@/contexts/AdminAuthContext";
 import { DealerAuthProvider } from "@/contexts/DealerAuthContext";
+import { InspectorAuthProvider } from "@/contexts/InspectorAuthContext";
 import { Toaster } from "@/components/ui/sonner";
 import { SessionExpiredModal } from "@/components/shared/SessionExpiredModal";
 import { useEffect } from "react";
@@ -20,11 +21,14 @@ function VehicleLegacyRedirect() {
 import PublicLayout from "@/layouts/PublicLayout";
 import DealerLayout from "@/layouts/DealerLayout";
 import AdminLayout from "@/layouts/AdminLayout";
+import InspectorLayout from "@/layouts/InspectorLayout";
 import { ProtectedRoute } from "@/components/shared/ProtectedRoute";
 
 import Home from "@/pages/public/Home";
 import Cars from "@/pages/public/Cars";
 import PremiumCars from "@/pages/public/PremiumCars";
+import VerifiedCars from "@/pages/public/VerifiedCars";
+import VerifiedPremiumCars from "@/pages/public/VerifiedPremiumCars";
 import CarDetails from "@/pages/public/CarDetails";
 import Wishlist from "@/pages/public/Wishlist";
 import CustomerChat from "@/pages/public/Chat";
@@ -46,8 +50,10 @@ import DealerLeads from "@/pages/dealer/Leads";
 import DealerProfile from "@/pages/dealer/Profile";
 import DealerWishlist from "@/pages/dealer/CustomerWishlist";
 import DealerChat from "@/pages/dealer/Chat";
-
 import DealerSubscription from "@/pages/dealer/subscription/Subscription";
+import DealerFacebookRequests from "@/pages/dealer/FacebookRequests";
+import DealerInstagramRequests from "@/pages/dealer/InstagramRequests";
+import DealerSocialVisits from "@/pages/dealer/DealerSocialVisits";
 
 import AdminDashboard from "@/pages/admin/Dashboard";
 import AdminDealers from "@/pages/admin/Dealers";
@@ -58,115 +64,134 @@ import AdminPromoVideo from "@/pages/admin/PromoVideo";
 import AdminFestivalOffer from "@/pages/admin/FestivalOffer";
 import AdminLeads from "@/pages/admin/Leads";
 import AdminSubscriptions from "@/pages/admin/Subscriptions";
-
 import AdminReports from "@/pages/admin/Reports";
 import AdminChat from "@/pages/admin/Chat";
-
-import DealerFacebookRequests from "@/pages/dealer/FacebookRequests";
 import AdminFacebookDealerSummary from "@/pages/admin/facebook/FacebookDealerSummary";
 import AdminFacebookDealerRequests from "@/pages/admin/facebook/FacebookDealerRequests";
 import AdminFacebookBatchProgress from "@/pages/admin/facebook/FacebookBatchProgress";
-
-import DealerInstagramRequests from "@/pages/dealer/InstagramRequests";
 import AdminInstagramDealerSummary from "@/pages/admin/instagram/InstagramDealerSummary";
 import AdminInstagramDealerRequests from "@/pages/admin/instagram/InstagramDealerRequests";
 import AdminInstagramBatchProgress from "@/pages/admin/instagram/InstagramBatchProgress";
 import AdminSocialVisitLogs from "@/pages/admin/instagram/SocialVisitLogs";
-import DealerSocialVisits from "@/pages/dealer/DealerSocialVisits";
 import AdminWhatsappDashboard from "@/pages/admin/WhatsappDashboard";
+import AdminInspectors from "@/pages/admin/Inspectors";
+import AdminInspections from "@/pages/admin/Inspections";
+
+import InspectorDashboard from "@/pages/inspector/Dashboard";
+import InspectorHistory from "@/pages/inspector/History";
+import InspectorProfile from "@/pages/inspector/Profile";
+
 export default function App() {
   return (
     <AdminAuthProvider>
       <DealerAuthProvider>
-        <BrowserRouter>
-          <Routes>
-            {/* Public */}
-            <Route element={<PublicLayout />}>
-              <Route index element={<Home />} />
-              <Route path="/cars" element={<Cars />} />
-              <Route path="/premium" element={<PremiumCars />} />
-              <Route path="/car/:id" element={<CarDetails />} />
-              <Route path="/vehicle/:id" element={<VehicleLegacyRedirect />} />
-              <Route path="/wishlist" element={<Wishlist />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/terms" element={<TermsAndConditions />} />
-              <Route path="/refund-policy" element={<RefundPolicy />} />
-              <Route path="/rto-form" element={<RTOForm />} />
-              <Route path="/delete-account" element={<DeleteAccount />} />
+        <InspectorAuthProvider>
+          <BrowserRouter>
+            <Routes>
+              {/* Public */}
+              <Route element={<PublicLayout />}>
+                <Route index element={<Home />} />
+                <Route path="/cars" element={<Cars />} />
+                <Route path="/premium" element={<PremiumCars />} />
+                <Route path="/verified-cars" element={<VerifiedCars />} />
+                <Route path="/verified-premium" element={<VerifiedPremiumCars />} />
+                <Route path="/car/:id" element={<CarDetails />} />
+                <Route path="/vehicle/:id" element={<VehicleLegacyRedirect />} />
+                <Route path="/wishlist" element={<Wishlist />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/terms" element={<TermsAndConditions />} />
+                <Route path="/refund-policy" element={<RefundPolicy />} />
+                <Route path="/rto-form" element={<RTOForm />} />
+                <Route path="/delete-account" element={<DeleteAccount />} />
 
-              {/* Customer Protected */}
-              <Route element={<ProtectedRoute allow={["customer"]} />}>
-                <Route path="/chat" element={<CustomerChat />} />
+                {/* Customer Protected */}
+                <Route element={<ProtectedRoute allow={["customer"]} />}>
+                  <Route path="/chat" element={<CustomerChat />} />
+                </Route>
               </Route>
-            </Route>
 
-            {/* Auth */}
-            <Route path="/auth/login" element={<Login />} />
-            <Route path="/auth/register" element={<Register />} />
+              {/* Auth */}
+              <Route path="/auth/login" element={<Login />} />
+              <Route path="/auth/register" element={<Register />} />
 
-            {/* Dealer */}
-            <Route element={<ProtectedRoute allow={["dealer"]} />}>
-              <Route path="/dealer" element={<DealerLayout />}>
-                <Route
-                  index
-                  element={<Navigate to="/dealer/dashboard" replace />}
-                />
-                <Route path="dashboard" element={<DealerDashboard />} />
-                <Route path="vehicles" element={<DealerVehicles />} />
-                <Route
-                  path="vehicles/:vehicleId"
-                  element={<DealerVehicleDetails />}
-                />
-                <Route path="leads" element={<DealerLeads />} />
-                <Route path="wishlist" element={<DealerWishlist />} />
-                <Route path="profile" element={<DealerProfile />} />
-                <Route path="chat" element={<DealerChat />} />
-                <Route path="subscription" element={<DealerSubscription />} />
-                <Route path="facebook-requests" element={<DealerFacebookRequests />} />
-                <Route path="instagram-requests" element={<DealerInstagramRequests />} />
+              {/* Inspector Portal */}
+              <Route element={<ProtectedRoute allow={["inspector"]} />}>
+                <Route path="/inspector" element={<InspectorLayout />}>
+                  <Route
+                    index
+                    element={<Navigate to="/inspector/dashboard" replace />}
+                  />
+                  <Route path="dashboard" element={<InspectorDashboard />} />
+                  <Route path="history" element={<InspectorHistory />} />
+                  <Route path="profile" element={<InspectorProfile />} />
+                </Route>
+              </Route>
+
+              {/* Dealer Portal */}
+              <Route element={<ProtectedRoute allow={["dealer"]} />}>
+                <Route path="/dealer" element={<DealerLayout />}>
+                  <Route
+                    index
+                    element={<Navigate to="/dealer/dashboard" replace />}
+                  />
+                  <Route path="dashboard" element={<DealerDashboard />} />
+                  <Route path="vehicles" element={<DealerVehicles />} />
+                  <Route
+                    path="vehicles/:vehicleId"
+                    element={<DealerVehicleDetails />}
+                  />
+                  <Route path="leads" element={<DealerLeads />} />
+                  <Route path="wishlist" element={<DealerWishlist />} />
+                  <Route path="profile" element={<DealerProfile />} />
+                  <Route path="chat" element={<DealerChat />} />
+                  <Route path="subscription" element={<DealerSubscription />} />
+                  <Route path="facebook-requests" element={<DealerFacebookRequests />} />
+                  <Route path="instagram-requests" element={<DealerInstagramRequests />} />
                   <Route path="social-visits" element={<DealerSocialVisits />} />
+                </Route>
               </Route>
-            </Route>
 
-            {/* Admin */}
-            <Route element={<ProtectedRoute allow={["admin"]} />}>
-              <Route path="/admin" element={<AdminLayout />}>
-                <Route
-                  index
-                  element={<Navigate to="/admin/dashboard" replace />}
-                />
-                <Route path="dashboard" element={<AdminDashboard />} />
-                <Route path="dealers" element={<AdminDealers />} />
-                <Route path="dealers/:id" element={<AdminDealerDetails />} />
-                <Route path="vehicles" element={<AdminVehicles />} />
-                <Route path="promo-video" element={<AdminPromoVideo />} />
-                <Route path="festival-offer" element={<AdminFestivalOffer />} />
-                <Route path="offers" element={<AdminOffers />} />
-                <Route path="leads" element={<AdminLeads />} />
-                <Route path="subscriptions" element={<AdminSubscriptions />} />
-                <Route path="chat" element={<AdminChat />} />
-                <Route path="reports" element={<AdminReports />} />
-                <Route path="facebook-requests" element={<AdminFacebookDealerSummary />} />
-                <Route path="facebook-requests/dealer/:dealerId" element={<AdminFacebookDealerRequests />} />
-                <Route path="facebook-requests/batch/:batchId" element={<AdminFacebookBatchProgress />} />
-                <Route path="instagram-requests" element={<AdminInstagramDealerSummary />} />
-                <Route path="instagram-requests/dealer/:dealerId" element={<AdminInstagramDealerRequests />} />
-                <Route path="instagram-requests/batch/:batchId" element={<AdminInstagramBatchProgress />} />
+              {/* Admin Portal */}
+              <Route element={<ProtectedRoute allow={["admin"]} />}>
+                <Route path="/admin" element={<AdminLayout />}>
+                  <Route
+                    index
+                    element={<Navigate to="/admin/dashboard" replace />}
+                  />
+                  <Route path="dashboard" element={<AdminDashboard />} />
+                  <Route path="inspectors" element={<AdminInspectors />} />
+                  <Route path="certifications" element={<AdminInspections />} />
+                  <Route path="dealers" element={<AdminDealers />} />
+                  <Route path="dealers/:id" element={<AdminDealerDetails />} />
+                  <Route path="vehicles" element={<AdminVehicles />} />
+                  <Route path="promo-video" element={<AdminPromoVideo />} />
+                  <Route path="festival-offer" element={<AdminFestivalOffer />} />
+                  <Route path="offers" element={<AdminOffers />} />
+                  <Route path="leads" element={<AdminLeads />} />
+                  <Route path="subscriptions" element={<AdminSubscriptions />} />
+                  <Route path="chat" element={<AdminChat />} />
+                  <Route path="reports" element={<AdminReports />} />
+                  <Route path="facebook-requests" element={<AdminFacebookDealerSummary />} />
+                  <Route path="facebook-requests/dealer/:dealerId" element={<AdminFacebookDealerRequests />} />
+                  <Route path="facebook-requests/batch/:batchId" element={<AdminFacebookBatchProgress />} />
+                  <Route path="instagram-requests" element={<AdminInstagramDealerSummary />} />
+                  <Route path="instagram-requests/dealer/:dealerId" element={<AdminInstagramDealerRequests />} />
+                  <Route path="instagram-requests/batch/:batchId" element={<AdminInstagramBatchProgress />} />
                   <Route path="social-visits" element={<AdminSocialVisitLogs />} />
-
-                <Route path="whatsapp" element={<AdminWhatsappDashboard />} />
+                  <Route path="whatsapp" element={<AdminWhatsappDashboard />} />
+                </Route>
               </Route>
-            </Route>
 
-            {/* 404 inside the public layout shell */}
-            <Route element={<PublicLayout />}>
-              <Route path="*" element={<NotFound />} />
-            </Route>
-          </Routes>
-        </BrowserRouter>
-        <Toaster position="bottom-left" richColors expand />
-        <SessionExpiredModal />
+              {/* 404 inside the public layout shell */}
+              <Route element={<PublicLayout />}>
+                <Route path="*" element={<NotFound />} />
+              </Route>
+            </Routes>
+          </BrowserRouter>
+          <Toaster position="bottom-left" richColors expand />
+          <SessionExpiredModal />
+        </InspectorAuthProvider>
       </DealerAuthProvider>
     </AdminAuthProvider>
   );

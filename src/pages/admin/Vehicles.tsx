@@ -12,7 +12,22 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AlertCircle, RefreshCw, Search, Facebook } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  AlertCircle,
+  RefreshCw,
+  Search,
+  Facebook,
+  CheckCircle2,
+  Clock,
+  ShieldCheck,
+} from "lucide-react";
 import { useAdminAllVehicles } from "@/hooks/admin/useAdminAllVehicles";
 import { formatINR, formatKM } from "@/utils/helpers";
 
@@ -54,17 +69,28 @@ function shareVehicleToFacebook(vehicleId: string | number) {
 
 export default function AdminVehicles() {
   const [search, setSearch] = useState("");
+  const [certFilter, setCertFilter] = useState("ALL");
   const { vehicles, loading, error, refetch } = useAdminAllVehicles();
 
-  const filtered = vehicles.filter(
-    (v) =>
-      `${v.brand} ${v.model} ${v.variant}`
-        .toLowerCase()
-        .includes(search.toLowerCase()) ||
-      v.city?.toLowerCase().includes(search.toLowerCase()) ||
-      v.fuelType?.toLowerCase().includes(search.toLowerCase()) ||
-      v.vehicleType?.toLowerCase().includes(search.toLowerCase()),
-  );
+  const filtered = vehicles.filter((v) => {
+    // Certification status filter
+    if (certFilter === "VERIFIED" && !v.isCertified) return false;
+    if (
+      certFilter === "PENDING" &&
+      (!v.certifyRequested || v.isCertified || v.inspectionStatus !== "PENDING")
+    )
+      return false;
+    if (certFilter === "NOT_CERTIFIED" && v.isCertified) return false;
+
+    // Search filter
+    const q = search.toLowerCase();
+    return (
+      `${v.brand} ${v.model} ${v.variant}`.toLowerCase().includes(q) ||
+      v.city?.toLowerCase().includes(q) ||
+      v.fuelType?.toLowerCase().includes(q) ||
+      v.vehicleType?.toLowerCase().includes(q)
+    );
+  });
 
   if (error) {
     return (
@@ -86,21 +112,34 @@ export default function AdminVehicles() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold tracking-tight text-slate-900">
-            Vehicles
+            Vehicles Inventory
           </h2>
           <p className="text-base text-slate-500 mt-1">
-            {filtered.length} vehicles
+            {filtered.length} vehicles listed • Monitor verified vs unverified status
           </p>
         </div>
 
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          <div className="relative flex-1 sm:w-[280px] sm:flex-none">
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          {/* Certification Filter */}
+          <Select value={certFilter} onValueChange={setCertFilter}>
+            <SelectTrigger className="w-44 h-10 rounded-xl text-xs bg-white border-slate-200">
+              <SelectValue placeholder="Verification Status" />
+            </SelectTrigger>
+            <SelectContent className="rounded-xl">
+              <SelectItem value="ALL">All Verification</SelectItem>
+              <SelectItem value="VERIFIED">Verified (Certified)</SelectItem>
+              <SelectItem value="PENDING">Pending Verify</SelectItem>
+              <SelectItem value="NOT_CERTIFIED">Not Certified</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <div className="relative flex-1 sm:w-[260px] sm:flex-none">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search brand, model, city..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 h-10 bg-white rounded-xl w-full"
+              className="pl-9 h-10 rounded-xl"
             />
           </div>
 
@@ -108,20 +147,20 @@ export default function AdminVehicles() {
             variant="outline"
             size="icon"
             onClick={() => refetch()}
-            disabled={loading}
-            className="h-10 w-10 bg-white rounded-xl shrink-0 cursor-pointer"
+            className="h-10 w-10 rounded-xl"
+            title="Refresh"
           >
-            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+            <RefreshCw className="h-4 w-4" />
           </Button>
         </div>
       </div>
 
-      <Card className="border border-slate-100 shadow-premium rounded-2xl overflow-hidden bg-white">
+      <Card className="rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
         <CardContent className="p-0 overflow-x-auto">
-          <Table className="min-w-[900px]">
+          <Table className="min-w-[1000px]">
             <TableHeader className="bg-black border-b border-black">
               <TableRow className="bg-black hover:bg-black border-none">
-                <TableHead className="w-16 text-center text-xs font-bold text-slate-100 uppercase tracking-wider py-4">
+                <TableHead className="w-14 text-center text-xs font-bold text-slate-100 uppercase tracking-wider py-4">
                   Sr No
                 </TableHead>
                 <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4 pl-4">
@@ -137,7 +176,10 @@ export default function AdminVehicles() {
                   City
                 </TableHead>
                 <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4">
-                  Status
+                  Listing Status
+                </TableHead>
+                <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4">
+                  Certification
                 </TableHead>
                 <TableHead className="text-xs font-bold text-slate-100 uppercase tracking-wider py-4 pr-6">
                   Year
@@ -154,7 +196,7 @@ export default function AdminVehicles() {
                     key={`skeleton-${idx}`}
                     className="border-b border-slate-100/80 last:border-none"
                   >
-                    <TableCell className="w-16 text-center py-4">
+                    <TableCell className="w-14 text-center py-4">
                       <Skeleton className="h-4 w-4 mx-auto" />
                     </TableCell>
                     <TableCell className="py-4 pl-4">
@@ -178,6 +220,9 @@ export default function AdminVehicles() {
                     <TableCell className="py-4">
                       <Skeleton className="h-7 w-20 rounded-full" />
                     </TableCell>
+                    <TableCell className="py-4">
+                      <Skeleton className="h-7 w-24 rounded-full" />
+                    </TableCell>
                     <TableCell className="py-4 pr-6">
                       <Skeleton className="h-4 w-12 rounded" />
                     </TableCell>
@@ -189,10 +234,10 @@ export default function AdminVehicles() {
               ) : filtered.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={8}
+                    colSpan={9}
                     className="text-center py-12 text-muted-foreground font-medium"
                   >
-                    {search
+                    {search || certFilter !== "ALL"
                       ? "No matching vehicles found."
                       : "No vehicles found."}
                   </TableCell>
@@ -221,24 +266,28 @@ export default function AdminVehicles() {
                               FALLBACK_IMG;
                           }}
                         />
-                        <div className="min-w-0 max-w-[280px]">
+                        <div className="min-w-0 max-w-[260px]">
                           <div className="font-semibold text-slate-900 text-sm flex items-center gap-2">
-                            <span className="truncate block" title={`${v.brand} ${v.model} ${v.variant}`}>
+                            <span
+                              className="truncate block"
+                              title={`${v.brand} ${v.model} ${v.variant}`}
+                            >
                               {v.brand} {v.model} {v.variant}
                             </span>
                             {v.vehicleType && (
                               <Badge
-                                className={`${v.vehicleType === "PREMIUM"
-                                  ? "bg-amber-100 text-amber-700 hover:bg-amber-100"
-                                  : "bg-slate-100 text-slate-700 hover:bg-slate-100"
-                                  } border-0 text-[10px] px-1.5 py-0.5 font-bold rounded shrink-0`}
+                                className={`${
+                                  v.vehicleType === "PREMIUM"
+                                    ? "bg-amber-100 text-amber-700 hover:bg-amber-100"
+                                    : "bg-slate-100 text-slate-700 hover:bg-slate-100"
+                                } border-0 text-[10px] px-1.5 py-0.5 font-bold rounded shrink-0`}
                               >
                                 {v.vehicleType}
                               </Badge>
                             )}
                           </div>
                           <div className="text-xs text-slate-400 mt-0.5">
-                            {v.dealerContactName ?? "—"}
+                            {v.dealerBusinessName || v.dealerContactName || "—"}
                           </div>
                         </div>
                       </div>
@@ -255,6 +304,21 @@ export default function AdminVehicles() {
                     <TableCell className="py-4">
                       <StatusBadge status={v.vehicleStatus} />
                     </TableCell>
+                    <TableCell className="py-4">
+                      {v.isCertified ? (
+                        <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold rounded-full px-2.5 py-1">
+                          <CheckCircle2 className="h-3 w-3" /> Verified
+                        </span>
+                      ) : v.certifyRequested || v.inspectionStatus === "PENDING" ? (
+                        <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200 text-xs font-bold rounded-full px-2.5 py-1">
+                          <Clock className="h-3 w-3" /> Pending Verify
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 bg-slate-100 text-slate-600 text-xs font-medium rounded-full px-2.5 py-1">
+                          Not Certified
+                        </span>
+                      )}
+                    </TableCell>
                     <TableCell className="text-sm text-slate-400 py-4 pr-6">
                       {v.registrationYear}
                     </TableCell>
@@ -266,7 +330,7 @@ export default function AdminVehicles() {
                         onClick={() => shareVehicleToFacebook(v.id)}
                       >
                         <Facebook className="h-4 w-4" />
-                        <span className="hidden lg:inline">Post to Facebook Group</span>
+                        <span className="hidden lg:inline">Share</span>
                       </Button>
                     </TableCell>
                   </TableRow>

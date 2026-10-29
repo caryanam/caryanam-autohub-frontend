@@ -6,6 +6,7 @@ function hasRoleToken(role: AuthRole): boolean {
   if (role === "admin") return !!localStorage.getItem("adminToken");
   if (role === "dealer") return !!localStorage.getItem("dealerToken");
   if (role === "customer") return !!localStorage.getItem("customerToken");
+  if (role === "inspector") return !!localStorage.getItem("inspectorToken");
   return false;
 }
 

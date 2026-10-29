@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Fuel, Gauge, MapPin, Star, Heart } from "lucide-react";
+import { Fuel, Gauge, MapPin, Star, Heart, CheckCircle2 } from "lucide-react";
 import type { Vehicle } from "@/types";
 import { formatINR, formatKM } from "@/utils/helpers";
 import { Badge } from "@/components/ui/badge";
@@ -31,6 +31,7 @@ export function VehicleCard({
   const wishlisted = wishlistIds.includes(vehicle.id);
   const isPremium = vehicle.vehicleType === "PREMIUM";
   const isFeatured = vehicle.vehicleStatus === "FEATURED";
+  const isCertified = Boolean(vehicle.isCertified);
 
   const handleWishlist = async (e: React.MouseEvent) => {
     e.preventDefault();

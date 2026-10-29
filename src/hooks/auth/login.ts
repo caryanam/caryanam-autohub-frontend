@@ -70,6 +70,13 @@ export function useLogin() {
             r.toUpperCase().includes("ADMIN"),
           ));
 
+      const isInspector =
+        rawRole.includes("INSPECTOR") ||
+        (Array.isArray(decoded.roles) &&
+          (decoded.roles as string[]).some((r) =>
+            r.toUpperCase().includes("INSPECTOR"),
+          ));
+
       const isDealer =
         rawRole.includes("DEALER") ||
         (Array.isArray(decoded.roles) &&
@@ -78,16 +85,32 @@ export function useLogin() {
           ));
 
       if (isAdmin) {
+        localStorage.removeItem("dealerToken");
+        localStorage.removeItem("dealerData");
+        localStorage.removeItem("inspectorToken");
+        localStorage.removeItem("inspectorData");
         localStorage.setItem("adminToken", token);
         localStorage.setItem("adminData", JSON.stringify(decoded));
         return { role: "admin" as const, token, data: decoded };
+      } else if (isInspector) {
+        localStorage.removeItem("dealerToken");
+        localStorage.removeItem("dealerData");
+        localStorage.removeItem("adminToken");
+        localStorage.removeItem("adminData");
+        localStorage.setItem("inspectorToken", token);
+        localStorage.setItem("inspectorData", JSON.stringify(decoded));
+        return { role: "inspector" as const, token, data: decoded };
       } else if (isDealer) {
+        localStorage.removeItem("adminToken");
+        localStorage.removeItem("adminData");
+        localStorage.removeItem("inspectorToken");
+        localStorage.removeItem("inspectorData");
         localStorage.setItem("dealerToken", token);
         localStorage.setItem("dealerData", JSON.stringify(decoded));
         return { role: "dealer" as const, token, data: decoded };
       } else {
         throw new LoginError(
-          "Access denied. Only dealers and administrators are allowed to access this portal.",
+          "Access denied. Only authorized dealers, inspectors, and administrators can access this portal.",
           403,
         );
       }
@@ -105,5 +128,5 @@ export function useLogin() {
     }
   }, []);
 
-  return { isLoggingIn, login };
+  return { login, isLoggingIn };
 }

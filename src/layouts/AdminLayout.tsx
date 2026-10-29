@@ -1,5 +1,5 @@
-import { MousePointerClick } from "lucide-react";
 import {
+  MousePointerClick,
   LayoutDashboard,
   Users,
   CarFront,
@@ -13,6 +13,8 @@ import {
   Sparkles,
   Facebook,
   Instagram,
+  ShieldCheck,
+  CheckCircle2,
 } from "lucide-react";
 import DashboardLayout from "./DashboardLayout";
 
@@ -21,6 +23,16 @@ const nav = [
     to: "/admin/dashboard",
     label: "Dashboard",
     icon: <LayoutDashboard className="h-4 w-4" />,
+  },
+  {
+    to: "/admin/inspectors",
+    label: "Inspectors",
+    icon: <ShieldCheck className="h-4 w-4" />,
+  },
+  {
+    to: "/admin/certifications",
+    label: "Certifications",
+    icon: <CheckCircle2 className="h-4 w-4" />,
   },
   {
     to: "/admin/dealers",
@@ -66,7 +78,7 @@ const nav = [
   {
     to: "/admin/social-visits",
     label: "Social Media Visits",
-      icon: <MousePointerClick className="h-4 w-4" />,
+    icon: <MousePointerClick className="h-4 w-4" />,
   },
   {
     to: "/admin/subscriptions",
@@ -84,7 +96,6 @@ const nav = [
     icon: <FileBarChart className="h-4 w-4" />,
   },
 ];
-
 
 export default function AdminLayout() {
   return (

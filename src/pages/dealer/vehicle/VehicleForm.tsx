@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { ImageIcon, Video, Loader2, X, Upload, Camera, Plus, Search, Download } from "lucide-react";
+import { ImageIcon, Video, Loader2, X, Upload, Camera, Plus, Search, Download, ShieldCheck, Check } from "lucide-react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { Input } from "@/components/ui/input";
@@ -118,6 +118,7 @@ export default function VehicleForm({
   const [kilometerDriven, setKilometerDriven] = useState("");
   const [vehicleDescription, setVehicleDescription] = useState("");
   const [financeAvailability, setFinanceAvailability] = useState(true);
+  const [certifyRequested, setCertifyRequested] = useState(false);
 
   const handleFetchRc = async () => {
     if (!regNo) {
@@ -336,6 +337,9 @@ export default function VehicleForm({
           ? vehicleDetails.financeAvailability
           : true,
       );
+      setCertifyRequested(
+        Boolean(vehicleDetails.certifyRequested || vehicleDetails.isCertified)
+      );
     }
   }, [vehicleDetails]);
 
@@ -464,6 +468,7 @@ export default function VehicleForm({
       city,
       vehicleDescription,
       financeAvailability,
+      certifyRequested,
     };
 
     if (vehicleId) {
@@ -741,8 +746,12 @@ export default function VehicleForm({
             </Select>
           </div>
 
-          <div className="text-left flex flex-col justify-end pb-1">
-            <Label className="mb-2">Finance Availability</Label>
+          <div className="text-left">
+            <div className="h-6 flex items-center mb-1">
+              <Label htmlFor="financeAvailability" className="font-semibold text-slate-800 dark:text-slate-200">
+                Finance Availability
+              </Label>
+            </div>
             <div className="flex items-center space-x-2 h-10 border rounded-md px-3 bg-background">
               <Switch
                 id="financeAvailability"
@@ -752,6 +761,54 @@ export default function VehicleForm({
               <Label htmlFor="financeAvailability" className="text-sm font-medium cursor-pointer text-muted-foreground">
                 {financeAvailability ? "Available" : "Not Available"}
               </Label>
+            </div>
+          </div>
+
+          <div className="text-left">
+            <div className="h-6 flex items-center justify-between mb-1">
+              <Label htmlFor="certifyRequested" className="font-semibold text-slate-800 dark:text-slate-200 cursor-pointer">
+                Do you want to certify this vehicle?
+              </Label>
+              {certifyRequested && (
+                <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded-full">
+                  Requested
+                </span>
+              )}
+            </div>
+            <div className={`flex items-center justify-between h-10 border rounded-md px-3 transition-colors ${certifyRequested ? "border-emerald-500 bg-emerald-50/40 dark:bg-emerald-950/20" : "bg-background"}`}>
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="certifyRequested"
+                  checked={certifyRequested}
+                  onCheckedChange={setCertifyRequested}
+                  disabled={Boolean(vehicleDetails?.isCertified)}
+                />
+                <Label
+                  htmlFor="certifyRequested"
+                  className={`text-sm font-medium cursor-pointer ${certifyRequested ? "text-emerald-700 dark:text-emerald-400 font-bold" : "text-muted-foreground"}`}
+                >
+                  {certifyRequested ? "Yes, Certify" : "No"}
+                </Label>
+              </div>
+
+              {/* Quick toggle buttons: Yes / No */}
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => setCertifyRequested(false)}
+                  disabled={Boolean(vehicleDetails?.isCertified)}
+                  className={`px-2.5 py-1 rounded text-xs font-bold transition-all border ${!certifyRequested ? "bg-slate-200 dark:bg-slate-700 border-slate-300 dark:border-slate-600 text-slate-800 dark:text-white" : "border-transparent text-slate-400 hover:text-slate-600"}`}
+                >
+                  No
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCertifyRequested(true)}
+                  className={`px-2.5 py-1 rounded text-xs font-bold transition-all border flex items-center gap-1 ${certifyRequested ? "bg-emerald-600 border-emerald-600 text-white shadow-xs" : "border-slate-200 text-slate-500 hover:text-emerald-600 bg-white dark:bg-slate-800"}`}
+                >
+                  <Check className="h-3 w-3" /> Yes
+                </button>
+              </div>
             </div>
           </div>
         </div>

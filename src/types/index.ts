@@ -7,7 +7,7 @@ export type SubscriptionTier = "Basic" | "Standard" | "Premium";
 
 export interface Vehicle {
   id: number;
-  vehicleId: string;
+  vehicleId?: string;
   dealerId: number;
   brand: string;
   model: string;
@@ -16,7 +16,7 @@ export interface Vehicle {
   askingPrice: number;
   kilometerDriven: number;
   fuelType: string;
-  transmission: Transmission;
+  transmission?: Transmission;
   ownershipDetails: number;
   city: string;
   vehicleDescription: string;
@@ -35,6 +35,15 @@ export interface Vehicle {
   videos?: string[];
   financeAvailability?: boolean;
   executiveMobile?: string | null;
+
+  // Certification attributes
+  certifyRequested?: boolean;
+  isCertified?: boolean;
+  inspectionStatus?: "NONE" | "PENDING" | "VERIFIED" | "REJECTED";
+  certifiedAt?: string;
+  certifiedByInspectorId?: number;
+  certifiedByInspectorName?: string;
+  inspectionNotes?: string;
 }
 
 export interface Dealer {
@@ -81,7 +90,7 @@ export interface SubscriptionPlan {
   features: string[];
 }
 
-export type AuthRole = "guest" | "dealer" | "admin" | "customer";
+export type AuthRole = "guest" | "dealer" | "admin" | "customer" | "inspector";
 
 export interface AuthUser {
   id: string;
@@ -89,6 +98,62 @@ export interface AuthUser {
   email: string;
   role: AuthRole;
   dealerId?: string;
+  assignedArea?: string;
+  mobile?: string;
+}
+
+export interface Inspector {
+  id: number;
+  fullName: string;
+  email: string;
+  mobile: string;
+  assignedArea: string;
+  isActive: boolean;
+  role: string;
+  createdByAdminId?: number;
+  createdAt?: string;
+  updatedAt?: string;
+  totalCompletedInspections?: number;
+  totalPendingInspections?: number;
+}
+
+export interface VehicleInspectionRequest {
+  id: number;
+  vehicleId: number;
+  vehicleBrand: string;
+  vehicleModel: string;
+  vehicleVariant: string;
+  registrationYear: number;
+  askingPrice: number;
+  kilometerDriven: number;
+  fuelType: string;
+  vehicleCity: string;
+  vehicleType: string;
+  vehicleThumbnail?: string;
+  vehicleImages?: string[];
+
+  dealerId: number;
+  dealerBusinessName: string;
+  dealerOwnerName: string;
+  dealerMobile: string;
+  dealerWhatsapp?: string;
+  dealerEmail?: string;
+  dealerAddress?: string;
+  dealerCity?: string;
+
+  inspectorId?: number;
+  inspectorName?: string;
+  inspectorMobile?: string;
+  inspectorEmail?: string;
+  inspectorAssignedArea?: string;
+
+  area: string;
+  status: "PENDING" | "VERIFIED" | "REJECTED";
+  requestDate: string;
+  completedDate?: string;
+  inspectionNotes?: string;
+  overallRating?: number;
+  isCertified?: boolean;
 }
 
 export interface VehicleQrData {

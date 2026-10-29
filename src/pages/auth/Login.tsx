@@ -8,6 +8,7 @@ import { SEO } from "@/components/shared/SEO";
 import { useLogin, LoginError } from "@/hooks/auth/login";
 import { useAdminAuth } from "@/contexts/AdminAuthContext";
 import { useDealerAuth } from "@/contexts/DealerAuthContext";
+import { useInspectorAuth } from "@/contexts/InspectorAuthContext";
 import { toast } from "sonner";
 import { useState } from "react";
 import carImg from "@/assets/download.jpg";
@@ -32,6 +33,7 @@ export default function Login() {
   const { isLoggingIn, login } = useLogin();
   const { setUserFromToken: setAdmin } = useAdminAuth();
   const { setUserFromToken: setDealer } = useDealerAuth();
+  const { setUserFromToken: setInspector } = useInspectorAuth();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   
@@ -57,27 +59,39 @@ export default function Login() {
       });
       if (result.role === "admin") {
         setAdmin(result.data);
+      } else if (result.role === "inspector") {
+        setInspector(result.data);
       } else {
         setDealer(result.data);
       }
 
       const payload = result.data as Record<string, any>;
-      const dealerName = String(
-        payload.businessName ?? payload.ownerName ?? payload.name ?? "Dealer",
+      const displayName = String(
+        payload.fullName ?? payload.businessName ?? payload.ownerName ?? payload.name ?? (result.role === "inspector" ? "Inspector" : "Dealer"),
       );
 
       toast.success(
         result.role === "admin"
           ? "Welcome, Admin!"
-          : `Welcome back, ${dealerName}!`,
+          : result.role === "inspector"
+          ? `Welcome, Inspector ${displayName}!`
+          : `Welcome back, ${displayName}!`,
         {
           description:
-            result.role === "admin" ? "Admin Dashboard" : "Dealer Dashboard",
+            result.role === "admin"
+              ? "Admin Dashboard"
+              : result.role === "inspector"
+              ? "Inspector Portal"
+              : "Dealer Dashboard",
         },
       );
 
       navigate(
-        result.role === "admin" ? "/admin/dashboard" : "/dealer/dashboard",
+        result.role === "admin"
+          ? "/admin/dashboard"
+          : result.role === "inspector"
+          ? "/inspector/dashboard"
+          : "/dealer/dashboard",
         { replace: true },
       );
     } catch (error) {

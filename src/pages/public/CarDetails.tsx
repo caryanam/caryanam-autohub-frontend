@@ -337,6 +337,11 @@ export default function CarDetails() {
                   </>
                 )}
                 <div className="absolute top-4 left-4 flex flex-col gap-1.5 z-10">
+                  {vehicle.isCertified && (
+                    <Badge className="bg-emerald-600 text-white border-0 font-bold shadow gap-1">
+                      <BadgeCheck className="h-3.5 w-3.5" /> Certified
+                    </Badge>
+                  )}
                   {vehicle.vehicleStatus === "FEATURED" && (
                     <Badge className="gradient-primary text-white border-0 gap-1">
                       <Star className="h-3 w-3 fill-current" /> Featured

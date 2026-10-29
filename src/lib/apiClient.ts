@@ -13,8 +13,11 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use((config) => {
   const url = config.url ?? "";
   // Pick token based on API path — admin APIs use adminToken, dealer APIs use dealerToken
+  const isInspectorApi = url.includes("/api/inspector");
   const isAdminApi = url.includes("/api/admin");
-  const token = isAdminApi
+  const token = isInspectorApi
+    ? (localStorage.getItem("inspectorToken") || localStorage.getItem("dealerToken") || "")
+    : isAdminApi
     ? (localStorage.getItem("adminToken") ?? "")
     : (localStorage.getItem("dealerToken") ??
       localStorage.getItem("adminToken") ??
